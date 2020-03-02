@@ -7,10 +7,9 @@
   "private": true,
   "scripts": {
     "build": "grafana-toolkit plugin:build",
-    "test": "grafana-toolkit plugin:test",
+    "test": "grafana-toolkit plugin:test --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "dev": "grafana-toolkit plugin:dev",
-    "watch": "grafana-toolkit plugin:dev --watch",
-    "coveralls": "npm test --passWithNoTests --coverage && cat ./coverage/lcov.info | coveralls"
+    "watch": "grafana-toolkit plugin:dev --watch"
   },
   "license": "Apache-2.0",
   "devDependencies": {
