@@ -7,7 +7,7 @@
   "private": true,
   "scripts": {
     "build": "grafana-toolkit plugin:build",
-    "test": "grafana-toolkit plugin:test --coverage | coveralls",
+    "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
     "coveralls": "jest --passWithNoTests --coverage && cat ./tests/coverage/lcov.info | coveralls"
