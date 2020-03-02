@@ -13,7 +13,6 @@ jobs:
       - run: git fetch --prune --unshallow
       - run: npm ci
       - run: npm run build
-      - run: npm test # can we remove this? Is run coveralls enough?
       - run: npm run coveralls
         env:
           COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
