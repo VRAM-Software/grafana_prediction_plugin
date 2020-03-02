@@ -2,7 +2,7 @@
   "name": "grafana_prediction_plugin",
   "productName": "VRAM Software - Grafana prediction",
   "version": "0.0.1",
-  "author": "VRAM-Software",
+  "author": "mrampazz",
   "description": "Plugin Grafana Gruppo VRAM",
   "private": true,
   "scripts": {
@@ -10,18 +10,21 @@
     "test": "grafana-toolkit plugin:test",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch",
-    "coveralls": "jest --passWithNoTests --coverage && cat ./coverage/lcov.info | coveralls"
+    "coveralls": "npm test --passWithNoTests --coverage && cat ./coverage/lcov.info | coveralls"
   },
-  "author": "mrampazz",
   "license": "Apache-2.0",
   "devDependencies": {
     "@grafana/data": "next",
     "@grafana/toolkit": "next",
     "@grafana/ui": "next",
     "@types/grafana": "git+https://git@github.com/CorpGlory/types-grafana.git",
-    "@types/lodash": "latest"
+    "@types/jest": "^25.1.3",
+    "@types/lodash": "latest",
+    "jest": "^25.1.0",
+    "ts-jest": "^25.2.1",
+    "typescript": "^3.8.3",
+    "coveralls": "^3.0.9"
   },
   "dependencies": {
-    "coveralls": "^3.0.9"
   }
 }
