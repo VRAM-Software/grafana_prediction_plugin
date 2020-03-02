@@ -1,0 +1,44 @@
+{
+    "type": "app",
+    "name": "Grafana prediction plugin",
+    "id": "grafana-prediction-plugin",
+    "info": {
+        "description": "App plugin developed for Grafana",
+        "author": {
+            "name": "VRAM Software",
+            "url": "https://github.com/VRAM-Software"
+        },
+        "logos": {
+            "small": "img/circular-logo.png",
+            "large": "img/logo-big.png"
+        },
+        "links": [
+            {
+                "name": "GitHub",
+                "url": "https://github.com/VRAM-Software/grafana_prediction_plugin/src"
+            },
+            {
+                "name": "License",
+                "url": "https://github.com/VRAM-Software/grafana_prediction_plugin/blob/master/LICENSE"
+            }
+        ],
+        "version": "%VERSION%",
+        "updated": "%TODAY%"
+    },
+    "includes": [
+        {
+            "type": "vram-panel",
+            "name": "VRAM panel"
+        },
+        {
+            "type": "dashboard",
+            "name": "Test Dashboard",
+            "path": "./dashboards/test_dashboard.json",
+            "addToNav": true
+        }
+    ],
+    "dependencies": {
+        "grafanaVersion": "6.5.x",
+        "plugins": []
+    }
+}
