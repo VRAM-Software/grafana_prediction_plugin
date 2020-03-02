@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/grafana_prediction_plugin.iml" filepath="$PROJECT_DIR$/.idea/grafana_prediction_plugin.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../prediction_configuration_utility/.idea/prediction_configuration_utility.iml" filepath="$PROJECT_DIR$/../prediction_configuration_utility/.idea/prediction_configuration_utility.iml" />
     </modules>
   </component>
 </project>
