@@ -3,13 +3,18 @@ import { PanelEvents } from '@grafana/data';
 import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import appEvents from 'grafana/app/core/app_events';
 
+import Plotly from 'plotly.js';
+
 export class StatusPluginCtrl extends MetricsPanelCtrl {
   static templateUrl = 'panels/edit-panel/partials/panelTemplate.html';
   static scrollable = true;
 
   message: string;
+  graphArea: any;
   private seriesList: any;
-  seriesOutput: string;
+  cfg: any;
+  initialized: boolean;
+  mouse: any;
 
   panelDefaults = {
     jsonContent: '',
@@ -22,11 +27,17 @@ export class StatusPluginCtrl extends MetricsPanelCtrl {
     _.defaults(this.panel, this.panelDefaults);
 
     this.message = 'Loading data...';
-    this.seriesOutput = 'Loading data...';
+    this.initialized = false;
+    this.cfg = this.panel.pconfig;
 
-    this.events.on(PanelEvents.editModeInitialized, this.onInitEditMode.bind(this));
     this.events.on(PanelEvents.dataReceived, this.onDataReceived.bind(this));
     this.events.on(PanelEvents.render, this.onRender.bind(this));
+    this.events.on(PanelEvents.refresh, this.onRefresh.bind(this));
+
+    // Refresh after plotly is loaded
+    this.refresh();
+
+    this.events.on(PanelEvents.editModeInitialized, this.onInitEditMode.bind(this));
   }
 
   onInitEditMode() {
@@ -49,12 +60,39 @@ export class StatusPluginCtrl extends MetricsPanelCtrl {
     appEvents.emit('alert-success', ['File Json Cancellato']);
   }
 
+  onRefresh() {
+    // ignore fetching data if another panel is in fullscreen
+    if (this.otherPanelInFullscreenMode()) {
+      return;
+    }
+
+    if (this.graphArea && this.initialized && Plotly) {
+      Plotly.redraw(this.graphArea);
+    }
+  }
+
   onRender() {
     this.message = this.seriesList[0].alias + ' :';
-    this.seriesOutput = '';
-    for (let i = 0; i < this.seriesList[0].datapoints.length; i++) {
-      this.seriesOutput += (Math.round(this.seriesList[0].datapoints[i][0] * 100) / 100).toFixed(2) + '; ';
+    if (!Plotly) {
+      return;
     }
+    const x = new Array();
+    const y = new Array();
+
+    for (let i = 0; i < this.seriesList[0].datapoints.length; i++) {
+      x[i] = this.seriesList[0].datapoints[i][1];
+      y[i] = this.seriesList[0].datapoints[i][0];
+    }
+
+    const trace1 = {
+      x,
+      y,
+      type: 'scatter',
+    };
+
+    const data = [trace1];
+
+    Plotly.newPlot(this.graphArea, data);
   }
 
   onDataReceived(data: any) {
@@ -62,7 +100,4 @@ export class StatusPluginCtrl extends MetricsPanelCtrl {
     this.seriesList = data;
     this.render();
   }
-
-  // Called from anularjs with ng-change
-  onTextBoxRefresh() {}
 }
