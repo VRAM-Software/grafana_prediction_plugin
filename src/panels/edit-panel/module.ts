@@ -1,3 +1,3 @@
-import { StatusPluginCtrl } from './StatusPluginCtrl';
+import { PlotlyPanelCtrl } from './panelCtrl';
 
-export { StatusPluginCtrl as PanelCtrl };
+export { PlotlyPanelCtrl as PanelCtrl };
