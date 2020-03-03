@@ -14,7 +14,7 @@ import { Axis } from 'plotly.js';
 let Plotly: any; // Loaded dynamically!
 
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
-  static templateUrl = 'partials/module.html';
+  static templateUrl = 'panels/edit-panel/partials/module.html';
   static configVersion = 1; // An index to help config migration
 
   initialized: boolean;
@@ -36,12 +36,12 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     settings: {
       line: {
         color: '#005f81',
-        width: 1,
+        width: 5,
         dash: 'solid',
         shape: 'linear',
       },
       marker: {
-        size: 3,
+        size: 5,
         symbol: 'circle',
         color: '#33B5E5',
         colorscale: 'YlOrRd',
@@ -143,6 +143,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
+    // TODO: fix import of library
+    this.cfg.loadFromCDN = true;
     loadPlotly(this.cfg).then(v => {
       Plotly = v;
       console.log('Plotly', v);
