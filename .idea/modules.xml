@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$USER_HOME$/Scaricati/grafana-plotly-panel-use-toolkit/.idea/grafana-plotly-panel-use-toolkit.iml" filepath="$USER_HOME$/Scaricati/grafana-plotly-panel-use-toolkit/.idea/grafana-plotly-panel-use-toolkit.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/grafana_prediction_plugin.iml" filepath="$PROJECT_DIR$/.idea/grafana_prediction_plugin.iml" />
       <module fileurl="file://$PROJECT_DIR$/../prediction_configuration_utility/.idea/prediction_configuration_utility.iml" filepath="$PROJECT_DIR$/../prediction_configuration_utility/.idea/prediction_configuration_utility.iml" />
     </modules>
