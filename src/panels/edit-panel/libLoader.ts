@@ -1,3 +1,10 @@
+/**
+ * File: libLoader.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-23
+ * Description: Used to load the plotly library files
+ */
+
 import $script from 'scriptjs';
 
 let loaded: any; // Plotly Library

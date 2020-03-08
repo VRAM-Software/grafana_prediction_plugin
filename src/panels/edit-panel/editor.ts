@@ -1,3 +1,10 @@
+/**
+ * File: editor.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-19
+ * Description: Used to update the plotly graph
+ */
+
 import _ from 'lodash';
 
 import { PlotlyPanelCtrl } from './panelCtrl';

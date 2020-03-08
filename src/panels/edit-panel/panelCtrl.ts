@@ -1,3 +1,10 @@
+/**
+ * File: panelCtrl.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-19
+ * Description: Main control panel of the app plugin, handles configuration and data import
+ */
+
 import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 
 import _ from 'lodash';

@@ -1,3 +1,9 @@
+/**
+ * File: SeriesWrapper.test.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-23
+ * Description: Test file for SeriesWrapper.ts
+ */
 import {
   SeriesWrapper,
   SeriesWrapperSeries,

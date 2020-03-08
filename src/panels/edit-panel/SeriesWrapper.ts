@@ -1,3 +1,10 @@
+/**
+ * File: SeriesWrapper.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-23
+ * Description: Wrapper to handle data series retrieved from Grafana
+ */
+
 import _ from 'lodash';
 
 // This gives a standard way to get a value for a given field
