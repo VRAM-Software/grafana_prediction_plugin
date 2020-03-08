@@ -1,3 +1,10 @@
+/**
+ * File: config.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-19
+ * Description: Configuration panel inside Grafana settings
+ */
+
 import { PluginMeta } from '@grafana/data';
 
 export class TestControl {

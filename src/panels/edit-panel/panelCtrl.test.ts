@@ -1,3 +1,10 @@
+/**
+ * File: panelCtrl.test.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-19
+ * Description: Test file for panelCtrl.ts
+ */
+
 import { PlotlyPanelCtrl } from './panelCtrl';
 
 import * as panel_json_v004 from './__test_data/panel_json_v004.json';

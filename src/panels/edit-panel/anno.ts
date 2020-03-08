@@ -1,3 +1,10 @@
+/**
+ * File: anno.ts
+ * Author: Marco Dalla Libera
+ * Creation date: 2020-02-19
+ * Description: Used to update the plotly annotations
+ */
+
 import { Shape, Data } from 'plotly.js';
 
 export class AnnoInfo {
