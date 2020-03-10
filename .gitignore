@@ -110,6 +110,8 @@ fabric.properties
 
 # Sonarlint plugin
 .idea/**/sonarlint/
+.idea/sonarlint.xml
+.idea/sonarlint-state.xml
 
 # SonarQube Plugin
 .idea/**/sonarIssues.xml
