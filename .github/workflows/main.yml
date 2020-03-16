@@ -13,7 +13,7 @@ jobs:
       - run: git fetch --prune --unshallow
       - run: npm ci
       - run: npm run build
-      - run: npm test
+      - run: npm ci-test
         env:
           COVERALLS_REPO_TOKEN: "${{ secrets.COVERALLS_REPO_TOKEN }}"
           COVERALLS_GIT_BRANCH: "${{ github.ref }}"     
