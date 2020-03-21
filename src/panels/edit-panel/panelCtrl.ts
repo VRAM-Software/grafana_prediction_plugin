@@ -11,11 +11,11 @@ import _ from 'lodash';
 import moment from 'moment';
 import $ from 'jquery';
 
-import { SeriesWrapper, SeriesWrapperSeries, SeriesWrapperTable, SeriesWrapperTableRow } from './SeriesWrapper';
-import { EditorHelper } from './editor';
+import { SeriesWrapper, SeriesWrapperSeries, SeriesWrapperTable, SeriesWrapperTableRow } from './plotly/SeriesWrapper';
+import { EditorHelper } from './plotly/editor';
 
-import { loadPlotly, loadIfNecessary } from './libLoader';
-import { AnnoInfo } from './anno';
+import { loadPlotly, loadIfNecessary } from './plotly/libLoader';
+import { AnnoInfo } from './plotly/anno';
 import { Axis } from 'plotly.js';
 
 let Plotly: any; // Loaded dynamically!
@@ -25,7 +25,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static configVersion = 1; // An index to help config migration
 
   initialized: boolean;
-  //$tooltip: any;
 
   static defaultTrace = {
     mapping: {
@@ -136,8 +135,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
     this.initialized = false;
 
-    //this.$tooltip = $('<div id="tooltip" class="graph-tooltip">');
-
     // defaults configs
     _.defaultsDeep(this.panel, PlotlyPanelCtrl.defaults);
 
@@ -150,8 +147,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    // TODO: fix import of library
-    this.cfg.loadFromCDN = true;
     loadPlotly(this.cfg).then(v => {
       Plotly = v;
       console.log('Plotly', v);
@@ -245,8 +240,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   onInitEditMode() {
     this.editor = new EditorHelper(this);
     this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-    this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/tab_display.html', 3);
-    this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/tab_traces.html', 4);
+    this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_display.html', 3);
+    this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_traces.html', 4);
     //  this.editorTabIndex = 1;
     this.onConfigChanged(); // Sets up the axis info
 
@@ -463,25 +458,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         }
       });
 
-      // if(true) {
-      //   this.graphDiv.on('plotly_hover', (data, xxx) => {
-      //     console.log( 'HOVER!!!', data, xxx, this.mouse );
-      //     if(data.points.length>0) {
-      //       var idx = 0;
-      //       var pt = data.points[idx];
-
-      //       var body = '<div class="graph-tooltip-time">'+ pt.pointNumber +'</div>';
-      //       body += "<center>";
-      //       body += pt.x + ', '+pt.y;
-      //       body += "</center>";
-
-      //       //this.$tooltip.html( body ).place_tt( this.mouse.pageX + 10, this.mouse.pageY );
-      //     }
-      //   }).on('plotly_unhover', (data) => {
-      //     //this.$tooltip.detach();
-      //   });
-      // }
-
       this.graphDiv.on('plotly_selected', data => {
         if (data === undefined || data.points === undefined) {
           return;
@@ -524,7 +500,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       });
       this.initialized = true;
     } else if (this.initialized) {
-      Plotly.redraw(this.graphDiv);
+      Plotly.redraw(this.graphDiv).then(() => {
+        this.renderingCompleted();
+      });
     } else {
       console.log('Not initialized yet!');
     }
