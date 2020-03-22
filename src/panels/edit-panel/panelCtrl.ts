@@ -500,6 +500,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       });
       this.initialized = true;
     } else if (this.initialized) {
+      const rect = this.graphDiv.getBoundingClientRect();
+      this.layout.width = rect.width;
+      this.layout.height = this.height;
+
       Plotly.redraw(this.graphDiv).then(() => {
         this.renderingCompleted();
       });
