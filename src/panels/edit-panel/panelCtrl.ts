@@ -17,6 +17,7 @@ import { EditorHelper } from './plotly/editor';
 import { loadPlotly, loadIfNecessary } from './plotly/libLoader';
 import { AnnoInfo } from './plotly/anno';
 import { Axis } from 'plotly.js';
+import { PanelEvents } from '@grafana/data';
 
 let Plotly: any; // Loaded dynamically!
 
@@ -79,7 +80,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       traces: [PlotlyPanelCtrl.defaultTrace],
       settings: {
         type: 'scatter',
-        displayModeBar: false,
+        displayModeBar: true,
       },
       layout: {
         showlegend: false,
@@ -152,20 +153,20 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       console.log('Plotly', v);
 
       // Wait till plotly exists has loaded before we handle any data
-      this.events.on('render', this.onRender.bind(this));
-      this.events.on('data-received', this.onDataReceived.bind(this));
-      this.events.on('data-error', this.onDataError.bind(this));
-      this.events.on('panel-size-changed', this.onResize.bind(this));
-      this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
-      this.events.on('refresh', this.onRefresh.bind(this));
+      this.events.on(PanelEvents.render, this.onRender.bind(this));
+      this.events.on(PanelEvents.dataReceived, this.onDataReceived.bind(this));
+      this.events.on(PanelEvents.dataError, this.onDataError.bind(this));
+      this.events.on(PanelEvents.panelSizeChanged, this.onResize.bind(this));
+      this.events.on(PanelEvents.dataSnapshotLoad, this.onDataSnapshotLoad.bind(this));
+      this.events.on(PanelEvents.refresh, this.onRefresh.bind(this));
 
-      // Refresh after plotly is loaded
-      this.refresh();
+      // force to render the panel after plotly is loaded
+      this.initEditMode();
     });
 
     // Standard handlers
-    this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
-    this.events.on('panel-initialized', this.onPanelInitialized.bind(this));
+    this.events.on(PanelEvents.editModeInitialized, this.onInitEditMode.bind(this));
+    this.events.on(PanelEvents.panelInitialized, this.onPanelInitialized.bind(this));
   }
 
   // Called only on import button click, if the import doesn't throw errors, it reset the saved data

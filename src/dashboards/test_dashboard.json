@@ -30,7 +30,22 @@
         {
             "type": "vram-panel",
             "title": "VRAM panel",
-            "id": 0
+            "id": 0,
+            "gridPos": {
+                "x": 0,
+                "y": 0,
+                "w": 24,
+                "h": 14
+            },
+            "datasource": "-- Grafana --",
+            "targets": [
+                {
+                    "refId": "A",
+                    "resultFormat": "time_series",
+                    "scenarioId": "random_walk",
+                    "target": "select metric"
+                }
+            ]
         }
     ],
     "schemaVersion": 1,
