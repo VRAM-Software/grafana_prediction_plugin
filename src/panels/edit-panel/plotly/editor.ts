@@ -19,7 +19,7 @@ class AxisInfo {
 const REMOVE_KEY = '-- remove --';
 
 export class EditorHelper {
-  axis = new Array<AxisInfo>();
+  axis: AxisInfo[];
   trace: any; // Trace Config
   traceIndex = 0;
   traces: any[]; // array of configs;
