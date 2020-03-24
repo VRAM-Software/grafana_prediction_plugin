@@ -8,7 +8,7 @@
 import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 
 import _ from 'lodash';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import $ from 'jquery';
 
 import { SeriesWrapper, SeriesWrapperSeries, SeriesWrapperTable, SeriesWrapperTableRow } from './plotly/SeriesWrapper';
@@ -456,7 +456,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
           const ts = this.traces[0].ts[idx];
           // console.log( 'CLICK!!!', ts, data );
           const msg = data.points[i].x.toPrecision(4) + ', ' + data.points[i].y.toPrecision(4);
-          this.$rootScope.appEvent('alert-success', [msg, '@ ' + this.dashboard.formatDate(moment(ts))]);
+          this.$rootScope.appEvent('alert-success', [msg, '@ ' + this.dashboard.formatDate(DateTime.fromMillis(ts))]);
         }
       });
 
@@ -487,7 +487,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         min -= 1000;
         max += 1000;
 
-        const range = { from: moment.utc(min), to: moment.utc(max) };
+        const range = { from: DateTime.fromMillis(min, { zone: 'utc' }), to: DateTime.fromMillis(max, { zone: 'utc' }) };
 
         console.log('SELECTED!!!', min, max, data.points.length, range);
 
