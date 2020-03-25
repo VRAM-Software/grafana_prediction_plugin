@@ -72,7 +72,7 @@ export class EditorHelper {
     this.onUpdateAxis(); // Every time????
 
     // Initalize the axis
-    for (let i of this.axis) {
+    for (const i of this.axis) {
       if (i.layout.rangemode === 'between') {
         if (!_.isArray(i.layout.range)) {
           i.layout.range = [0, null];
