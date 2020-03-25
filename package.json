@@ -21,16 +21,18 @@
   "dependencies": {
     "jquery": "^3.2.1",
     "lodash": "^4.17.10",
+    "luxon": "^1.22.0",
     "moment": "^2.22.1",
     "plotly.js": "^1.41",
     "scriptjs": "^2.5.9"
   },
   "devDependencies": {
     "@grafana/data": "next",
-    "@grafana/toolkit": "next",
+    "@grafana/toolkit": "canary",
     "@grafana/ui": "next",
     "@types/grafana": "github:CorpGlory/types-grafana.git",
-    "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks",
-    "coveralls": "^3.0.9"
+    "@types/luxon": "^1.22.0",
+    "coveralls": "^3.0.9",
+    "grafana-sdk-mocks": "github:grafana/grafana-sdk-mocks"
   }
 }

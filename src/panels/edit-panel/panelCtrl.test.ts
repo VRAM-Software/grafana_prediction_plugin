@@ -7,7 +7,7 @@
 
 import { PlotlyPanelCtrl } from './panelCtrl';
 
-import * as panel_json_v004 from './__test_data/panel_json_v004.json';
+import * as panel_json_v004 from './plotly/__test_data/panel_json_v004.json';
 
 describe('Plotly Panel', () => {
   const injector = {

@@ -7,7 +7,7 @@
 
 import _ from 'lodash';
 
-import { PlotlyPanelCtrl } from './panelCtrl';
+import { PlotlyPanelCtrl } from '../panelCtrl';
 
 class AxisInfo {
   label: string;
@@ -19,7 +19,7 @@ class AxisInfo {
 const REMOVE_KEY = '-- remove --';
 
 export class EditorHelper {
-  axis = new Array<AxisInfo>();
+  axis: AxisInfo[];
   trace: any; // Trace Config
   traceIndex = 0;
   traces: any[]; // array of configs;
@@ -208,7 +208,6 @@ export class EditorHelper {
   }
 
   removeCurrentTrace() {
-    // TODO... better behavior
     if (this.traces.length <= 1) {
       console.error('Wont remove a single trace', this);
       return;

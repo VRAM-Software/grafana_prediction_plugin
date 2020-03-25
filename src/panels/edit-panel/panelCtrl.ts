@@ -8,15 +8,16 @@
 import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 
 import _ from 'lodash';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import $ from 'jquery';
 
-import { SeriesWrapper, SeriesWrapperSeries, SeriesWrapperTable, SeriesWrapperTableRow } from './SeriesWrapper';
-import { EditorHelper } from './editor';
+import { SeriesWrapper, SeriesWrapperSeries, SeriesWrapperTable, SeriesWrapperTableRow } from './plotly/SeriesWrapper';
+import { EditorHelper } from './plotly/editor';
 
-import { loadPlotly, loadIfNecessary } from './libLoader';
-import { AnnoInfo } from './anno';
+import { loadPlotly, loadIfNecessary } from './plotly/libLoader';
+import { AnnoInfo } from './plotly/anno';
 import { Axis } from 'plotly.js';
+import { PanelEvents } from '@grafana/data';
 
 let Plotly: any; // Loaded dynamically!
 
@@ -25,7 +26,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static configVersion = 1; // An index to help config migration
 
   initialized: boolean;
-  //$tooltip: any;
 
   static defaultTrace = {
     mapping: {
@@ -80,7 +80,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       traces: [PlotlyPanelCtrl.defaultTrace],
       settings: {
         type: 'scatter',
-        displayModeBar: false,
+        displayModeBar: true,
       },
       layout: {
         showlegend: false,
@@ -136,8 +136,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
     this.initialized = false;
 
-    //this.$tooltip = $('<div id="tooltip" class="graph-tooltip">');
-
     // defaults configs
     _.defaultsDeep(this.panel, PlotlyPanelCtrl.defaults);
 
@@ -150,27 +148,25 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    // TODO: fix import of library
-    this.cfg.loadFromCDN = true;
     loadPlotly(this.cfg).then(v => {
       Plotly = v;
       console.log('Plotly', v);
 
       // Wait till plotly exists has loaded before we handle any data
-      this.events.on('render', this.onRender.bind(this));
-      this.events.on('data-received', this.onDataReceived.bind(this));
-      this.events.on('data-error', this.onDataError.bind(this));
-      this.events.on('panel-size-changed', this.onResize.bind(this));
-      this.events.on('data-snapshot-load', this.onDataSnapshotLoad.bind(this));
-      this.events.on('refresh', this.onRefresh.bind(this));
+      this.events.on(PanelEvents.render, this.onRender.bind(this));
+      this.events.on(PanelEvents.dataReceived, this.onDataReceived.bind(this));
+      this.events.on(PanelEvents.dataError, this.onDataError.bind(this));
+      this.events.on(PanelEvents.panelSizeChanged, this.onResize.bind(this));
+      this.events.on(PanelEvents.dataSnapshotLoad, this.onDataSnapshotLoad.bind(this));
+      this.events.on(PanelEvents.refresh, this.onRefresh.bind(this));
 
-      // Refresh after plotly is loaded
-      this.refresh();
+      // force to render the panel after plotly is loaded
+      this.onInitEditMode();
     });
 
     // Standard handlers
-    this.events.on('init-edit-mode', this.onInitEditMode.bind(this));
-    this.events.on('panel-initialized', this.onPanelInitialized.bind(this));
+    this.events.on(PanelEvents.editModeInitialized, this.onInitEditMode.bind(this));
+    this.events.on(PanelEvents.panelInitialized, this.onPanelInitialized.bind(this));
   }
 
   // Called only on import button click, if the import doesn't throw errors, it reset the saved data
@@ -204,6 +200,36 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     return null;
   }
 
+  getPanelHeight() {
+    // panel can have a fixed height set via "General" tab in panel editor
+    let tmpPanelHeight = this.panel.height;
+    if (typeof tmpPanelHeight === 'undefined' || tmpPanelHeight === '') {
+      // grafana also supplies the height, try to use that if the panel does not have a height
+      tmpPanelHeight = String(this.height);
+      // v4 and earlier define this height, detect span for pre-v5
+      if (typeof this.panel.span !== 'undefined') {
+        // if there is no header, adjust height to use all space available
+        var panelTitleOffset = 20;
+        if (this.panel.title !== '') {
+          panelTitleOffset = 42;
+        }
+        tmpPanelHeight = String(this.containerHeight - panelTitleOffset); // offset for header
+      }
+      if (typeof tmpPanelHeight === 'undefined') {
+        // height still cannot be determined, get it from the row instead
+        tmpPanelHeight = this.row.height;
+        if (typeof tmpPanelHeight === 'undefined') {
+          // last resort - default to 250px (this should never happen)
+          tmpPanelHeight = '250';
+        }
+      }
+    }
+    // replace px
+    tmpPanelHeight = tmpPanelHeight.replace('px', '');
+    // convert to numeric value
+    return parseInt(tmpPanelHeight, 10);
+  }
+
   // Don't call resize too quickly
   doResize = _.debounce(() => {
     // https://github.com/alonho/angular-plotly/issues/26
@@ -214,7 +240,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     } else {
       const rect = this.graphDiv.getBoundingClientRect();
       this.layout.width = rect.width;
-      this.layout.height = this.height;
+      this.layout.height = this.getPanelHeight();
+
+      console.warn('Width, height: ' + this.layout.width + ' ; ' + this.layout.height);
+
       Plotly.redraw(this.graphDiv);
     }
   }, 50);
@@ -243,18 +272,14 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   onInitEditMode() {
-    this.editor = new EditorHelper(this);
-    this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-    this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/tab_display.html', 3);
-    this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/tab_traces.html', 4);
-    //  this.editorTabIndex = 1;
-    this.onConfigChanged(); // Sets up the axis info
+    if (!this.editor) {
+      this.editor = new EditorHelper(this);
+      this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
+      this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_display.html', 3);
+      this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_traces.html', 4);
 
-    // Check the size in a little bit
-    setTimeout(() => {
-      console.log('RESIZE in editor');
-      this.onResize();
-    }, 500);
+      this.onConfigChanged(); // Sets up the axis info
+    }
   }
 
   processConfigMigration() {
@@ -323,8 +348,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     // Update the size
     const rect = this.graphDiv.getBoundingClientRect();
     layout.autosize = false; // height is from the div
-    layout.height = this.height;
+    layout.height = this.getPanelHeight();
     layout.width = rect.width;
+
+    console.warn(' getProcessedLayout; Width, height: ' + layout.width + ' ; ' + layout.height);
 
     // Make sure it is something
     if (!layout.xaxis) {
@@ -424,7 +451,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
   onRender() {
     // ignore fetching data if another panel is in fullscreen
-    if (this.otherPanelInFullscreenMode() || !this.graphDiv) {
+    if (this.otherPanelInFullscreenMode() || !$('#plotly-spot').length) {
       return;
     }
 
@@ -459,28 +486,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
           const ts = this.traces[0].ts[idx];
           // console.log( 'CLICK!!!', ts, data );
           const msg = data.points[i].x.toPrecision(4) + ', ' + data.points[i].y.toPrecision(4);
-          this.$rootScope.appEvent('alert-success', [msg, '@ ' + this.dashboard.formatDate(moment(ts))]);
+          this.$rootScope.appEvent('alert-success', [msg, '@ ' + this.dashboard.formatDate(DateTime.fromMillis(ts))]);
         }
       });
-
-      // if(true) {
-      //   this.graphDiv.on('plotly_hover', (data, xxx) => {
-      //     console.log( 'HOVER!!!', data, xxx, this.mouse );
-      //     if(data.points.length>0) {
-      //       var idx = 0;
-      //       var pt = data.points[idx];
-
-      //       var body = '<div class="graph-tooltip-time">'+ pt.pointNumber +'</div>';
-      //       body += "<center>";
-      //       body += pt.x + ', '+pt.y;
-      //       body += "</center>";
-
-      //       //this.$tooltip.html( body ).place_tt( this.mouse.pageX + 10, this.mouse.pageY );
-      //     }
-      //   }).on('plotly_unhover', (data) => {
-      //     //this.$tooltip.detach();
-      //   });
-      // }
 
       this.graphDiv.on('plotly_selected', data => {
         if (data === undefined || data.points === undefined) {
@@ -509,7 +517,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         min -= 1000;
         max += 1000;
 
-        const range = { from: moment.utc(min), to: moment.utc(max) };
+        const range = { from: DateTime.fromMillis(min, { zone: 'utc' }).toMillis(), to: DateTime.fromMillis(max, { zone: 'utc' }).toMillis() };
 
         console.log('SELECTED!!!', min, max, data.points.length, range);
 
@@ -524,7 +532,13 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       });
       this.initialized = true;
     } else if (this.initialized) {
-      Plotly.redraw(this.graphDiv);
+      const rect = this.graphDiv.getBoundingClientRect();
+      this.layout.width = rect.width;
+      this.layout.height = this.getPanelHeight();
+
+      Plotly.redraw(this.graphDiv).then(() => {
+        this.renderingCompleted();
+      });
     } else {
       console.log('Not initialized yet!');
     }
@@ -789,7 +803,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   link(scope, elem, attrs, ctrl) {
-    this.graphDiv = elem.find('.plotly-spot')[0];
+    this.graphDiv = elem.find('#plotly-spot')[0];
     this.initialized = false;
     elem.on('mousemove', evt => {
       this.mouse = evt;
