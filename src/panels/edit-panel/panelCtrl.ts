@@ -200,6 +200,36 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     return null;
   }
 
+  getPanelHeight() {
+    // panel can have a fixed height set via "General" tab in panel editor
+    let tmpPanelHeight = this.panel.height;
+    if (typeof tmpPanelHeight === 'undefined' || tmpPanelHeight === '') {
+      // grafana also supplies the height, try to use that if the panel does not have a height
+      tmpPanelHeight = String(this.height);
+      // v4 and earlier define this height, detect span for pre-v5
+      if (typeof this.panel.span !== 'undefined') {
+        // if there is no header, adjust height to use all space available
+        var panelTitleOffset = 20;
+        if (this.panel.title !== '') {
+          panelTitleOffset = 42;
+        }
+        tmpPanelHeight = String(this.containerHeight - panelTitleOffset); // offset for header
+      }
+      if (typeof tmpPanelHeight === 'undefined') {
+        // height still cannot be determined, get it from the row instead
+        tmpPanelHeight = this.row.height;
+        if (typeof tmpPanelHeight === 'undefined') {
+          // last resort - default to 250px (this should never happen)
+          tmpPanelHeight = '250';
+        }
+      }
+    }
+    // replace px
+    tmpPanelHeight = tmpPanelHeight.replace('px', '');
+    // convert to numeric value
+    return parseInt(tmpPanelHeight, 10);
+  }
+
   // Don't call resize too quickly
   doResize = _.debounce(() => {
     // https://github.com/alonho/angular-plotly/issues/26
@@ -208,9 +238,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       // not drawn!
       console.warn('resize a plot that is not drawn yet');
     } else {
-      // const rect = this.graphDiv.getBoundingClientRect();
-      this.layout.width = $('#plotly-spot').width();
-      this.layout.height = $('#plotly-spot').height();
+      const rect = this.graphDiv.getBoundingClientRect();
+      this.layout.width = rect.width;
+      this.layout.height = this.getPanelHeight();
 
       console.warn('Width, height: ' + this.layout.width + ' ; ' + this.layout.height);
 
@@ -242,15 +272,14 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   onInitEditMode() {
-    this.editor = new EditorHelper(this);
-    this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-    this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_display.html', 3);
-    this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_traces.html', 4);
+    if (!this.editor) {
+      this.editor = new EditorHelper(this);
+      this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
+      this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_display.html', 3);
+      this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_traces.html', 4);
 
-    // Check the size in a little bit
-    setTimeout(() => {
       this.onConfigChanged(); // Sets up the axis info
-    }, 500);
+    }
   }
 
   processConfigMigration() {
@@ -317,9 +346,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     layout.paper_bgcolor = layout.plot_bgcolor;
 
     // Update the size
+    const rect = this.graphDiv.getBoundingClientRect();
     layout.autosize = false; // height is from the div
-    layout.width = $('#plotly-spot').width();
-    layout.height = this.graphDiv.height();
+    layout.height = this.getPanelHeight();
+    layout.width = rect.width;
 
     console.warn(' getProcessedLayout; Width, height: ' + layout.width + ' ; ' + layout.height);
 
@@ -487,7 +517,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         min -= 1000;
         max += 1000;
 
-        const range = { from: DateTime.fromMillis(min, { zone: 'utc' }), to: DateTime.fromMillis(max, { zone: 'utc' }) };
+        const range = { from: DateTime.fromMillis(min, { zone: 'utc' }).toMillis(), to: DateTime.fromMillis(max, { zone: 'utc' }).toMillis() };
 
         console.log('SELECTED!!!', min, max, data.points.length, range);
 
@@ -504,7 +534,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     } else if (this.initialized) {
       const rect = this.graphDiv.getBoundingClientRect();
       this.layout.width = rect.width;
-      this.layout.height = this.graphDiv.height();
+      this.layout.height = this.getPanelHeight();
 
       Plotly.redraw(this.graphDiv).then(() => {
         this.renderingCompleted();
@@ -773,7 +803,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   link(scope, elem, attrs, ctrl) {
-    this.graphDiv = elem.find('#plotly-spot');
+    this.graphDiv = elem.find('#plotly-spot')[0];
     this.initialized = false;
     elem.on('mousemove', evt => {
       this.mouse = evt;

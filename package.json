@@ -28,7 +28,7 @@
   },
   "devDependencies": {
     "@grafana/data": "next",
-    "@grafana/toolkit": "next",
+    "@grafana/toolkit": "canary",
     "@grafana/ui": "next",
     "@types/grafana": "github:CorpGlory/types-grafana.git",
     "@types/luxon": "^1.22.0",
