@@ -55,8 +55,6 @@ describe('Plotly Panel', () => {
     });
 
     it('it should use default configs', () => {
-      // console.log('SAME:', ctx.ctrl.panel.pconfig);
-      // console.log(' >>>:', PlotlyPanelCtrl.defaults.pconfig);
       expect(JSON.stringify(ctx.ctrl.panel.pconfig)).toBe(JSON.stringify(PlotlyPanelCtrl.defaults.pconfig));
     });
   });

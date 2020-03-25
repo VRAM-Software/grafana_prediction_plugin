@@ -21,6 +21,8 @@ import { PanelEvents } from '@grafana/data';
 
 let Plotly: any; // Loaded dynamically!
 
+const alertSuccess = 'alert-success';
+
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static templateUrl = 'panels/edit-panel/partials/module.html';
   static configVersion = 1; // An index to help config migration
@@ -131,7 +133,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   dataWarnings: string[]; // warnings about loading data
 
   /** @ngInject */
-  constructor($scope, $injector, $window, private $rootScope, public uiSegmentSrv, private annotationsSrv) {
+  constructor($scope, $injector, $window, private readonly $rootScope, public uiSegmentSrv, private readonly annotationsSrv) {
     super($scope, $injector);
 
     this.initialized = false;
@@ -177,21 +179,21 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   // Called on import button click but also to re-load a saved network
   async onUpload(net: any) {
     this.panel.jsonContent = JSON.stringify(net, null, '\t');
-    this.$rootScope.appEvent('alert-success', ['File Json Caricato']);
+    this.$rootScope.appEvent(alertSuccess, ['File Json Caricato']);
   }
 
   async delete_json_click() {
     this.panel.jsonContent = null;
-    this.$rootScope.appEvent('alert-success', ['File Json Cancellato']);
+    this.$rootScope.appEvent(alertSuccess, ['File Json Cancellato']);
   }
 
   getCssRule(selectorText): CSSStyleRule | null {
-    const styleSheets = document.styleSheets;
-    for (let idx = 0; idx < styleSheets.length; idx += 1) {
-      const styleSheet = styleSheets[idx] as CSSStyleSheet;
-      const rules = styleSheet.cssRules;
-      for (let ruleIdx = 0; ruleIdx < rules.length; ruleIdx += 1) {
-        const rule = rules[ruleIdx] as CSSStyleRule;
+    const styleSheets = Array.from(document.styleSheets);
+    for (let idx of styleSheets) {
+      const styleSheet = idx as CSSStyleSheet;
+      const rules = Array.from(styleSheet.cssRules);
+      for (let ruleIdx of rules) {
+        const rule = ruleIdx as CSSStyleRule;
         if (rule.selectorText === selectorText) {
           return rule;
         }
@@ -242,8 +244,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       this.layout.width = rect.width;
       this.layout.height = this.getPanelHeight();
 
-      console.warn('Width, height: ' + this.layout.width + ' ; ' + this.layout.height);
-
       Plotly.redraw(this.graphDiv);
     }
   }, 50);
@@ -283,7 +283,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   processConfigMigration() {
-    console.log('Migrating Plotly Configuration to version: ' + PlotlyPanelCtrl.configVersion);
+    console.log(`Migrating Plotly Configuration to version: ${PlotlyPanelCtrl.configVersion}`);
 
     // Remove some things that should not be saved
     const cfg = this.panel.pconfig;
@@ -311,7 +311,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       delete cfg.settings.mode;
     }
 
-    // TODO... MORE Migrations
     console.log('After Migration:', cfg);
     this.cfg = cfg;
     this.panel.version = PlotlyPanelCtrl.configVersion;
@@ -350,8 +349,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     layout.autosize = false; // height is from the div
     layout.height = this.getPanelHeight();
     layout.width = rect.width;
-
-    console.warn(' getProcessedLayout; Width, height: ' + layout.width + ' ; ' + layout.height);
 
     // Make sure it is something
     if (!layout.xaxis) {
@@ -481,12 +478,11 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         if (data === undefined || data.points === undefined) {
           return;
         }
-        for (let i = 0; i < data.points.length; i++) {
-          const idx = data.points[i].pointNumber;
+        for (let i of data.points) {
+          const idx = i.pointNumber;
           const ts = this.traces[0].ts[idx];
-          // console.log( 'CLICK!!!', ts, data );
-          const msg = data.points[i].x.toPrecision(4) + ', ' + data.points[i].y.toPrecision(4);
-          this.$rootScope.appEvent('alert-success', [msg, '@ ' + this.dashboard.formatDate(DateTime.fromMillis(ts))]);
+          const msg = `${i.x.toPrecision(4)}, ${i.y.toPrecision(4)}`;
+          this.$rootScope.appEvent(alertSuccess, [msg, `@ ${this.dashboard.formatDate(DateTime.fromMillis(ts))}`]);
         }
       });
 
@@ -505,8 +501,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         let min = Number.MAX_SAFE_INTEGER;
         let max = Number.MIN_SAFE_INTEGER;
 
-        for (let i = 0; i < data.points.length; i++) {
-          const found = data.points[i];
+        for (let i of data.points) {
+          const found = i;
           const idx = found.pointNumber;
           const ts = found.fullData.x[idx];
           min = Math.min(min, ts);
@@ -558,7 +554,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       dataList.forEach((series, sidx) => {
         let refId = '';
         if (useRefID) {
-          refId = _.get(this.panel, 'targets[' + sidx + '].refId');
+          refId = _.get(this.panel, `targets[${sidx}].refId'`);
           if (!refId) {
             refId = String.fromCharCode('A'.charCodeAt(0) + sidx);
           }
@@ -581,7 +577,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     finfo.forEach(s => {
       s.getAllKeys().forEach(k => {
         this.seriesByKey.set(k, s);
-        seriesHash += '$' + k;
+        seriesHash += `$${k}`;
       });
     });
     this.series = finfo;
@@ -643,7 +639,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       });
       const s = this.seriesByKey.get(key);
       if (!s) {
-        this.dataWarnings.push('Unable to find: ' + key + ' for ' + trace.name + ' // ' + path);
+        this.dataWarnings.push(`Unable to find: ${key} for ${trace.name} // ${path}`);
       }
     }
   }
@@ -712,14 +708,13 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   // Fills in the required data into the trace values
   _updateTraceData(force = false): boolean {
     if (!this.series) {
-      // console.log('NO Series data yet!');
       return false;
     }
 
     if (force || !this.traces) {
       this._updateTracesFromConfigs();
     } else if (this.traces.length !== this.cfg.traces.length) {
-      console.log('trace number mismatch.  Found: ' + this.traces.length + ', expect: ' + this.cfg.traces.length);
+      console.log(`trace number mismatch.  Found: ${this.traces.length}, expect: ${this.cfg.traces.length}`);
       this._updateTracesFromConfigs();
     }
 
@@ -740,7 +735,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
             if (!this.error) {
               this.error = '';
             }
-            this.error += 'Unable to find: ' + v.key + ' (using zeros).  ';
+            this.error += `Unable to find: ${v.key} (using zeros).  `;
           }
           if (!vals) {
             vals = zero;
@@ -750,7 +745,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       }
     });
 
-    //console.log('SetDATA', this.traces);
     return true;
   }
 
@@ -808,8 +802,5 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     elem.on('mousemove', evt => {
       this.mouse = evt;
     });
-
-    //let p = $(this.graphDiv).parent().parent()[0];
-    //console.log( 'PLOT', this.graphDiv, p );
   }
 }

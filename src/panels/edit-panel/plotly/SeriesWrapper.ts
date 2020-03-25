@@ -76,7 +76,6 @@ export class SeriesWrapperSeries extends SeriesWrapper {
       this.type = 'epoch';
       this.first = series.datapoints[0][1];
       this.name += '@time';
-      return;
     }
   }
 
@@ -96,10 +95,10 @@ export class SeriesWrapperSeries extends SeriesWrapper {
 
   getAllKeys(): string[] {
     if (this.refId) {
-      const vals = [this.name, this.refId + '@' + this.value, this.refId + '/' + this.name];
+      const vals = [this.name, `${this.refId}@${this.value}`, `${this.refId}/${this.name}`];
 
       if ('A' === this.refId) {
-        vals.push('@' + this.value);
+        vals.push(`@${this.value}`);
       }
       return vals;
     }
@@ -112,7 +111,7 @@ export class SeriesWrapperTableRow extends SeriesWrapper {
   constructor(refId: string, public table: any) {
     super(refId);
 
-    this.name = refId + '@row';
+    this.name = `${refId}@row`;
   }
 
   toArray(): any[] {
@@ -133,7 +132,7 @@ export class SeriesWrapperTable extends SeriesWrapper {
 
     const col = table.columns[index];
     if (!col) {
-      throw new Error('Unkonwn Column: ' + index);
+      throw new Error(`Unkonwn Column: ${index}`);
     }
 
     this.name = col.text;
@@ -160,7 +159,7 @@ export class SeriesWrapperTable extends SeriesWrapper {
 
   getAllKeys(): string[] {
     if (this.refId) {
-      return [this.getKey(), this.refId + '/' + this.name, this.refId + '[' + this.index + ']'];
+      return [this.getKey(), `${this.refId}/${this.name}`, `${this.refId}[${this.index}]`];
     }
     return [this.getKey()];
   }

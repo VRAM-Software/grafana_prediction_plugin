@@ -72,13 +72,13 @@ export class EditorHelper {
     this.onUpdateAxis(); // Every time????
 
     // Initalize the axis
-    for (let i = 0; i < this.axis.length; i++) {
-      if (this.axis[i].layout.rangemode === 'between') {
-        if (!_.isArray(this.axis[i].layout.range)) {
-          this.axis[i].layout.range = [0, null];
+    for (let i of this.axis) {
+      if (i.layout.rangemode === 'between') {
+        if (!_.isArray(i.layout.range)) {
+          i.layout.range = [0, null];
         }
       } else {
-        delete this.axis[i].layout.range;
+        delete i.layout.range;
       }
     }
 
@@ -178,8 +178,7 @@ export class EditorHelper {
         series: s,
       };
       if (!s) {
-        //  opts.fake = true;
-        opts.html = value + '  <i class="fa fa-exclamation-triangle"></i>';
+        opts.html = `${value}  <i class="fa fa-exclamation-triangle"></i>`;
       }
       this.mapping[key] = this.ctrl.uiSegmentSrv.newSegment(opts);
     } else {
@@ -216,12 +215,13 @@ export class EditorHelper {
     for (let i = 0; i < this.traces.length; i++) {
       if (this.trace === this.traces[i]) {
         this.traces.splice(i, 1);
-        if (i >= this.traces.length) {
-          i = this.traces.length - 1;
-        }
         this.ctrl.onConfigChanged();
         this.ctrl._updateTraceData(true);
-        this.selectTrace(i);
+        if (i >= this.traces.length) {
+          this.selectTrace(i);
+        } else {
+          this.selectTrace(this.traces.length - 1);
+        }
         this.ctrl.refresh();
         return;
       }
@@ -231,7 +231,7 @@ export class EditorHelper {
   }
 
   static createTraceName(idx: number) {
-    return 'Trace ' + (idx + 1);
+    return `Trace ${idx + 1}`;
   }
 
   //-----------------------------------------------------------------------
@@ -260,8 +260,6 @@ export class EditorHelper {
         );
       });
 
-      //console.log('GET Segments:', withRemove, series);
-      //console.log('ALL Series:', this.ctrl.series);
       resolve(series);
     });
   }

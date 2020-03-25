@@ -74,7 +74,9 @@ export class AnnoInfo {
 
     // Overwrite it with new points
     this.trace = { ...this.trace, x, y, text };
-    this.trace.marker!.color = color;
+    if (this.trace.marker) {
+      this.trace.marker.color = color;
+    }
     return x.length > 0;
   }
 }
