@@ -189,10 +189,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
   getCssRule(selectorText): CSSStyleRule | null {
     const styleSheets = Array.from(document.styleSheets);
-    for (let idx of styleSheets) {
+    for (const idx of styleSheets) {
       const styleSheet = idx as CSSStyleSheet;
       const rules = Array.from(styleSheet.cssRules);
-      for (let ruleIdx of rules) {
+      for (const ruleIdx of rules) {
         const rule = ruleIdx as CSSStyleRule;
         if (rule.selectorText === selectorText) {
           return rule;
@@ -478,7 +478,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         if (data === undefined || data.points === undefined) {
           return;
         }
-        for (let i of data.points) {
+        for (const i of data.points) {
           const idx = i.pointNumber;
           const ts = this.traces[0].ts[idx];
           const msg = `${i.x.toPrecision(4)}, ${i.y.toPrecision(4)}`;
@@ -501,7 +501,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         let min = Number.MAX_SAFE_INTEGER;
         let max = Number.MIN_SAFE_INTEGER;
 
-        for (let i of data.points) {
+        for (const i of data.points) {
           const found = i;
           const idx = found.pointNumber;
           const ts = found.fullData.x[idx];
