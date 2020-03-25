@@ -25,7 +25,6 @@ export class TestControl {
       this.appModel = {} as PluginMeta;
     }
 
-    this.appModel = this.appModel as any;
     if (!this.appModel.jsonData) {
       this.appModel.jsonData = {};
     }
@@ -41,9 +40,7 @@ export class TestControl {
     console.log('Post Update, plugin loaded', this);
   }
 
-  redirect() {
-    //console.info("redirect() not done");
-  }
+  redirect() {}
 }
 
 TestControl.templateUrl = 'components/config.html';
