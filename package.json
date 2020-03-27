@@ -19,16 +19,17 @@
     }
   },
   "dependencies": {
-    "jquery": "^3.2.1",
+    "@babel/preset-env": "^7.9.0",
+    "jquery": "^3.4.1",
     "lodash": "^4.17.10",
-    "luxon": "^1.22.0",
-    "moment": "^2.22.1",
-    "plotly.js": "^1.41",
+    "luxon": "^1.22.2",
+    "moment": "^2.24.0",
+    "plotly.js": "^1.52.3",
     "scriptjs": "^2.5.9"
   },
   "devDependencies": {
     "@grafana/data": "next",
-    "@grafana/toolkit": "canary",
+    "@grafana/toolkit": "^6.7.1",
     "@grafana/ui": "next",
     "@types/grafana": "github:CorpGlory/types-grafana.git",
     "@types/luxon": "^1.22.0",
