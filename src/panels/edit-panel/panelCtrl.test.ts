@@ -8,6 +8,7 @@
 import { PlotlyPanelCtrl } from './panelCtrl';
 
 import * as panel_json_v004 from './plotly/__test_data/panel_json_v004.json';
+import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 
 describe('Plotly Panel', () => {
   const injector = {
@@ -55,7 +56,7 @@ describe('Plotly Panel', () => {
     });
 
     it('it should use default configs', () => {
-      expect(JSON.stringify(ctx.ctrl.panel.pconfig)).toBe(JSON.stringify(PlotlyPanelCtrl.defaults.pconfig));
+      expect(JSON.stringify(ctx.ctrl.panel.pconfig)).toBe(JSON.stringify(PlotlyPanelUtil.defaults.pconfig));
     });
   });
 
@@ -66,7 +67,7 @@ describe('Plotly Panel', () => {
     });
 
     it('it should now have have a version', () => {
-      expect(ctx.ctrl.panel.version).toBe(PlotlyPanelCtrl.configVersion);
+      expect(ctx.ctrl.panel.version).toBe(PlotlyPanelUtil.configVersion);
       expect(ctx.ctrl.cfg.layout.margin).toBeUndefined();
     });
   });
