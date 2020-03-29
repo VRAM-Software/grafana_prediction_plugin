@@ -8,6 +8,7 @@
 import _ from 'lodash';
 
 import { PlotlyPanelCtrl } from '../panelCtrl';
+import { PlotlyPanelUtil } from './PlotlyPanelUtil';
 
 class AxisInfo {
   label: string;
@@ -46,7 +47,7 @@ export class EditorHelper {
 
     let changed = false;
     ctrl.cfg.traces.forEach(trace => {
-      _.defaults(trace, PlotlyPanelCtrl.defaultTrace);
+      _.defaults(trace, PlotlyPanelUtil.defaultTrace);
       const mapping = trace.mapping;
       if (!mapping.color) {
         mapping.color = defaultMappings.first;
@@ -60,7 +61,7 @@ export class EditorHelper {
         mapping.y = defaultMappings.first;
         changed = true;
       }
-      if (ctrl.is3d() && !mapping.z) {
+      if (PlotlyPanelUtil.is3d(ctrl) && !mapping.z) {
         mapping.z = defaultMappings.first;
         changed = true;
       }
@@ -82,7 +83,7 @@ export class EditorHelper {
       }
     }
 
-    this.ctrl.onConfigChanged();
+    PlotlyPanelUtil.onConfigChanged(this.ctrl);
   }
 
   onUpdateAxis() {
@@ -114,7 +115,7 @@ export class EditorHelper {
       segment: this.mapping.y,
     });
 
-    if (this.ctrl.is3d()) {
+    if (PlotlyPanelUtil.is3d(this.ctrl)) {
       if (!layout.zaxis) {
         layout.zaxis = {};
       }
@@ -134,7 +135,7 @@ export class EditorHelper {
   selectTrace(index: number) {
     this.traces = this.ctrl.cfg.traces;
     if (!this.traces || this.traces.length < 1) {
-      this.traces = this.ctrl.cfg.traces = [_.deepClone(PlotlyPanelCtrl.defaultTrace)];
+      this.traces = this.ctrl.cfg.traces = [_.deepClone(PlotlyPanelUtil.defaultTrace)];
     }
     if (index >= this.ctrl.cfg.traces.length) {
       index = this.ctrl.cfg.traces.length - 1;
@@ -142,7 +143,7 @@ export class EditorHelper {
     this.trace = this.ctrl.cfg.traces[index];
     this.traceIndex = index;
 
-    _.defaults(this.trace, PlotlyPanelCtrl.defaultTrace);
+    _.defaults(this.trace, PlotlyPanelUtil.defaultTrace);
     if (!this.trace.name) {
       this.trace.name = EditorHelper.createTraceName(index);
     }
@@ -199,7 +200,7 @@ export class EditorHelper {
     if (this.ctrl.cfg.traces.length > 0) {
       trace = _.cloneDeep(this.ctrl.cfg.traces[this.ctrl.cfg.traces.length - 1]);
     } else {
-      trace = _.deepClone(PlotlyPanelCtrl.defaultTrace);
+      trace = _.deepClone(PlotlyPanelUtil.defaultTrace);
     }
     trace.name = EditorHelper.createTraceName(this.ctrl.traces.length);
     this.ctrl.cfg.traces.push(trace);
@@ -215,8 +216,8 @@ export class EditorHelper {
     for (let i = 0; i < this.traces.length; i++) {
       if (this.trace === this.traces[i]) {
         this.traces.splice(i, 1);
-        this.ctrl.onConfigChanged();
-        this.ctrl._updateTraceData(true);
+        PlotlyPanelUtil.onConfigChanged(this.ctrl);
+        PlotlyPanelUtil._updateTraceData(this.ctrl, true);
         if (i >= this.traces.length) {
           this.selectTrace(i);
         } else {
