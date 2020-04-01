@@ -105,24 +105,49 @@ export class PlotlyPanelUtil {
     visible: false,
   };
 
-  getPanelHeight(ctrl: PlotlyPanelCtrl) {
+  private _ctrl;
+
+  private _initialized: boolean;
+
+  constructor(ctrl: PlotlyPanelCtrl) {
+    this.initialized = false;
+    this._ctrl = ctrl;
+  }
+
+  get initialized(): boolean {
+    return this._initialized;
+  }
+
+  set initialized(value: boolean) {
+    this._initialized = value;
+  }
+
+  get ctrl(): PlotlyPanelCtrl {
+    return this._ctrl;
+  }
+
+  set ctrl(value: PlotlyPanelCtrl) {
+    this._ctrl = value;
+  }
+
+  getPanelHeight() {
     // panel can have a fixed height set via "General" tab in panel editor
-    let tmpPanelHeight = ctrl.panel.height;
+    let tmpPanelHeight = this.ctrl.panel.height;
     if (typeof tmpPanelHeight === 'undefined' || tmpPanelHeight === '') {
       // grafana also supplies the height, try to use that if the panel does not have a height
-      tmpPanelHeight = String(ctrl.height);
+      tmpPanelHeight = String(this.ctrl.height);
       // v4 and earlier define this height, detect span for pre-v5
-      if (typeof ctrl.panel.span !== 'undefined') {
+      if (typeof this.ctrl.panel.span !== 'undefined') {
         // if there is no header, adjust height to use all space available
         var panelTitleOffset = 20;
-        if (ctrl.panel.title !== '') {
+        if (this.ctrl.panel.title !== '') {
           panelTitleOffset = 42;
         }
-        tmpPanelHeight = String(ctrl.containerHeight - panelTitleOffset); // offset for header
+        tmpPanelHeight = String(this.ctrl.containerHeight - panelTitleOffset); // offset for header
       }
       if (typeof tmpPanelHeight === 'undefined') {
         // height still cannot be determined, get it from the row instead
-        tmpPanelHeight = ctrl.row.height;
+        tmpPanelHeight = this.ctrl.row.height;
         if (typeof tmpPanelHeight === 'undefined') {
           // last resort - default to 250px (this should never happen)
           tmpPanelHeight = '250';
@@ -135,56 +160,56 @@ export class PlotlyPanelUtil {
     return parseInt(tmpPanelHeight, 10);
   }
 
-  is3d(ctrl: PlotlyPanelCtrl) {
-    return ctrl.cfg.settings.type === 'scatter3d';
+  is3d() {
+    return this.ctrl.cfg.settings.type === 'scatter3d';
   }
 
-  deepCopyWithTemplates = (ctrl: PlotlyPanelCtrl, obj) => {
+  deepCopyWithTemplates = obj => {
     if (_.isArray(obj)) {
-      return obj.map(val => this.deepCopyWithTemplates(ctrl, val));
+      return obj.map(val => this.deepCopyWithTemplates(val));
     } else if (_.isString(obj)) {
-      return ctrl.templateSrv.replace(obj, ctrl.panel.scopedVars);
+      return this.ctrl.templateSrv.replace(obj, this.ctrl.panel.scopedVars);
     } else if (_.isObject(obj)) {
       const copy = {};
       _.forEach(obj, (v, k) => {
-        copy[k] = this.deepCopyWithTemplates(ctrl, v);
+        copy[k] = this.deepCopyWithTemplates(v);
       });
       return copy;
     }
     return obj;
   };
 
-  __addCopyPath(ctrl: PlotlyPanelCtrl, trace: any, key: string, path: string) {
+  __addCopyPath(trace: any, key: string, path: string) {
     if (key) {
       trace.__set.push({
         key: key,
         path: path,
       });
-      const s = ctrl.seriesByKey.get(key);
+      const s = this.ctrl.seriesByKey.get(key);
       if (!s) {
-        ctrl.dataWarnings.push(`Unable to find: ${key} for ${trace.name} // ${path}`);
+        this.ctrl.dataWarnings.push(`Unable to find: ${key} for ${trace.name} // ${path}`);
       }
     }
   }
 
   // This will update all trace settings *except* the data
-  _updateTracesFromConfigs(ctrl: PlotlyPanelCtrl) {
-    ctrl.dataWarnings = [];
+  _updateTracesFromConfigs() {
+    this.ctrl.dataWarnings = [];
 
     // Make sure we have a trace
-    if (ctrl.cfg.traces == null || ctrl.cfg.traces.length < 1) {
-      ctrl.cfg.traces = [_.cloneDeep(PlotlyPanelUtil.defaultTrace)];
+    if (this.ctrl.cfg.traces == null || this.ctrl.cfg.traces.length < 1) {
+      this.ctrl.cfg.traces = [_.cloneDeep(PlotlyPanelUtil.defaultTrace)];
     }
 
-    const is3D = this.is3d(ctrl);
-    ctrl.traces = ctrl.cfg.traces.map((tconfig, idx) => {
-      const config = this.deepCopyWithTemplates(ctrl, tconfig) || {};
+    const is3D = this.is3d();
+    this.ctrl.traces = this.ctrl.cfg.traces.map((tconfig, idx) => {
+      const config = this.deepCopyWithTemplates(tconfig) || {};
       _.defaults(config, PlotlyPanelUtil.defaults);
       const mapping = config.mapping;
 
       const trace: any = {
         name: config.name || EditorHelper.createTraceName(idx),
-        type: ctrl.cfg.settings.type,
+        type: this.ctrl.cfg.settings.type,
         mode: 'markers+lines', // really depends on config settings
         __set: [], // { key:? property:? }
       };
@@ -199,7 +224,7 @@ export class PlotlyPanelUtil {
         delete trace.marker.sizeref;
 
         if (config.settings.color_option === 'ramp') {
-          this.__addCopyPath(ctrl, trace, mapping.color, 'marker.color');
+          this.__addCopyPath(trace, mapping.color, 'marker.color');
         } else {
           delete trace.marker.colorscale;
           delete trace.marker.showscale;
@@ -212,12 +237,12 @@ export class PlotlyPanelUtil {
       }
 
       // Set the text
-      this.__addCopyPath(ctrl, trace, mapping.text, 'text');
-      this.__addCopyPath(ctrl, trace, mapping.x, 'x');
-      this.__addCopyPath(ctrl, trace, mapping.y, 'y');
+      this.__addCopyPath(trace, mapping.text, 'text');
+      this.__addCopyPath(trace, mapping.x, 'x');
+      this.__addCopyPath(trace, mapping.y, 'y');
 
       if (is3D) {
-        this.__addCopyPath(ctrl, trace, mapping.z, 'z');
+        this.__addCopyPath(trace, mapping.z, 'z');
       }
 
       // Set the trace mode
@@ -229,25 +254,25 @@ export class PlotlyPanelUtil {
   }
 
   // Fills in the required data into the trace values
-  _updateTraceData(ctrl: PlotlyPanelCtrl, force = false): boolean {
-    if (!ctrl.series) {
+  _updateTraceData(force = false): boolean {
+    if (!this.ctrl.series) {
       return false;
     }
 
-    if (force || !ctrl.traces) {
-      this._updateTracesFromConfigs(ctrl);
-    } else if (ctrl.traces.length !== ctrl.cfg.traces.length) {
-      console.log(`trace number mismatch.  Found: ${ctrl.traces.length}, expect: ${ctrl.cfg.traces.length}`);
-      this._updateTracesFromConfigs(ctrl);
+    if (force || !this.ctrl.traces) {
+      this._updateTracesFromConfigs();
+    } else if (this.ctrl.traces.length !== this.ctrl.cfg.traces.length) {
+      console.log(`trace number mismatch.  Found: ${this.ctrl.traces.length}, expect: ${this.ctrl.cfg.traces.length}`);
+      this._updateTracesFromConfigs();
     }
 
     // Use zero when the metric value is missing
     // Plotly gets lots of errors when the values are missing
     let zero: any = [];
-    ctrl.traces.forEach(trace => {
+    this.ctrl.traces.forEach(trace => {
       if (trace.__set) {
         trace.__set.forEach(v => {
-          const s = ctrl.seriesByKey.get(v.key);
+          const s = this.ctrl.seriesByKey.get(v.key);
           let vals: any[] = zero;
           if (s) {
             vals = s.toArray();
@@ -255,10 +280,10 @@ export class PlotlyPanelUtil {
               zero = Array.from(new Array(3), () => 0);
             }
           } else {
-            if (!ctrl.error) {
-              ctrl.error = '';
+            if (!this.ctrl.error) {
+              this.ctrl.error = '';
             }
-            ctrl.error += `Unable to find: ${v.key} (using zeros).  `;
+            this.ctrl.error += `Unable to find: ${v.key} (using zeros).  `;
           }
           if (!vals) {
             vals = zero;
@@ -271,16 +296,16 @@ export class PlotlyPanelUtil {
     return true;
   }
 
-  getProcessedLayout(ctrl: PlotlyPanelCtrl) {
+  getProcessedLayout() {
     // Copy from config
-    const layout = this.deepCopyWithTemplates(ctrl, ctrl.cfg.layout);
+    const layout = this.deepCopyWithTemplates(this.ctrl.cfg.layout);
     layout.plot_bgcolor = 'transparent';
     layout.paper_bgcolor = layout.plot_bgcolor;
 
     // Update the size
-    const rect = ctrl.graphDiv.getBoundingClientRect();
+    const rect = this.ctrl.graphDiv.getBoundingClientRect();
     layout.autosize = false; // height is from the div
-    layout.height = this.getPanelHeight(ctrl);
+    layout.height = this.getPanelHeight();
     layout.width = rect.width;
 
     // Make sure it is something
@@ -292,18 +317,18 @@ export class PlotlyPanelUtil {
     }
 
     // Fixed scales
-    if (ctrl.cfg.fixScale) {
-      if ('x' === ctrl.cfg.fixScale) {
+    if (this.ctrl.cfg.fixScale) {
+      if ('x' === this.ctrl.cfg.fixScale) {
         layout.yaxis.scaleanchor = 'x';
-      } else if ('y' === ctrl.cfg.fixScale) {
+      } else if ('y' === this.ctrl.cfg.fixScale) {
         layout.xaxis.scaleanchor = 'y';
-      } else if ('z' === ctrl.cfg.fixScale) {
+      } else if ('z' === this.ctrl.cfg.fixScale) {
         layout.xaxis.scaleanchor = 'z';
         layout.yaxis.scaleanchor = 'z';
       }
     }
 
-    if (this.is3d(ctrl)) {
+    if (this.is3d()) {
       if (!layout.zaxis) {
         layout.zaxis = {};
       }
@@ -332,7 +357,7 @@ export class PlotlyPanelUtil {
 
       // Check if the X axis should be a date
       if (!layout.xaxis.type || layout.xaxis.type === 'auto') {
-        const mapping = _.get(ctrl.cfg, 'traces[0].mapping.x');
+        const mapping = _.get(this.ctrl.cfg, 'traces[0].mapping.x');
         if (mapping && mapping.indexOf('time') >= 0) {
           layout.xaxis.type = 'date';
         }
@@ -349,12 +374,12 @@ export class PlotlyPanelUtil {
 
       // Set the range to the query window
       if (isDate && !layout.xaxis.range) {
-        const range = ctrl.timeSrv.timeRange();
+        const range = this.ctrl.timeSrv.timeRange();
         layout.xaxis.range = [range.from.valueOf(), range.to.valueOf()];
       }
 
       // get the css rule of grafana graph axis text
-      const labelStyle = this.getCssRule(ctrl, 'div.flot-text');
+      const labelStyle = this.getCssRule('div.flot-text');
       if (labelStyle) {
         let color = labelStyle.style.color;
         if (!layout.font) {
@@ -379,7 +404,7 @@ export class PlotlyPanelUtil {
     return layout;
   }
 
-  getCssRule(ctrl: PlotlyPanelCtrl, selectorText): CSSStyleRule | null {
+  getCssRule(selectorText): CSSStyleRule | null {
     const styleSheets = Array.from(document.styleSheets);
     for (const idx of styleSheets) {
       const styleSheet = idx as CSSStyleSheet;
@@ -394,11 +419,11 @@ export class PlotlyPanelUtil {
     return null;
   }
 
-  processConfigMigration(ctrl: PlotlyPanelCtrl) {
+  processConfigMigration() {
     console.log(`Migrating Plotly Configuration to version: ${PlotlyPanelUtil.configVersion}`);
 
     // Remove some things that should not be saved
-    const cfg = ctrl.panel.pconfig;
+    const cfg = this.ctrl.panel.pconfig;
     delete cfg.layout.plot_bgcolor;
     delete cfg.layout.paper_bgcolor;
     delete cfg.layout.autosize;
@@ -406,7 +431,7 @@ export class PlotlyPanelUtil {
     delete cfg.layout.width;
     delete cfg.layout.margin;
     delete cfg.layout.scene;
-    if (!this.is3d(ctrl)) {
+    if (!this.is3d()) {
       delete cfg.layout.zaxis;
     }
 
@@ -424,73 +449,73 @@ export class PlotlyPanelUtil {
     }
 
     console.log('After Migration:', cfg);
-    ctrl.cfg = cfg;
-    ctrl.panel.version = PlotlyPanelUtil.configVersion;
+    this.ctrl.cfg = cfg;
+    this.ctrl.panel.version = PlotlyPanelUtil.configVersion;
   }
 
   // Don't call resize too quickly
-  doResize = _.debounce((ctrl: PlotlyPanelCtrl) => {
+  doResize = _.debounce(() => {
     // https://github.com/alonho/angular-plotly/issues/26
-    const e = window.getComputedStyle(ctrl.graphDiv).display;
+    const e = window.getComputedStyle(this.ctrl.graphDiv).display;
     if (!e || 'none' === e) {
       // not drawn!
       console.warn('resize a plot that is not drawn yet');
     } else {
-      const rect = ctrl.graphDiv.getBoundingClientRect();
-      ctrl.layout.width = rect.width;
-      ctrl.layout.height = this.getPanelHeight(ctrl);
+      const rect = this.ctrl.graphDiv.getBoundingClientRect();
+      this.ctrl.layout.width = rect.width;
+      this.ctrl.layout.height = this.getPanelHeight();
 
-      ctrl.Plotly.redraw(ctrl.graphDiv);
+      this.ctrl.Plotly.redraw(this.ctrl.graphDiv);
     }
   }, 50);
 
-  onConfigChanged(ctrl: PlotlyPanelCtrl) {
+  onConfigChanged() {
     // Force reloading the traces
-    this._updateTraceData(ctrl, true);
+    this._updateTraceData(true);
 
-    if (!ctrl.Plotly) {
+    if (!this.ctrl.Plotly) {
       return;
     }
 
     // Check if the plotly library changed
-    loadIfNecessary(ctrl.cfg).then(res => {
+    loadIfNecessary(this.ctrl.cfg).then(res => {
       if (res) {
-        if (ctrl.Plotly) {
-          ctrl.Plotly.purge(ctrl.graphDiv);
+        if (this.ctrl.Plotly) {
+          this.ctrl.Plotly.purge(this.ctrl.graphDiv);
         }
-        ctrl.Plotly = res;
+        this.ctrl.Plotly = res;
       }
 
       // Updates the layout and redraw
-      if (ctrl.initialized && ctrl.graphDiv) {
-        if (!ctrl.cfg.showAnnotations) {
-          ctrl.annotations.clear();
+      if (this.initialized && this.ctrl.graphDiv) {
+        if (!this.ctrl.cfg.showAnnotations) {
+          this.ctrl.annotations.clear();
         }
 
-        const s = ctrl.cfg.settings;
+        const s = this.ctrl.cfg.settings;
         const options = {
           showLink: false,
           displaylogo: false,
           displayModeBar: s.displayModeBar,
           modeBarButtonsToRemove: ['sendDataToCloud'], //, 'select2d', 'lasso2d']
         };
-        ctrl.layout = this.getProcessedLayout(ctrl);
-        ctrl.layout.shapes = ctrl.annotations.shapes;
-        let traces = ctrl.traces;
-        if (ctrl.annotations.shapes.length > 0) {
-          traces = ctrl.traces.concat(ctrl.annotations.trace);
+        this.ctrl.layout = this.getProcessedLayout();
+        this.ctrl.layout.shapes = this.ctrl.annotations.shapes;
+        let traces = this.ctrl.traces;
+        if (this.ctrl.annotations.shapes.length > 0) {
+          traces = this.ctrl.traces.concat(this.ctrl.annotations.trace);
         }
         console.log('ConfigChanged (traces)', traces);
-        ctrl.Plotly.react(ctrl.graphDiv, traces, ctrl.layout, options);
+        this.ctrl.Plotly.react(this.ctrl.graphDiv, traces, this.ctrl.layout, options);
       }
 
-      ctrl.render(); // does not query again!
+      this.ctrl.render(); // does not query again!
     });
   }
 
-  renderPlotly(ctrl: PlotlyPanelCtrl, $rootScope) {
-    if (!ctrl.initialized) {
-      const s = ctrl.cfg.settings;
+  renderPlotly($rootScope) {
+    if (!this.initialized) {
+      const s = this.ctrl.cfg.settings;
 
       const options = {
         showLink: false,
@@ -499,27 +524,27 @@ export class PlotlyPanelUtil {
         modeBarButtonsToRemove: ['sendDataToCloud'], //, 'select2d', 'lasso2d']
       };
 
-      ctrl.layout = this.getProcessedLayout(ctrl);
-      ctrl.layout.shapes = ctrl.annotations.shapes;
-      let traces = ctrl.traces;
-      if (ctrl.annotations.shapes.length > 0) {
-        traces = ctrl.traces.concat(ctrl.annotations.trace);
+      this.ctrl.layout = this.getProcessedLayout();
+      this.ctrl.layout.shapes = this.ctrl.annotations.shapes;
+      let traces = this.ctrl.traces;
+      if (this.ctrl.annotations.shapes.length > 0) {
+        traces = this.ctrl.traces.concat(this.ctrl.annotations.trace);
       }
-      ctrl.Plotly.react(ctrl.graphDiv, traces, ctrl.layout, options);
+      this.ctrl.Plotly.react(this.ctrl.graphDiv, traces, this.ctrl.layout, options);
 
-      ctrl.graphDiv.on('plotly_click', data => {
+      this.ctrl.graphDiv.on('plotly_click', data => {
         if (data === undefined || data.points === undefined) {
           return;
         }
         for (const i of data.points) {
           const idx = i.pointNumber;
-          const ts = ctrl.traces[0].ts[idx];
+          const ts = this.ctrl.traces[0].ts[idx];
           const msg = `${i.x.toPrecision(4)}, ${i.y.toPrecision(4)}`;
-          $rootScope.appEvent(alertSuccess, [msg, `@ ${ctrl.dashboard.formatDate(DateTime.fromMillis(ts))}`]);
+          $rootScope.appEvent(alertSuccess, [msg, `@ ${this.ctrl.dashboard.formatDate(DateTime.fromMillis(ts))}`]);
         }
       });
 
-      ctrl.graphDiv.on('plotly_selected', data => {
+      this.ctrl.graphDiv.on('plotly_selected', data => {
         if (data === undefined || data.points === undefined) {
           return;
         }
@@ -550,38 +575,38 @@ export class PlotlyPanelUtil {
 
         console.log('SELECTED!!!', min, max, data.points.length, range);
 
-        ctrl.timeSrv.setTime(range);
+        this.ctrl.timeSrv.setTime(range);
 
         // rebuild the graph after query
-        if (ctrl.graphDiv) {
-          ctrl.Plotly.Plots.purge(ctrl.graphDiv);
-          ctrl.graphDiv.innerHTML = '';
-          ctrl.initialized = false;
+        if (this.ctrl.graphDiv) {
+          this.ctrl.Plotly.Plots.purge(this.ctrl.graphDiv);
+          this.ctrl.graphDiv.innerHTML = '';
+          this.initialized = false;
         }
       });
-      ctrl.initialized = true;
-    } else if (ctrl.initialized) {
-      const rect = ctrl.graphDiv.getBoundingClientRect();
-      ctrl.layout.width = rect.width;
-      ctrl.layout.height = this.getPanelHeight(ctrl);
+      this.initialized = true;
+    } else if (this.initialized) {
+      const rect = this.ctrl.graphDiv.getBoundingClientRect();
+      this.ctrl.layout.width = rect.width;
+      this.ctrl.layout.height = this.getPanelHeight();
 
-      ctrl.Plotly.redraw(ctrl.graphDiv).then(() => {
-        ctrl.renderingCompleted();
+      this.ctrl.Plotly.redraw(this.ctrl.graphDiv).then(() => {
+        this.ctrl.renderingCompleted();
       });
     } else {
       console.log('Not initialized yet!');
     }
   }
 
-  plotlyDataReceived(ctrl: PlotlyPanelCtrl, dataList, annotationsSrv) {
+  plotlyDataReceived(dataList, annotationsSrv) {
     const finfo: SeriesWrapper[] = [];
     let seriesHash = '/';
     if (dataList && dataList.length > 0) {
-      const useRefID = dataList.length === ctrl.panel.targets.length;
+      const useRefID = dataList.length === this.ctrl.panel.targets.length;
       dataList.forEach((series, sidx) => {
         let refId = '';
         if (useRefID) {
-          refId = _.get(ctrl.panel, `targets[${sidx}].refId'`);
+          refId = _.get(this.ctrl.panel, `targets[${sidx}].refId'`);
           if (!refId) {
             refId = String.fromCharCode('A'.charCodeAt(0) + sidx);
           }
@@ -600,61 +625,61 @@ export class PlotlyPanelUtil {
         }
       });
     }
-    ctrl.seriesByKey.clear();
+    this.ctrl.seriesByKey.clear();
     finfo.forEach(s => {
       s.getAllKeys().forEach(k => {
-        ctrl.seriesByKey.set(k, s);
+        this.ctrl.seriesByKey.set(k, s);
         seriesHash += `$${k}`;
       });
     });
-    ctrl.series = finfo;
+    this.ctrl.series = finfo;
 
     // Now Process the loaded data
-    const hchanged = ctrl.seriesHash !== seriesHash;
-    if (hchanged && ctrl.editor) {
-      EditorHelper.updateMappings(ctrl);
-      ctrl.editor.selectTrace(ctrl.editor.traceIndex);
-      ctrl.editor.onConfigChanged();
+    const hchanged = this.ctrl.seriesHash !== seriesHash;
+    if (hchanged && this.ctrl.editor) {
+      EditorHelper.updateMappings(this.ctrl);
+      this.ctrl.editor.selectTrace(this.ctrl.editor.traceIndex);
+      this.ctrl.editor.onConfigChanged();
     }
 
-    if (hchanged || !ctrl.initialized) {
-      this.onConfigChanged(ctrl);
-      ctrl.seriesHash = seriesHash;
+    if (hchanged || !this.initialized) {
+      this.onConfigChanged();
+      this.ctrl.seriesHash = seriesHash;
     }
 
     // Support Annotations
     let annotationPromise = Promise.resolve();
-    if (!ctrl.cfg.showAnnotations || this.is3d(ctrl)) {
-      ctrl.annotations.clear();
-      if (ctrl.layout) {
-        if (ctrl.layout.shapes) {
-          this.onConfigChanged(ctrl);
+    if (!this.ctrl.cfg.showAnnotations || this.is3d()) {
+      this.ctrl.annotations.clear();
+      if (this.ctrl.layout) {
+        if (this.ctrl.layout.shapes) {
+          this.onConfigChanged();
         }
-        ctrl.layout.shapes = [];
+        this.ctrl.layout.shapes = [];
       }
     } else {
       annotationPromise = annotationsSrv
         .getAnnotations({
-          dashboard: ctrl.dashboard,
-          panel: ctrl.panel,
-          range: ctrl.range,
+          dashboard: this.ctrl.dashboard,
+          panel: this.ctrl.panel,
+          range: this.ctrl.range,
         })
         .then(results => {
-          const hasAnno = ctrl.annotations.update(results);
-          if (ctrl.layout) {
-            if (hasAnno !== ctrl._hadAnno) {
-              this.onConfigChanged(ctrl);
+          const hasAnno = this.ctrl.annotations.update(results);
+          if (this.ctrl.layout) {
+            if (hasAnno !== this.ctrl._hadAnno) {
+              this.onConfigChanged();
             }
-            ctrl.layout.shapes = ctrl.annotations.shapes;
+            this.ctrl.layout.shapes = this.ctrl.annotations.shapes;
           }
-          ctrl._hadAnno = hasAnno;
+          this.ctrl._hadAnno = hasAnno;
         });
     }
 
     // Load the real data changes
     annotationPromise.then(() => {
-      this._updateTraceData(ctrl);
-      ctrl.render();
+      this._updateTraceData();
+      this.ctrl.render();
     });
   }
 }

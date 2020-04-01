@@ -26,8 +26,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
   Plotly: any; // Loaded dynamically!
 
-  initialized: boolean;
-
   graphDiv: any;
   annotations = new AnnoInfo();
   series: SeriesWrapper[];
@@ -53,9 +51,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.uiSegmentSrv = uiSegmentSrv;
     this.annotationsSrv = annotationsSrv;
 
-    this.initialized = false;
-
-    this.plotlyPanelUtil = new PlotlyPanelUtil();
+    this.plotlyPanelUtil = new PlotlyPanelUtil(this);
 
     // defaults configs
     _.defaultsDeep(this.panel, PlotlyPanelUtil.defaults);
@@ -124,7 +120,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    if (this.graphDiv && this.initialized && this.Plotly) {
+    if (this.graphDiv && this.plotlyPanelUtil.initialized && this.Plotly) {
       this.Plotly.redraw(this.graphDiv);
     }
   }
@@ -136,16 +132,16 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_display.html', 3);
       this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_traces.html', 4);
 
-      this.plotlyPanelUtil.onConfigChanged(this); // Sets up the axis info
+      this.plotlyPanelUtil.onConfigChanged(); // Sets up the axis info
     }
   }
 
   onPanelInitialized() {
     if (!this.panel.version || PlotlyPanelUtil.configVersion > this.panel.version) {
-      this.plotlyPanelUtil.processConfigMigration(this);
+      this.plotlyPanelUtil.processConfigMigration();
     }
 
-    this.plotlyPanelUtil._updateTraceData(this, true);
+    this.plotlyPanelUtil._updateTraceData(true);
   }
 
   onRender() {
@@ -158,7 +154,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    this.plotlyPanelUtil.renderPlotly(this, this.$rootScope);
+    this.plotlyPanelUtil.renderPlotly(this.$rootScope);
   }
 
   onDataSnapshotLoad(snapshot) {
@@ -168,12 +164,12 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   _hadAnno = false;
 
   onDataReceived(dataList) {
-    this.plotlyPanelUtil.plotlyDataReceived(this, dataList, this.annotationsSrv);
+    this.plotlyPanelUtil.plotlyDataReceived(dataList, this.annotationsSrv);
   }
 
   link(scope, elem, attrs, ctrl) {
     this.graphDiv = elem.find('#plotly-spot')[0];
-    this.initialized = false;
+    this.plotlyPanelUtil.initialized = false;
     elem.on('mousemove', evt => {
       this.mouse = evt;
     });
