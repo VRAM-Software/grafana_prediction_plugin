@@ -105,7 +105,7 @@ export class PlotlyPanelUtil {
     visible: false,
   };
 
-  static getPanelHeight(ctrl: PlotlyPanelCtrl) {
+  getPanelHeight(ctrl: PlotlyPanelCtrl) {
     // panel can have a fixed height set via "General" tab in panel editor
     let tmpPanelHeight = ctrl.panel.height;
     if (typeof tmpPanelHeight === 'undefined' || tmpPanelHeight === '') {
@@ -135,26 +135,26 @@ export class PlotlyPanelUtil {
     return parseInt(tmpPanelHeight, 10);
   }
 
-  static is3d(ctrl: PlotlyPanelCtrl) {
+  is3d(ctrl: PlotlyPanelCtrl) {
     return ctrl.cfg.settings.type === 'scatter3d';
   }
 
-  static deepCopyWithTemplates = (ctrl: PlotlyPanelCtrl, obj) => {
+  deepCopyWithTemplates = (ctrl: PlotlyPanelCtrl, obj) => {
     if (_.isArray(obj)) {
-      return obj.map(val => PlotlyPanelUtil.deepCopyWithTemplates(ctrl, val));
+      return obj.map(val => this.deepCopyWithTemplates(ctrl, val));
     } else if (_.isString(obj)) {
       return ctrl.templateSrv.replace(obj, ctrl.panel.scopedVars);
     } else if (_.isObject(obj)) {
       const copy = {};
       _.forEach(obj, (v, k) => {
-        copy[k] = PlotlyPanelUtil.deepCopyWithTemplates(ctrl, v);
+        copy[k] = this.deepCopyWithTemplates(ctrl, v);
       });
       return copy;
     }
     return obj;
   };
 
-  static __addCopyPath(ctrl: PlotlyPanelCtrl, trace: any, key: string, path: string) {
+  __addCopyPath(ctrl: PlotlyPanelCtrl, trace: any, key: string, path: string) {
     if (key) {
       trace.__set.push({
         key: key,
@@ -168,7 +168,7 @@ export class PlotlyPanelUtil {
   }
 
   // This will update all trace settings *except* the data
-  static _updateTracesFromConfigs(ctrl: PlotlyPanelCtrl) {
+  _updateTracesFromConfigs(ctrl: PlotlyPanelCtrl) {
     ctrl.dataWarnings = [];
 
     // Make sure we have a trace
@@ -176,9 +176,9 @@ export class PlotlyPanelUtil {
       ctrl.cfg.traces = [_.cloneDeep(PlotlyPanelUtil.defaultTrace)];
     }
 
-    const is3D = PlotlyPanelUtil.is3d(ctrl);
+    const is3D = this.is3d(ctrl);
     ctrl.traces = ctrl.cfg.traces.map((tconfig, idx) => {
-      const config = PlotlyPanelUtil.deepCopyWithTemplates(ctrl, tconfig) || {};
+      const config = this.deepCopyWithTemplates(ctrl, tconfig) || {};
       _.defaults(config, PlotlyPanelUtil.defaults);
       const mapping = config.mapping;
 
@@ -199,7 +199,7 @@ export class PlotlyPanelUtil {
         delete trace.marker.sizeref;
 
         if (config.settings.color_option === 'ramp') {
-          PlotlyPanelUtil.__addCopyPath(ctrl, trace, mapping.color, 'marker.color');
+          this.__addCopyPath(ctrl, trace, mapping.color, 'marker.color');
         } else {
           delete trace.marker.colorscale;
           delete trace.marker.showscale;
@@ -212,12 +212,12 @@ export class PlotlyPanelUtil {
       }
 
       // Set the text
-      PlotlyPanelUtil.__addCopyPath(ctrl, trace, mapping.text, 'text');
-      PlotlyPanelUtil.__addCopyPath(ctrl, trace, mapping.x, 'x');
-      PlotlyPanelUtil.__addCopyPath(ctrl, trace, mapping.y, 'y');
+      this.__addCopyPath(ctrl, trace, mapping.text, 'text');
+      this.__addCopyPath(ctrl, trace, mapping.x, 'x');
+      this.__addCopyPath(ctrl, trace, mapping.y, 'y');
 
       if (is3D) {
-        PlotlyPanelUtil.__addCopyPath(ctrl, trace, mapping.z, 'z');
+        this.__addCopyPath(ctrl, trace, mapping.z, 'z');
       }
 
       // Set the trace mode
@@ -229,16 +229,16 @@ export class PlotlyPanelUtil {
   }
 
   // Fills in the required data into the trace values
-  static _updateTraceData(ctrl: PlotlyPanelCtrl, force = false): boolean {
+  _updateTraceData(ctrl: PlotlyPanelCtrl, force = false): boolean {
     if (!ctrl.series) {
       return false;
     }
 
     if (force || !ctrl.traces) {
-      PlotlyPanelUtil._updateTracesFromConfigs(ctrl);
+      this._updateTracesFromConfigs(ctrl);
     } else if (ctrl.traces.length !== ctrl.cfg.traces.length) {
       console.log(`trace number mismatch.  Found: ${ctrl.traces.length}, expect: ${ctrl.cfg.traces.length}`);
-      PlotlyPanelUtil._updateTracesFromConfigs(ctrl);
+      this._updateTracesFromConfigs(ctrl);
     }
 
     // Use zero when the metric value is missing
@@ -271,16 +271,16 @@ export class PlotlyPanelUtil {
     return true;
   }
 
-  static getProcessedLayout(ctrl: PlotlyPanelCtrl) {
+  getProcessedLayout(ctrl: PlotlyPanelCtrl) {
     // Copy from config
-    const layout = PlotlyPanelUtil.deepCopyWithTemplates(ctrl, ctrl.cfg.layout);
+    const layout = this.deepCopyWithTemplates(ctrl, ctrl.cfg.layout);
     layout.plot_bgcolor = 'transparent';
     layout.paper_bgcolor = layout.plot_bgcolor;
 
     // Update the size
     const rect = ctrl.graphDiv.getBoundingClientRect();
     layout.autosize = false; // height is from the div
-    layout.height = PlotlyPanelUtil.getPanelHeight(ctrl);
+    layout.height = this.getPanelHeight(ctrl);
     layout.width = rect.width;
 
     // Make sure it is something
@@ -303,7 +303,7 @@ export class PlotlyPanelUtil {
       }
     }
 
-    if (PlotlyPanelUtil.is3d(ctrl)) {
+    if (this.is3d(ctrl)) {
       if (!layout.zaxis) {
         layout.zaxis = {};
       }
@@ -354,7 +354,7 @@ export class PlotlyPanelUtil {
       }
 
       // get the css rule of grafana graph axis text
-      const labelStyle = PlotlyPanelUtil.getCssRule(ctrl, 'div.flot-text');
+      const labelStyle = this.getCssRule(ctrl, 'div.flot-text');
       if (labelStyle) {
         let color = labelStyle.style.color;
         if (!layout.font) {
@@ -379,7 +379,7 @@ export class PlotlyPanelUtil {
     return layout;
   }
 
-  static getCssRule(ctrl: PlotlyPanelCtrl, selectorText): CSSStyleRule | null {
+  getCssRule(ctrl: PlotlyPanelCtrl, selectorText): CSSStyleRule | null {
     const styleSheets = Array.from(document.styleSheets);
     for (const idx of styleSheets) {
       const styleSheet = idx as CSSStyleSheet;
@@ -394,7 +394,7 @@ export class PlotlyPanelUtil {
     return null;
   }
 
-  static processConfigMigration(ctrl: PlotlyPanelCtrl) {
+  processConfigMigration(ctrl: PlotlyPanelCtrl) {
     console.log(`Migrating Plotly Configuration to version: ${PlotlyPanelUtil.configVersion}`);
 
     // Remove some things that should not be saved
@@ -406,7 +406,7 @@ export class PlotlyPanelUtil {
     delete cfg.layout.width;
     delete cfg.layout.margin;
     delete cfg.layout.scene;
-    if (!PlotlyPanelUtil.is3d(ctrl)) {
+    if (!this.is3d(ctrl)) {
       delete cfg.layout.zaxis;
     }
 
@@ -429,7 +429,7 @@ export class PlotlyPanelUtil {
   }
 
   // Don't call resize too quickly
-  static doResize = _.debounce((ctrl: PlotlyPanelCtrl) => {
+  doResize = _.debounce((ctrl: PlotlyPanelCtrl) => {
     // https://github.com/alonho/angular-plotly/issues/26
     const e = window.getComputedStyle(ctrl.graphDiv).display;
     if (!e || 'none' === e) {
@@ -438,15 +438,15 @@ export class PlotlyPanelUtil {
     } else {
       const rect = ctrl.graphDiv.getBoundingClientRect();
       ctrl.layout.width = rect.width;
-      ctrl.layout.height = PlotlyPanelUtil.getPanelHeight(ctrl);
+      ctrl.layout.height = this.getPanelHeight(ctrl);
 
       ctrl.Plotly.redraw(ctrl.graphDiv);
     }
   }, 50);
 
-  static onConfigChanged(ctrl: PlotlyPanelCtrl) {
+  onConfigChanged(ctrl: PlotlyPanelCtrl) {
     // Force reloading the traces
-    PlotlyPanelUtil._updateTraceData(ctrl, true);
+    this._updateTraceData(ctrl, true);
 
     if (!ctrl.Plotly) {
       return;
@@ -474,7 +474,7 @@ export class PlotlyPanelUtil {
           displayModeBar: s.displayModeBar,
           modeBarButtonsToRemove: ['sendDataToCloud'], //, 'select2d', 'lasso2d']
         };
-        ctrl.layout = PlotlyPanelUtil.getProcessedLayout(ctrl);
+        ctrl.layout = this.getProcessedLayout(ctrl);
         ctrl.layout.shapes = ctrl.annotations.shapes;
         let traces = ctrl.traces;
         if (ctrl.annotations.shapes.length > 0) {
@@ -488,7 +488,7 @@ export class PlotlyPanelUtil {
     });
   }
 
-  static renderPlotly(ctrl: PlotlyPanelCtrl, $rootScope) {
+  renderPlotly(ctrl: PlotlyPanelCtrl, $rootScope) {
     if (!ctrl.initialized) {
       const s = ctrl.cfg.settings;
 
@@ -499,7 +499,7 @@ export class PlotlyPanelUtil {
         modeBarButtonsToRemove: ['sendDataToCloud'], //, 'select2d', 'lasso2d']
       };
 
-      ctrl.layout = PlotlyPanelUtil.getProcessedLayout(ctrl);
+      ctrl.layout = this.getProcessedLayout(ctrl);
       ctrl.layout.shapes = ctrl.annotations.shapes;
       let traces = ctrl.traces;
       if (ctrl.annotations.shapes.length > 0) {
@@ -563,7 +563,7 @@ export class PlotlyPanelUtil {
     } else if (ctrl.initialized) {
       const rect = ctrl.graphDiv.getBoundingClientRect();
       ctrl.layout.width = rect.width;
-      ctrl.layout.height = PlotlyPanelUtil.getPanelHeight(ctrl);
+      ctrl.layout.height = this.getPanelHeight(ctrl);
 
       ctrl.Plotly.redraw(ctrl.graphDiv).then(() => {
         ctrl.renderingCompleted();
@@ -573,7 +573,7 @@ export class PlotlyPanelUtil {
     }
   }
 
-  static plotlyDataReceived(ctrl: PlotlyPanelCtrl, dataList, annotationsSrv) {
+  plotlyDataReceived(ctrl: PlotlyPanelCtrl, dataList, annotationsSrv) {
     const finfo: SeriesWrapper[] = [];
     let seriesHash = '/';
     if (dataList && dataList.length > 0) {
@@ -618,17 +618,17 @@ export class PlotlyPanelUtil {
     }
 
     if (hchanged || !ctrl.initialized) {
-      PlotlyPanelUtil.onConfigChanged(ctrl);
+      this.onConfigChanged(ctrl);
       ctrl.seriesHash = seriesHash;
     }
 
     // Support Annotations
     let annotationPromise = Promise.resolve();
-    if (!ctrl.cfg.showAnnotations || PlotlyPanelUtil.is3d(ctrl)) {
+    if (!ctrl.cfg.showAnnotations || this.is3d(ctrl)) {
       ctrl.annotations.clear();
       if (ctrl.layout) {
         if (ctrl.layout.shapes) {
-          PlotlyPanelUtil.onConfigChanged(ctrl);
+          this.onConfigChanged(ctrl);
         }
         ctrl.layout.shapes = [];
       }
@@ -643,7 +643,7 @@ export class PlotlyPanelUtil {
           const hasAnno = ctrl.annotations.update(results);
           if (ctrl.layout) {
             if (hasAnno !== ctrl._hadAnno) {
-              PlotlyPanelUtil.onConfigChanged(ctrl);
+              this.onConfigChanged(ctrl);
             }
             ctrl.layout.shapes = ctrl.annotations.shapes;
           }
@@ -653,7 +653,7 @@ export class PlotlyPanelUtil {
 
     // Load the real data changes
     annotationPromise.then(() => {
-      PlotlyPanelUtil._updateTraceData(ctrl);
+      this._updateTraceData(ctrl);
       ctrl.render();
     });
   }

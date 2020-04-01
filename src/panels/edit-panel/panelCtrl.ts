@@ -44,6 +44,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   editor: EditorHelper;
   dataWarnings: string[]; // warnings about loading data
 
+  plotlyPanelUtil: PlotlyPanelUtil;
+
   /** @ngInject */
   constructor($scope, $injector, $window, private readonly $rootScope, public uiSegmentSrv, private readonly annotationsSrv) {
     super($scope, $injector);
@@ -52,6 +54,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.annotationsSrv = annotationsSrv;
 
     this.initialized = false;
+
+    this.plotlyPanelUtil = new PlotlyPanelUtil();
 
     // defaults configs
     _.defaultsDeep(this.panel, PlotlyPanelUtil.defaults);
@@ -104,7 +108,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
   onResize() {
     if (this.graphDiv && this.layout && this.Plotly) {
-      PlotlyPanelUtil.doResize(this); // Debounced
+      this.plotlyPanelUtil.doResize(this); // Debounced
     }
   }
 
@@ -132,16 +136,16 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_display.html', 3);
       this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_traces.html', 4);
 
-      PlotlyPanelUtil.onConfigChanged(this); // Sets up the axis info
+      this.plotlyPanelUtil.onConfigChanged(this); // Sets up the axis info
     }
   }
 
   onPanelInitialized() {
     if (!this.panel.version || PlotlyPanelUtil.configVersion > this.panel.version) {
-      PlotlyPanelUtil.processConfigMigration(this);
+      this.plotlyPanelUtil.processConfigMigration(this);
     }
 
-    PlotlyPanelUtil._updateTraceData(this, true);
+    this.plotlyPanelUtil._updateTraceData(this, true);
   }
 
   onRender() {
@@ -154,7 +158,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    PlotlyPanelUtil.renderPlotly(this, this.$rootScope);
+    this.plotlyPanelUtil.renderPlotly(this, this.$rootScope);
   }
 
   onDataSnapshotLoad(snapshot) {
@@ -164,7 +168,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   _hadAnno = false;
 
   onDataReceived(dataList) {
-    PlotlyPanelUtil.plotlyDataReceived(this, dataList, this.annotationsSrv);
+    this.plotlyPanelUtil.plotlyDataReceived(this, dataList, this.annotationsSrv);
   }
 
   link(scope, elem, attrs, ctrl) {

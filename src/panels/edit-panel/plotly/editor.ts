@@ -61,7 +61,7 @@ export class EditorHelper {
         mapping.y = defaultMappings.first;
         changed = true;
       }
-      if (PlotlyPanelUtil.is3d(ctrl) && !mapping.z) {
+      if (ctrl.plotlyPanelUtil.is3d(ctrl) && !mapping.z) {
         mapping.z = defaultMappings.first;
         changed = true;
       }
@@ -83,7 +83,7 @@ export class EditorHelper {
       }
     }
 
-    PlotlyPanelUtil.onConfigChanged(this.ctrl);
+    this.ctrl.plotlyPanelUtil.onConfigChanged(this.ctrl);
   }
 
   onUpdateAxis() {
@@ -115,7 +115,7 @@ export class EditorHelper {
       segment: this.mapping.y,
     });
 
-    if (PlotlyPanelUtil.is3d(this.ctrl)) {
+    if (this.ctrl.plotlyPanelUtil.is3d(this.ctrl)) {
       if (!layout.zaxis) {
         layout.zaxis = {};
       }
@@ -216,8 +216,8 @@ export class EditorHelper {
     for (let i = 0; i < this.traces.length; i++) {
       if (this.trace === this.traces[i]) {
         this.traces.splice(i, 1);
-        PlotlyPanelUtil.onConfigChanged(this.ctrl);
-        PlotlyPanelUtil._updateTraceData(this.ctrl, true);
+        this.ctrl.plotlyPanelUtil.onConfigChanged(this.ctrl);
+        this.ctrl.plotlyPanelUtil._updateTraceData(this.ctrl, true);
         if (i >= this.traces.length) {
           this.selectTrace(i);
         } else {
