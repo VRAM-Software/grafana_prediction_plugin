@@ -1,0 +1,14 @@
+
+
+<div class="editor-row">
+    <div class="section gf-form-group">
+        <div class="gf-form">
+            <div ng-repeat="q in ctrl.panel.predictionSettings.query">
+                <label class="gf-form-label width-10">{{ q }}</label>
+                <div class="gf-form-select-wrapper">
+                    <select class="gf-form-input" ng-options="p for p in ctrl.panel.predictionSettings.predittori" ng-model="selectedQuery" ng-change="ctrl.change_query(selectedQuery)"></select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
