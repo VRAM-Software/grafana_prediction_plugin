@@ -37,7 +37,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
     // defaults configs
     let defaults = _.cloneDeep(PlotlyPanelCtrl.predictionPanelDefaults);
-    _.merge(defaults, PlotlyPanelUtil.defaults);
+    defaults = _.merge(defaults, PlotlyPanelUtil.defaults);
     _.defaultsDeep(this.panel, defaults);
 
     this.predictionPanelConfig = this.panel.predictionSettings;
