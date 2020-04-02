@@ -1,13 +1,11 @@
 import { PerformPrediction } from 'model/PerformPrediction';
 
 export class ProcessRl implements PerformPrediction {
-    private result: Array<Number>;
-    constructor() {
+  private result: number[];
+  constructor() {}
 
-    }
-
-    public performPrediction(datalist: Map<string, Array<number>>, configuration: Object, nodeMap: Map<string, string>, timeData: Array<number>): void {
-        let res: Array<Number> = [];
-        this.result = res;
-    }
+  public performPrediction(datalist: Map<string, number[]>, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): void {
+    let res: number[] = [];
+    this.result = res;
+  }
 }

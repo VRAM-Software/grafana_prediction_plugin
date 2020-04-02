@@ -1,25 +1,16 @@
 import { AlgorithmPrediction } from 'model/AlgorithmPrediction';
 
 export class RlPrediction implements AlgorithmPrediction {
-    private data: Array<number>;
-    private options: Object;
-    private timeData: Array<number>;
+  private options: {};
+  private timeData: number[];
 
-    constructor() {
+  constructor() {}
 
-    }
+  private setOptions = (option: {}): void => {};
 
-    private setOptions = (option: Object): void => {
+  private setCoefficients = (value: number): void => {};
 
-    }
-
-    private setCoefficients = (value: number): void => {
-        
-    }
-
-    predict = (data: Array<number>, json: Object): Object => {
-        return {}
-    }
-
-
-}
+  predict = (data: number[], json: {}): {} => {
+    return {};
+  };
+};
