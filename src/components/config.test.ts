@@ -8,17 +8,36 @@
 import { TestControl } from './config';
 
 describe('test', () => {
+  const injector = {
+    get: () => {
+      return {
+        timeRange: () => {
+          return {
+            from: '',
+            to: '',
+          };
+        },
+      };
+    },
+  };
+
+  const scope = {
+    $on: () => {},
+  };
   let component: TestControl;
-  const $location = '/';
+
+  TestControl.prototype.appEditCtrl = {
+    setPostUpdateHook: x => {},
+  };
 
   beforeEach(() => {
     console.log = jest.fn();
-    component = new TestControl($location);
+    component = new TestControl(scope, injector);
   });
 
   test('Constructor is called', () => {
+    expect(component.enabled).toBeFalsy();
     expect(component.appModel.jsonData).toEqual({});
-    expect(component.$location).toEqual('/');
     expect(typeof component.appModel).toBe('object');
     expect(console.log).toHaveBeenCalledTimes(1);
   });
@@ -32,6 +51,7 @@ describe('test', () => {
   test('post update plugin enabled', () => {
     component.appModel.enabled = true;
     component.postUpdate();
+    expect(component.enabled).toBeTruthy();
     expect(console.log).toHaveBeenCalledTimes(2);
     expect(console.log).toHaveBeenCalledWith('Post Update, plugin loaded', component);
   });

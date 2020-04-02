@@ -12,18 +12,13 @@ export class TestControl {
   enabled: boolean;
   appEditCtrl: any;
   appModel: any;
-  $location: any;
 
   /** @ngInject */
-  constructor($location: any) {
-    this.$location = $location;
+  constructor($scope: any, $injector: any) {
     this.enabled = false;
 
     // Grafana code to handle plugin enable, can't mock appEditCtrl so ignore it
-    /* istanbul ignore next */
-    if (process.env.NODE_ENV !== 'test') {
-      this.appEditCtrl.setPostUpdateHook(this.postUpdate.bind(this));
-    }
+    this.appEditCtrl.setPostUpdateHook(this.postUpdate.bind(this));
     if (!this.appModel) {
       this.appModel = {} as PluginMeta;
     }
@@ -36,10 +31,11 @@ export class TestControl {
 
   postUpdate() {
     if (!this.appModel.enabled) {
+      this.enabled = false;
       console.log('plugin disabled');
       return;
     }
-
+    this.enabled = true;
     console.log('Post Update, plugin loaded', this);
   }
 
