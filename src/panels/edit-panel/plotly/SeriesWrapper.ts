@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * File: SeriesWrapper.ts
  * Author: Marco Dalla Libera

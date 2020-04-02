@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * File: anno.ts
  * Author: Marco Dalla Libera

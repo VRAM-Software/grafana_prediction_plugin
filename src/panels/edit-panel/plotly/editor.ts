@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * File: editor.ts
  * Author: Marco Dalla Libera
