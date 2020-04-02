@@ -13,4 +13,4 @@ export class RlPrediction implements AlgorithmPrediction {
   predict = (data: number[], json: {}): {} => {
     return {};
   };
-};
+}

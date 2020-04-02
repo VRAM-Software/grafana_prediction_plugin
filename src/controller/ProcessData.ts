@@ -6,8 +6,8 @@ export class ProcessData {
   constructor(strategy: PerformPrediction) {
     this.strategy = strategy;
   }
-
-  private setStrategy = (algorithm: PerformPrediction): void => {
+  
+  setStrategy = (algorithm: PerformPrediction): void => {
     this.strategy = algorithm;
   };
 
