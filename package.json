@@ -6,9 +6,9 @@
   "description": "Plugin Grafana Gruppo VRAM",
   "private": true,
   "scripts": {
-    "build": "grafana-toolkit plugin:build",
-    "test": "grafana-toolkit plugin:test",
-    "ci-test": "grafana-toolkit plugin:test --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "build": "env NODE_ENV=test grafana-toolkit plugin:build",
+    "test": "env NODE_ENV=test grafana-toolkit plugin:test",
+    "ci-test": "env NODE_ENV=test grafana-toolkit plugin:test --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
