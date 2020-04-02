@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * File: libLoader.ts
  * Author: Marco Dalla Libera

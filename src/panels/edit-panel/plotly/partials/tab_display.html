@@ -13,8 +13,8 @@
       <label class="gf-form-label width-7">Type</label>
       <div class="gf-form-select-wrapper max-width-14">
         <select class="gf-form-input" 
-          ng-model="ctrl.cfg.settings.type" 
-          ng-change="ctrl.editor.onConfigChanged()">
+          ng-model="ctrl.plotlyPanelUtil.cfg.settings.type" 
+          ng-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()">
           <option value="scatter">Scatter</option>
           <option value="scatter3d">Scatter (3d)</option>
         </select>
@@ -25,8 +25,8 @@
       <label class="gf-form-label width-7">Drag</label>
       <div class="gf-form-select-wrapper max-width-14">
         <select class="gf-form-input" 
-          ng-model="ctrl.cfg.layout.dragmode" 
-          ng-change="ctrl.editor.onConfigChanged()">
+          ng-model="ctrl.plotlyPanelUtil.cfg.layout.dragmode" 
+          ng-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()">
           <option value="zoom">zoom</option>
           <option value="pan">pan</option>
           <option value="lasso">lasso</option>
@@ -39,8 +39,8 @@
       <label class="gf-form-label width-7">Fix Scale</label>
       <div class="gf-form-select-wrapper max-width-14">
         <select class="gf-form-input" 
-          ng-model="ctrl.cfg.fixScale" 
-          ng-change="ctrl.editor.onConfigChanged()">
+          ng-model="ctrl.plotlyPanelUtil.cfg.fixScale" 
+          ng-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()">
           <option value="">independent</option>
           <option value="x">X Axis (1:1)</option>
           <option value="y">Y Axis (1:1)</option>
@@ -52,34 +52,34 @@
       class="gf-form" 
       label="Annotations" 
       label-class="gf-form-label width-7" 
-      checked="ctrl.cfg.showAnnotations" 
-      on-change="ctrl.editor.onConfigChanged()"></gf-form-switch>
+      checked="ctrl.plotlyPanelUtil.cfg.showAnnotations" 
+      on-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()"></gf-form-switch>
 
     <gf-form-switch 
       class="gf-form" 
       label="Use CDN" 
       label-class="gf-form-label width-7" 
-      checked="ctrl.cfg.loadFromCDN" 
-      on-change="ctrl.editor.onConfigChanged()"></gf-form-switch>
+      checked="ctrl.plotlyPanelUtil.cfg.loadFromCDN" 
+      on-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()"></gf-form-switch>
 
     <gf-form-switch 
       class="gf-form" 
       label="Toolbar" 
       label-class="gf-form-label width-7" 
-      checked="ctrl.cfg.settings.displayModeBar" 
-      on-change="ctrl.editor.onConfigChanged()"></gf-form-switch>
+      checked="ctrl.plotlyPanelUtil.cfg.settings.displayModeBar" 
+      on-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()"></gf-form-switch>
       
     <gf-form-switch 
       class="gf-form" 
       label="Legend" 
       label-class="gf-form-label width-7" 
-      checked="ctrl.cfg.layout.showlegend" 
-      on-change="ctrl.editor.onConfigChanged()"></gf-form-switch>
+      checked="ctrl.plotlyPanelUtil.cfg.layout.showlegend" 
+      on-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()"></gf-form-switch>
 
-    <div class="gf-form" ng-if="ctrl.cfg.layout.showlegend">
+    <div class="gf-form" ng-if="ctrl.plotlyPanelUtil.cfg.layout.showlegend">
         <label class="gf-form-label width-7">- Orientation</label>
         <div class="gf-form-select-wrapper max-width-14">
-          <select class="gf-form-input" ng-model="ctrl.cfg.layout.legend.orientation" ng-change="ctrl.onConfigChanged()">
+          <select class="gf-form-input" ng-model="ctrl.plotlyPanelUtil.cfg.layout.legend.orientation" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
             <option value="h">Horizontal</option>
             <option value="v">Vertical</option>
           </select>
@@ -87,7 +87,7 @@
       </div>
   </div>
 
-  <div ng-repeat="axis in ctrl.editor.axis" class="section gf-form-group">
+  <div ng-repeat="axis in ctrl.plotlyPanelUtil.editor.axis" class="section gf-form-group">
     <h5 class="section-heading">{{axis.label}}</h5>
 
     <div class="gf-form">
@@ -95,7 +95,7 @@
       <input class="gf-form-input width-7" 
         placeholder="No Label"
         ng-model="axis.layout.title" 
-        ng-change="ctrl.onConfigChanged();">
+        ng-change="ctrl.plotlyPanelUtil.onConfigChanged();">
     </div>
 
     <div class="gf-form">
@@ -103,7 +103,7 @@
       <div class="gf-form-select-wrapper max-width-14">
         <select class="gf-form-input" 
           ng-model="axis.layout.type" 
-          ng-change="ctrl.editor.onConfigChanged()">
+          ng-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()">
           <option value="">auto</option>
           <option value="linear">Linear</option>
           <option value="log">Log</option>
@@ -117,7 +117,7 @@
       <div class="gf-form-select-wrapper max-width-14">
         <select class="gf-form-input" 
           ng-model="axis.layout.rangemode" 
-          ng-change="ctrl.editor.onConfigChanged()">
+          ng-change="ctrl.plotlyPanelUtil.editor.onConfigChanged()">
           <option value="normal">Auto</option>
           <option value="between">Between</option>
           <option value="tozero">To Zero</option>
@@ -132,7 +132,7 @@
         placeholder="min" 
         type="number"
         ng-model="axis.layout.range[0]" 
-        ng-blur="ctrl.onConfigChanged()"
+        ng-blur="ctrl.plotlyPanelUtil.onConfigChanged()"
       />
     </div>
     <div class="gf-form" ng-if="axis.layout.rangemode === 'between'">
@@ -141,12 +141,12 @@
         placeholder="max" 
         type="number"
         ng-model="axis.layout.range[1]" 
-        ng-blur="ctrl.onConfigChanged()"
+        ng-blur="ctrl.plotlyPanelUtil.onConfigChanged()"
       />
     </div>
 
-    <gf-form-switch class="gf-form" label="Show Grid:" label-class="gf-form-label width-7" checked="axis.layout.showgrid" on-change="ctrl.onConfigChanged()"></gf-form-switch>
-    <gf-form-switch class="gf-form" label="Zero Line:" label-class="gf-form-label width-7" checked="axis.layout.zeroline" on-change="ctrl.onConfigChanged()"></gf-form-switch>
+    <gf-form-switch class="gf-form" label="Show Grid:" label-class="gf-form-label width-7" checked="axis.layout.showgrid" on-change="ctrl.plotlyPanelUtil.onConfigChanged()"></gf-form-switch>
+    <gf-form-switch class="gf-form" label="Zero Line:" label-class="gf-form-label width-7" checked="axis.layout.zeroline" on-change="ctrl.plotlyPanelUtil.onConfigChanged()"></gf-form-switch>
   </div>
 
 </div>

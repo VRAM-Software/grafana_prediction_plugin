@@ -7,8 +7,10 @@
 
 import { PlotlyPanelCtrl } from './panelCtrl';
 
-import * as panel_json_v004 from './plotly/__test_data/panel_json_v004.json';
+import * as panel_json_v0 from './__testData/panel_json_v0.json';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
+
+jest.mock('./plotly/PlotlyPanelUtil');
 
 describe('Plotly Panel', () => {
   const injector = {
@@ -39,6 +41,7 @@ describe('Plotly Panel', () => {
 
   const ctx = {} as any;
   beforeEach(() => {
+    PlotlyPanelUtil.mockClear();
     ctx.ctrl = new PlotlyPanelCtrl(scope, injector, null, null, null, null);
     ctx.ctrl.events = {
       emit: () => {},
@@ -56,19 +59,19 @@ describe('Plotly Panel', () => {
     });
 
     it('it should use default configs', () => {
-      expect(JSON.stringify(ctx.ctrl.panel.pconfig)).toBe(JSON.stringify(PlotlyPanelUtil.defaults.pconfig));
+      expect(JSON.stringify(ctx.ctrl.panel.predictionSettings)).toBe(JSON.stringify(PlotlyPanelCtrl.predictionPanelDefaults.predictionSettings));
     });
   });
 
-  describe('check migration from 0.0.4', () => {
+  describe('check settings migration', () => {
     beforeEach(() => {
-      ctx.ctrl.panel = panel_json_v004;
+      ctx.ctrl.panel = panel_json_v0;
       ctx.ctrl.onPanelInitialized();
     });
 
     it('it should now have have a version', () => {
-      expect(ctx.ctrl.panel.version).toBe(PlotlyPanelUtil.configVersion);
-      expect(ctx.ctrl.cfg.layout.margin).toBeUndefined();
+      expect(ctx.ctrl.panel.predictionSettings.version).toBe(PlotlyPanelCtrl.predictionSettingsVersion);
+      expect(PlotlyPanelUtil).toHaveBeenCalledTimes(1);
     });
   });
 });
