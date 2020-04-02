@@ -6,7 +6,7 @@ export class ProcessData {
   constructor(strategy: PerformPrediction) {
     this.strategy = strategy;
   }
-  
+
   setStrategy = (algorithm: PerformPrediction): void => {
     this.strategy = algorithm;
   };

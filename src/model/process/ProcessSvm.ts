@@ -8,5 +8,5 @@ export class ProcessSvm implements PerformPrediction {
   performPrediction = (datalist: Map<string, number[]>, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): void => {
     let res: number[] = [];
     this.result = res;
-  }
+  };
 }
