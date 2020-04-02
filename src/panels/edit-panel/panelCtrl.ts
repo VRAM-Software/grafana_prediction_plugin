@@ -10,39 +10,23 @@ import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import _ from 'lodash';
 import $ from 'jquery';
 
-import { SeriesWrapper } from './plotly/SeriesWrapper';
-import { EditorHelper } from './plotly/editor';
-
-import { loadPlotly } from './plotly/libLoader';
-import { AnnoInfo } from './plotly/anno';
-
-import { PanelEvents } from '@grafana/data';
+import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 
-const alertSuccess = 'alert-success';
-
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
+  static predictionSettingsVersion = 1;
   static templateUrl = 'panels/edit-panel/partials/module.html';
-
-  Plotly: any; // Loaded dynamically!
-
-  graphDiv: any;
-  annotations = new AnnoInfo();
-  series: SeriesWrapper[];
-  seriesByKey: Map<string, SeriesWrapper> = new Map();
-  seriesHash = '?';
-
-  traces: any[]; // The data sent directly to Plotly -- with a special __copy element
-  layout: any; // The layout used by Plotly
-
-  mouse: any;
-  cfg: any;
-
-  // For editor
-  editor: EditorHelper;
-  dataWarnings: string[]; // warnings about loading data
+  static predictionPanelDefaults = {
+    predictionSettings: {
+      version: null,
+      json: null,
+      nodeMap: null,
+    },
+  };
 
   plotlyPanelUtil: PlotlyPanelUtil;
+  private _graphDiv: any;
+  private predictionPanelConfig: any;
 
   /** @ngInject */
   constructor($scope, $injector, $window, private readonly $rootScope, public uiSegmentSrv, private readonly annotationsSrv) {
@@ -51,39 +35,37 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.uiSegmentSrv = uiSegmentSrv;
     this.annotationsSrv = annotationsSrv;
 
-    this.plotlyPanelUtil = new PlotlyPanelUtil(this);
-
     // defaults configs
-    _.defaultsDeep(this.panel, PlotlyPanelUtil.defaults);
+    let defaults = _.cloneDeep(PlotlyPanelCtrl.predictionPanelDefaults);
+    _.merge(defaults, PlotlyPanelUtil.defaults);
+    _.defaultsDeep(this.panel, defaults);
 
-    this.cfg = this.panel.pconfig;
+    this.predictionPanelConfig = this.panel.predictionSettings;
 
-    this.traces = [];
+    this.plotlyPanelUtil = new PlotlyPanelUtil(this);
 
     // ?? This seems needed for tests?!!
     if (!this.events) {
       return;
     }
 
-    loadPlotly(this.cfg).then(v => {
-      this.Plotly = v;
-      console.log('Plotly', v);
+    this.events.on(PanelEvents.render, this.onRender.bind(this));
+    this.events.on(PanelEvents.dataReceived, this.onDataReceived.bind(this));
+    this.events.on(PanelEvents.dataError, this.onDataError.bind(this));
+    this.events.on(PanelEvents.panelSizeChanged, this.onResize.bind(this));
+    this.events.on(PanelEvents.dataSnapshotLoad, this.onDataSnapshotLoad.bind(this));
+    this.events.on(PanelEvents.refresh, this.onRefresh.bind(this));
 
-      // Wait till plotly exists has loaded before we handle any data
-      this.events.on(PanelEvents.render, this.onRender.bind(this));
-      this.events.on(PanelEvents.dataReceived, this.onDataReceived.bind(this));
-      this.events.on(PanelEvents.dataError, this.onDataError.bind(this));
-      this.events.on(PanelEvents.panelSizeChanged, this.onResize.bind(this));
-      this.events.on(PanelEvents.dataSnapshotLoad, this.onDataSnapshotLoad.bind(this));
-      this.events.on(PanelEvents.refresh, this.onRefresh.bind(this));
-
-      // force to render the panel after plotly is loaded
-      this.onInitEditMode();
-    });
+    // force to render the panel after plotly is loaded
+    this.onInitEditMode();
 
     // Standard handlers
     this.events.on(PanelEvents.editModeInitialized, this.onInitEditMode.bind(this));
     this.events.on(PanelEvents.panelInitialized, this.onPanelInitialized.bind(this));
+  }
+
+  get graphDiv(): any {
+    return this._graphDiv;
   }
 
   // Called only on import button click, if the import doesn't throw errors, it reset the saved data
@@ -91,26 +73,25 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     await this.onUpload(net);
   }
 
-  // Called on import button click but also to re-load a saved network
+  // Called on import button click but also to re-load a saved json
   async onUpload(net: any) {
-    this.panel.jsonContent = JSON.stringify(net, null, '\t');
-    this.$rootScope.appEvent(alertSuccess, ['File Json Caricato']);
+    this.panel.predictionSettings.json = JSON.stringify(net);
+    this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
   }
 
   async delete_json_click() {
-    this.panel.jsonContent = null;
-    this.$rootScope.appEvent(alertSuccess, ['File Json Cancellato']);
+    this.predictionPanelConfig.json = null;
+    this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
   }
 
   onResize() {
-    if (this.graphDiv && this.layout && this.Plotly) {
-      this.plotlyPanelUtil.doResize(this); // Debounced
+    if (this.graphDiv) {
+      this.plotlyPanelUtil.plotlyOnResize();
     }
   }
 
   onDataError(err) {
-    this.series = [];
-    this.annotations.clear();
+    this.plotlyPanelUtil.plotlyOnDataError();
     this.render();
   }
 
@@ -120,28 +101,26 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    if (this.graphDiv && this.plotlyPanelUtil.initialized && this.Plotly) {
-      this.Plotly.redraw(this.graphDiv);
+    if (this.graphDiv) {
+      this.plotlyPanelUtil.plotlyOnRefresh(this.graphDiv);
     }
   }
 
   onInitEditMode() {
-    if (!this.editor) {
-      this.editor = new EditorHelper(this);
+    if (!this.plotlyPanelUtil.isPlotlyEditModeLoaded()) {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-      this.addEditorTab('Display', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_display.html', 3);
-      this.addEditorTab('Traces', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/plotly/partials/tab_traces.html', 4);
+      this.plotlyPanelUtil.plotlyOnInitEditMode(3);
 
-      this.plotlyPanelUtil.onConfigChanged(); // Sets up the axis info
+      this.plotlyPanelUtil.onConfigChanged();
     }
   }
 
   onPanelInitialized() {
-    if (!this.panel.version || PlotlyPanelUtil.configVersion > this.panel.version) {
-      this.plotlyPanelUtil.processConfigMigration();
+    if (!this.predictionPanelConfig.version || PlotlyPanelCtrl.predictionSettingsVersion > this.predictionPanelConfig.version) {
+      // Process migration of settings
+      this.panel.predictionSettings.version = PlotlyPanelCtrl.predictionSettingsVersion;
     }
-
-    this.plotlyPanelUtil._updateTraceData(true);
+    this.plotlyPanelUtil.plotlyOnPanelInitialized();
   }
 
   onRender() {
@@ -150,28 +129,19 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return;
     }
 
-    if (!this.Plotly) {
-      return;
-    }
-
-    this.plotlyPanelUtil.renderPlotly(this.$rootScope);
+    this.plotlyPanelUtil.plotlyOnRender(this.$rootScope);
   }
 
   onDataSnapshotLoad(snapshot) {
     this.onDataReceived(snapshot);
   }
 
-  _hadAnno = false;
-
   onDataReceived(dataList) {
     this.plotlyPanelUtil.plotlyDataReceived(dataList, this.annotationsSrv);
   }
 
   link(scope, elem, attrs, ctrl) {
-    this.graphDiv = elem.find('#plotly-spot')[0];
+    this._graphDiv = elem.find('#plotly-spot')[0];
     this.plotlyPanelUtil.initialized = false;
-    elem.on('mousemove', evt => {
-      this.mouse = evt;
-    });
   }
 }

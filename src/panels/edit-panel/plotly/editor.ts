@@ -36,17 +36,17 @@ export class EditorHelper {
 
   // Callback when the query results changed
   static updateMappings(ctrl: PlotlyPanelCtrl): boolean {
-    if (ctrl.series == null || ctrl.series.length < 1) {
+    if (ctrl.plotlyPanelUtil.series == null || ctrl.plotlyPanelUtil.series.length < 1) {
       return false;
     }
 
     const defaultMappings = {
-      first: ctrl.series[0].getKey(),
-      time: ctrl.series[1].getKey(),
+      first: ctrl.plotlyPanelUtil.series[0].getKey(),
+      time: ctrl.plotlyPanelUtil.series[1].getKey(),
     };
 
     let changed = false;
-    ctrl.cfg.traces.forEach(trace => {
+    ctrl.plotlyPanelUtil.cfg.traces.forEach(trace => {
       _.defaults(trace, PlotlyPanelUtil.defaultTrace);
       const mapping = trace.mapping;
       if (!mapping.color) {
@@ -93,7 +93,7 @@ export class EditorHelper {
       return;
     }
 
-    const layout = this.ctrl.cfg.layout;
+    const layout = this.ctrl.plotlyPanelUtil.cfg.layout;
     if (!layout.xaxis) {
       layout.xaxis = {};
     }
@@ -133,14 +133,14 @@ export class EditorHelper {
   //-----------------------------------------------------------------------
 
   selectTrace(index: number) {
-    this.traces = this.ctrl.cfg.traces;
+    this.traces = this.ctrl.plotlyPanelUtil.cfg.traces;
     if (!this.traces || this.traces.length < 1) {
-      this.traces = this.ctrl.cfg.traces = [_.deepClone(PlotlyPanelUtil.defaultTrace)];
+      this.traces = this.ctrl.plotlyPanelUtil.cfg.traces = [_.deepClone(PlotlyPanelUtil.defaultTrace)];
     }
-    if (index >= this.ctrl.cfg.traces.length) {
-      index = this.ctrl.cfg.traces.length - 1;
+    if (index >= this.ctrl.plotlyPanelUtil.cfg.traces.length) {
+      index = this.ctrl.plotlyPanelUtil.cfg.traces.length - 1;
     }
-    this.trace = this.ctrl.cfg.traces[index];
+    this.trace = this.ctrl.plotlyPanelUtil.cfg.traces[index];
     this.traceIndex = index;
 
     _.defaults(this.trace, PlotlyPanelUtil.defaultTrace);
@@ -173,7 +173,7 @@ export class EditorHelper {
       });
       value = null; // will set this value later
     } else if (value) {
-      const s = this.ctrl.seriesByKey.get(value);
+      const s = this.ctrl.plotlyPanelUtil.seriesByKey.get(value);
       const opts: any = {
         value: value,
         series: s,
@@ -197,14 +197,14 @@ export class EditorHelper {
 
   createTrace() {
     let trace: any = {};
-    if (this.ctrl.cfg.traces.length > 0) {
-      trace = _.cloneDeep(this.ctrl.cfg.traces[this.ctrl.cfg.traces.length - 1]);
+    if (this.ctrl.plotlyPanelUtil.cfg.traces.length > 0) {
+      trace = _.cloneDeep(this.ctrl.plotlyPanelUtil.cfg.traces[this.ctrl.plotlyPanelUtil.cfg.traces.length - 1]);
     } else {
       trace = _.deepClone(PlotlyPanelUtil.defaultTrace);
     }
-    trace.name = EditorHelper.createTraceName(this.ctrl.traces.length);
-    this.ctrl.cfg.traces.push(trace);
-    this.selectTrace(this.ctrl.cfg.traces.length - 1);
+    trace.name = EditorHelper.createTraceName(this.ctrl.plotlyPanelUtil.traces.length);
+    this.ctrl.plotlyPanelUtil.cfg.traces.push(trace);
+    this.selectTrace(this.ctrl.plotlyPanelUtil.cfg.traces.length - 1);
   }
 
   removeCurrentTrace() {
@@ -252,7 +252,7 @@ export class EditorHelper {
           })
         );
       }
-      this.ctrl.series.forEach(s => {
+      this.ctrl.plotlyPanelUtil.series.forEach(s => {
         series.push(
           this.ctrl.uiSegmentSrv.newSegment({
             value: s.name,

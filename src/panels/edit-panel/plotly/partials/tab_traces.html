@@ -6,8 +6,8 @@
 * Description: HTML content for plotly graph traces
 */
 -->
-<div ng-if="ctrl.dataWarnings" style="margin-bottom:20px;">
-  <div ng-repeat="warn in ctrl.dataWarnings" style="margin-bottom:3px; padding:5px; border:1px solid red;">
+<div ng-if="ctrl.plotlyPanelUtil.dataWarnings" style="margin-bottom:20px;">
+  <div ng-repeat="warn in ctrl.plotlyPanelUtil.dataWarnings" style="margin-bottom:3px; padding:5px; border:1px solid red;">
     {{warn}}
   </div>
 </div>
@@ -16,14 +16,14 @@
   <aside class="edit-sidemenu-aside" style="min-width: 100px">
     <ul class="edit-sidemenu">
       <li
-        ng-repeat="trace in ctrl.traces"
-        ng-class="{ active: ctrl.editor.traceIndex === $index }"
+        ng-repeat="trace in ctrl.plotlyPanelUtil.traces"
+        ng-class="{ active: ctrl.plotlyPanelUtil.editor.traceIndex === $index }"
       >
-        <a ng-click="ctrl.editor.selectTrace( $index )">{{ trace.name }}</a>
+        <a ng-click="ctrl.plotlyPanelUtil.editor.selectTrace( $index )">{{ trace.name }}</a>
       </li>
       <li>
         <button
-          class="btn btn-success" ng-click="ctrl.editor.createTrace();"
+          class="btn btn-success" ng-click="ctrl.plotlyPanelUtil.editor.createTrace();"
           style="margin-bottom: 5px; width: 100%"
         >
           <em class="fa fa-plus"/> Add new
@@ -31,8 +31,8 @@
       </li>
       <li>
         <button
-          class="btn btn-danger" ng-click="ctrl.editor.removeCurrentTrace();"
-          ng-if="ctrl.traces.length > 1"
+          class="btn btn-danger" ng-click="ctrl.plotlyPanelUtil.editor.removeCurrentTrace();"
+          ng-if="ctrl.plotlyPanelUtil.traces.length > 1"
           style="width: 100%"
         >
           <em class="fa fa-trash"/> Delete
@@ -50,7 +50,7 @@
           <label class="gf-form-label width-7">Name</label>
           <input
             class="gf-form-input width-7"
-            ng-model="ctrl.editor.trace.name" 
+            ng-model="ctrl.plotlyPanelUtil.editor.trace.name" 
             ng-blur="ctrl.plotlyPanelUtil.onConfigChanged();"
           />
         </div>
@@ -59,12 +59,12 @@
       <h5 class="section-heading">Metrics</h5>
       <div class="section gf-form-inline">
         <div class="gf-form"  
-          ng-repeat="axis in ctrl.editor.axis">
+          ng-repeat="axis in ctrl.plotlyPanelUtil.editor.axis">
           <label class="gf-form-label width-7">{{axis.label}}</label>
           <metric-segment 
             segment="axis.segment" 
-            get-options="ctrl.editor.getSeriesSegs()" 
-            on-change="ctrl.editor.onAxisSeriesChanged(axis)"></metric-segment>
+            get-options="ctrl.plotlyPanelUtil.editor.getSeriesSegs()" 
+            on-change="ctrl.plotlyPanelUtil.editor.onAxisSeriesChanged(axis)"></metric-segment>
         </div>
       </div>
     </div>
@@ -75,16 +75,16 @@
         class="gf-form" 
         label="Show" 
         label-class="gf-form-label width-7"
-        checked="ctrl.editor.trace.show.markers" 
+        checked="ctrl.plotlyPanelUtil.editor.trace.show.markers" 
         on-change="ctrl.plotlyPanelUtil.onConfigChanged()"></gf-form-switch>
 
-      <div ng-if="ctrl.editor.trace.show.markers">
+      <div ng-if="ctrl.plotlyPanelUtil.editor.trace.show.markers">
         <div class="gf-form">
           <label class="gf-form-label width-7">Symbol</label>
           <metric-segment 
-            segment="ctrl.editor.symbol" 
-            get-options="ctrl.editor.getSymbolSegs()" 
-            on-change="ctrl.editor.onSymbolChanged()"></metric-segment>
+            segment="ctrl.plotlyPanelUtil.editor.symbol" 
+            get-options="ctrl.plotlyPanelUtil.editor.getSymbolSegs()" 
+            on-change="ctrl.plotlyPanelUtil.editor.onSymbolChanged()"></metric-segment>
         </div>
 
         <div class="gf-form">
@@ -92,14 +92,14 @@
           <input 
             type="number" 
             class="gf-form-input width-7" 
-            ng-model="ctrl.editor.trace.settings.marker.size" 
+            ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.marker.size" 
             spellcheck="false"
             placeholder="5" ng-blur="ctrl.plotlyPanelUtil.onConfigChanged()" />
         </div>
         <div class="gf-form">
           <label class="gf-form-label width-7">Color</label>
           <div class="gf-form-select-wrapper max-width-14">
-            <select class="gf-form-input" ng-model="ctrl.editor.trace.settings.color_option" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
+            <select class="gf-form-input" ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.color_option" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
               <option value="ramp">Ramp</option>
               <option value="solid">Solid</option>
             </select>
@@ -107,31 +107,31 @@
         </div>
 
         <div class="gf-form" 
-          ng-if="ctrl.editor.trace.settings.color_option === 'solid'" 
+          ng-if="ctrl.plotlyPanelUtil.editor.trace.settings.color_option === 'solid'" 
           >
           <label class="gf-form-label width-7">- Solid</label>
-          <input type="text" placeholder="text" ng-model="ctrl.editor.trace.settings.marker.color" class="gf-form-input width-10"
+          <input type="text" placeholder="text" ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.marker.color" class="gf-form-input width-10"
             ng-blur="ctrl.plotlyPanelUtil.onConfigChanged()" />
           <span class="gf-form-label">
             <spectrum-picker 
-              ng-model="ctrl.editor.trace.settings.marker.color" 
+              ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.marker.color" 
               ng-change="ctrl.plotlyPanelUtil.onConfigChanged()" />
           </span>
         </div>
 
         <div class="gf-form" 
-          ng-repeat="metric in ctrl.editor.getColorSegments()">
+          ng-repeat="metric in ctrl.plotlyPanelUtil.editor.getColorSegments()">
           <label class="gf-form-label width-7">- Metric</label>
           <metric-segment 
             segment="metric" 
-            get-options="ctrl.editor.getSeriesSegs()" 
-            on-change="ctrl.editor.onColorChanged()"></metric-segment>
+            get-options="ctrl.plotlyPanelUtil.editor.getSeriesSegs()" 
+            on-change="ctrl.plotlyPanelUtil.editor.onColorChanged()"></metric-segment>
         </div>
 
-        <div class="gf-form" ng-if="ctrl.editor.trace.settings.color_option != 'solid'">
+        <div class="gf-form" ng-if="ctrl.plotlyPanelUtil.editor.trace.settings.color_option != 'solid'">
           <label class="gf-form-label width-7">- Scale</label>
           <div class="gf-form-select-wrapper max-width-14">
-            <select class="gf-form-input" ng-model="ctrl.editor.trace.settings.marker.colorscale" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
+            <select class="gf-form-input" ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.marker.colorscale" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
               <option value="">Default</option>
               <option value="Greys">Greys<option>
               <option value="YlGnBu">YlGnBu<option>
@@ -154,31 +154,31 @@
             </select>
           </div>
         </div>
-        <gf-form-switch ng-if="ctrl.editor.trace.settings.color_option != 'solid'" class="gf-form" label="- Legend" label-class="gf-form-label width-7"
-          checked="ctrl.editor.trace.settings.marker.showscale" on-change="ctrl.plotlyPanelUtil.onConfigChanged()"></gf-form-switch>
+        <gf-form-switch ng-if="ctrl.plotlyPanelUtil.editor.trace.settings.color_option != 'solid'" class="gf-form" label="- Legend" label-class="gf-form-label width-7"
+          checked="ctrl.plotlyPanelUtil.editor.trace.settings.marker.showscale" on-change="ctrl.plotlyPanelUtil.onConfigChanged()"></gf-form-switch>
       </div>
     </div>
 
-    <div class="section gf-form-group" ng-if="ctrl.cfg.settings.mode !== 'markers'">
+    <div class="section gf-form-group" ng-if="ctrl.plotlyPanelUtil.cfg.settings.mode !== 'markers'">
       <h5 class="section-heading">Lines</h5>
       <gf-form-switch 
         class="gf-form" 
         label="Show" 
         label-class="gf-form-label width-7"
-        checked="ctrl.editor.trace.show.lines" 
+        checked="ctrl.plotlyPanelUtil.editor.trace.show.lines" 
         on-change="ctrl.plotlyPanelUtil.onConfigChanged()"></gf-form-switch>
 
-      <div ng-if="ctrl.editor.trace.show.lines">
+      <div ng-if="ctrl.plotlyPanelUtil.editor.trace.show.lines">
 
         <div class="gf-form">
           <label class="gf-form-label width-7">Size</label>
-          <input type="number" class="gf-form-input width-6" ng-model="ctrl.editor.trace.settings.line.width" spellcheck="false" placeholder="2"
+          <input type="number" class="gf-form-input width-6" ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.line.width" spellcheck="false" placeholder="2"
             ng-blur="ctrl.plotlyPanelUtil.onConfigChanged()" />
         </div>
         <div class="gf-form">
           <label class="gf-form-label width-7">Shape</label>
           <div class="gf-form-select-wrapper max-width-14">
-            <select class="gf-form-input" ng-model="ctrl.editor.trace.settings.line.shape" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
+            <select class="gf-form-input" ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.line.shape" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
               <option value="linear">linear</option>
               <option value="spline">spline</option>
               <option value="vhv">vhv</option>
@@ -191,7 +191,7 @@
         <div class="gf-form">
           <label class="gf-form-label width-7">Dash</label>
           <div class="gf-form-select-wrapper max-width-14">
-            <select class="gf-form-input" ng-model="ctrl.editor.trace.settings.line.dash" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
+            <select class="gf-form-input" ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.line.dash" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
               <option value="solid">solid</option>
               <option value="dot">dot</option>
               <option value="dash">dash</option>
@@ -206,12 +206,12 @@
           <label class="gf-form-label width-7">Color</label>
           <input class="gf-form-input width-10"
             type="text" placeholder="#???"
-            ng-model="ctrl.editor.trace.settings.line.color" 
+            ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.line.color" 
             ng-blur="ctrl.plotlyPanelUtil.onConfigChanged()"
           />
           <span class="gf-form-label">
             <spectrum-picker 
-              ng-model="ctrl.editor.trace.settings.line.color" 
+              ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.line.color" 
               ng-change="ctrl.plotlyPanelUtil.onConfigChanged()" />
           </span>
         </div>
@@ -222,18 +222,18 @@
       <h5 class="section-heading">Text</h5>
 
       <div class="gf-form"
-        ng-repeat="metric in ctrl.editor.getTextSegments()">
+        ng-repeat="metric in ctrl.plotlyPanelUtil.editor.getTextSegments()">
         <label class="gf-form-label width-7">Metric</label>
         <metric-segment 
           segment="metric" 
-          get-options="ctrl.editor.getSeriesSegs(true)" 
-          on-change="ctrl.editor.onTextMetricChanged()"></metric-segment>
+          get-options="ctrl.plotlyPanelUtil.editor.getSeriesSegs(true)" 
+          on-change="ctrl.plotlyPanelUtil.editor.onTextMetricChanged()"></metric-segment>
       </div>
       
-      <div class="gf-form" ng-if="ctrl.editor.trace.mapping.text">
+      <div class="gf-form" ng-if="ctrl.plotlyPanelUtil.editor.trace.mapping.text">
         <label class="gf-form-label width-7">Show</label>
         <div class="gf-form-select-wrapper max-width-14">
-          <select class="gf-form-input" ng-model="ctrl.editor.trace.settings.textposition" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
+          <select class="gf-form-input" ng-model="ctrl.plotlyPanelUtil.editor.trace.settings.textposition" ng-change="ctrl.plotlyPanelUtil.onConfigChanged()">
             <option value="">Hover</option>
             <option value="top">Top</option>
             <option value="bottom">Bottom</option>
