@@ -111,7 +111,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
 
       this.panel.predictionSettings.predittori = ['cpu', 'hdd', 'fan'];
-      this.panel.predictionSettings.query = ['querycpu', 'queryhdd', 'queryfan'];
+      this.panel.predictionSettings.query = ['query1', 'query2', 'query3'];
 
       this.addEditorTab('Select query associations', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/nodemap.html', 3);
 
@@ -120,8 +120,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     }
   }
 
-  async change_query(selectedQuery: any) {
-    console.log(selectedQuery);
+  async change_query(query: any, selectedP: any) {
+    console.log(query);
+    console.log(selectedP);
   }
 
   onPanelInitialized() {
