@@ -1,8 +1,8 @@
-import { PerformPrediction } from '../model/PerformPrediction';
+import { PerformPrediction } from './PerformPrediction';
 
 export class ProcessData {
   private strategy: PerformPrediction;
-  private data: Map<string, number>;
+  private data: Map<string, number[]>;
   constructor(strategy: PerformPrediction) {
     this.strategy = strategy;
   }
@@ -11,5 +11,8 @@ export class ProcessData {
     this.strategy = algorithm;
   };
 
-  setData = (datalist: Map<string, number[]>, configuration: {}, nodeMap: Map<string, string>): void => {};
+  setData = (datalist: Map<string, number[]>, configuration: {}, nodeMap: Map<string, string>): void => {
+    this.data = datalist;
+    this.strategy.performPrediction(datalist, configuration, nodeMap, []);
+  };
 }
