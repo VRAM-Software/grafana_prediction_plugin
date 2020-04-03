@@ -1,4 +1,5 @@
 import { AlgorithmPrediction } from 'model/AlgorithmPrediction';
+import Regression from '../../libs/regression';
 
 export class RlPrediction implements AlgorithmPrediction {
   private options: {};
@@ -19,7 +20,9 @@ export class RlPrediction implements AlgorithmPrediction {
     this.coefficients = value;
   };
 
-  predict = (data: number[], json: {}): {} => {
-    return {};
+  // data: {x: [1,2,3], y: [1]}
+  predict = (data: {}, json: {}): {} => {
+    const rl: Regression = new Regression();
+    return rl.hypothesize(data);
   };
 }

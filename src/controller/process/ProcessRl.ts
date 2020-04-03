@@ -11,7 +11,7 @@ export class ProcessRl implements PerformPrediction {
     this.rlPredicter = new RlPrediction();
   };
 
-  performPrediction = (datalist: Map<string, number[]>, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): void => {
+  performPrediction = (datalist: {}, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): void => {
     if (!this.rlPredicter) {
       this.createPredicterInstance();
     }

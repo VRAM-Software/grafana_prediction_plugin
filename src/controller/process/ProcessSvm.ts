@@ -10,7 +10,7 @@ export class ProcessSvm implements PerformPrediction {
     this.svmPredicter = new SvmPrediction();
   };
 
-  performPrediction = (datalist: Map<string, number[]>, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): {} => {
+  performPrediction = (datalist: {}, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): {} => {
     if (!this.svmPredicter) {
       this.createPredicterInstance();
     }
