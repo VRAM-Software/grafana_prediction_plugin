@@ -77,11 +77,13 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   async onUpload(net: any) {
     this.panel.predictionSettings.json = JSON.stringify(net);
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
+    this.panel.predictionSettings.predittori = net.Predictors;
   }
 
   async delete_json_click() {
     this.predictionPanelConfig.json = null;
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
+    this.panel.predictionSettings.predittori = null;
   }
 
   async change_query_association(query: any, selectedP: any) {
@@ -114,8 +116,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   onInitEditMode() {
     if (!this.plotlyPanelUtil.isPlotlyEditModeLoaded()) {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-
-      this.panel.predictionSettings.predittori = ['cpu', 'hdd', 'fan'];
 
       this.addEditorTab('Select query associations', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/nodemap.html', 3);
 
