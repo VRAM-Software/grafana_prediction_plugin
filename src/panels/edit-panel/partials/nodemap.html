@@ -4,9 +4,9 @@
     <div class="section gf-form-group">
         <div class="gf-form">
             <div ng-repeat="q in ctrl.panel.predictionSettings.query">
-                <label class="gf-form-label width-10">{{ q }}</label>
+                <label class="gf-form-label width-10">{{ q.name }}</label>
                 <div class="gf-form-select-wrapper">
-                    <select class="gf-form-input" ng-options="p for p in ctrl.panel.predictionSettings.predittori" ng-model="selectedP" ng-change="ctrl.change_query(q, selectedP)"></select>
+                    <select class="gf-form-input" ng-options="p for p in ctrl.panel.predictionSettings.predittori" ng-model="selectedP" ng-change="ctrl.change_query_association(q, selectedP)"></select>
                 </div>
             </div>
         </div>

@@ -84,6 +84,11 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
   }
 
+  async change_query_association(query: any, selectedP: any) {
+    this.panel.predictionSettings.nodeMap[query.id] = selectedP;
+    //console.log(this.panel.predictionSettings.nodeMap);
+  }
+
   onResize() {
     if (this.graphDiv) {
       this.plotlyPanelUtil.plotlyOnResize();
@@ -111,7 +116,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
 
       this.panel.predictionSettings.predittori = ['cpu', 'hdd', 'fan'];
-      this.panel.predictionSettings.query = ['query1', 'query2', 'query3'];
 
       this.addEditorTab('Select query associations', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/nodemap.html', 3);
 
@@ -120,15 +124,13 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     }
   }
 
-  async change_query(query: any, selectedP: any) {
-    console.log(query);
-    console.log(selectedP);
-  }
-
   onPanelInitialized() {
     if (!this.predictionPanelConfig.version || PlotlyPanelCtrl.predictionSettingsVersion > this.predictionPanelConfig.version) {
       // Process migration of settings
       this.panel.predictionSettings.version = PlotlyPanelCtrl.predictionSettingsVersion;
+    }
+    if (!this.panel.predictionSettings.nodeMap) {
+      this.panel.predictionSettings.nodeMap = [];
     }
     this.plotlyPanelUtil.plotlyOnPanelInitialized();
   }
@@ -148,6 +150,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
   onDataReceived(dataList) {
     this.plotlyPanelUtil.plotlyDataReceived(dataList, this.annotationsSrv);
+    // per influxDB il nome del campo potrebbe essere name anziché alias
+    this.panel.predictionSettings.query = dataList.map(a => {
+      return { id: a.refId, name: a.alias };
+    });
   }
 
   link(scope, elem, attrs, ctrl) {
