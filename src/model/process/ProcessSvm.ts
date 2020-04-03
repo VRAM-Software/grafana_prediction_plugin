@@ -9,4 +9,8 @@ export class ProcessSvm implements PerformPrediction {
     let res: number[] = [];
     this.result = res;
   };
+
+  getResult = () => {
+    return this.result;
+  };
 }

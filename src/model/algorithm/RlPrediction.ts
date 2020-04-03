@@ -7,6 +7,10 @@ export class RlPrediction implements AlgorithmPrediction {
 
   constructor() {}
 
+  getOptions = (): {} => {
+    return this.options;
+  };
+
   setOptions = (option: {}): void => {
     this.options = option;
   };
