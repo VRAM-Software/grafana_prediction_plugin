@@ -49,7 +49,7 @@ export class ProcessData {
     // TODO: understand how to setup nodeMap
     let timestamps: number[] = [];
     let data: number[][] = [];
-    let j: number = 0;
+    let j = 0;
     let temp: number[] = [];
 
     while (j < datalist[0].datapoints.length) {
