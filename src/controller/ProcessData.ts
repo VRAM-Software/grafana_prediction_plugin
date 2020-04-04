@@ -1,9 +1,11 @@
 import { PerformPrediction } from './PerformPrediction';
+import { DataSet } from '../types/DataSet';
 
 export class ProcessData {
   private strategy: PerformPrediction;
-  private data: number[][];
-  private timeStamps: Map<number, number>;
+  private data: DataSet;
+  private nodeMap: Map<string, string>;
+
   constructor(strategy: PerformPrediction) {
     this.strategy = strategy;
   }
@@ -12,58 +14,71 @@ export class ProcessData {
     this.strategy = algorithm;
   };
 
-  // Constructs
-  // datalist = {
-  //  cpu: [1,2,3,4,5]
-  //  disk: [1,2,3,4,5]
-  //  ram: [1,2,3,4,5]
-  //  timestamp: [0,1,2,3,4]
-  // }
+  /**
+   * datalist: [
+   *   {
+   *      target:"CPU",
+   *      datapoints: [
+   *        [10, 12 //timestamp],
+   *        [20, 13 //timestamp],
+   *        [30, 14 //timestamp]
+   *      ]
+   *   },
+   *   {
+   *      target: "DISK",
+   *      datapoints: [
+   *        [20, 12 //timestamp],
+   *        [40, 13 //timestamp],
+   *        [60, 14 //timestamp]
+   *      ]
+   *   }
+   * ]
+   */
+  // setData returns:
+  //  timestamps: [12,13,14]
+  //  data: [[10,20],[20,40],[30,60]]
 
-  // =>
-  // [cpu, disk, ram]
-  // [1,   1,    1] | T = 0
-  // [2,   2,    2] | T = 1
-  // [3,   3,    3] | T = 2
-  // [4,   4,    4] | T = 3
-  // [5,   5,    5] | T = 4
+  // nodemap: Map<string, string>
+  //  {
+  //     "queryA": "CPU"
+  //     "queryB": "DISK"
+  //  }
 
-  // extract Data
-  // extract TimeStamps
-  // i can have N properties in object datalist
-  // for each of them i have to get the value
-  // assuming timestamp is last array
-
-  createTimeDataMap = (timestamps: number[]): Map<number, number> => {
-    let map = new Map();
-    for (let i = 0; i < timestamps.length; i++) {
-      map.set(i, timestamps[i]);
-    }
-    return map;
-  };
-
-  createData = (datalist: {}, propNames: string[], timeStamps: number[]): number[][] => {
-    let array: number[][] = [];
+  setData = (datalist: { target: string; datapoints: number[][] }[], nodeMap: Map<string, string>): void => {
+    // TODO: understand how to setup nodeMap
+    let timestamps: number[] = [];
+    let data: number[][] = [];
+    let j: number = 0;
     let temp: number[] = [];
-    for (let i = 0; i < timeStamps.length; i++) {
+
+    while (j < datalist[0].datapoints.length) {
       temp = [];
-      for (let j = 0; j < propNames.length - 1; i++) {
-        temp.push(timeStamps[i][Object.keys(timeStamps[i])[j]]);
+      for (let i = 0; i < datalist.length; i++) {
+        let dp = datalist[i].datapoints;
+        let d = dp[j];
+        if (!timestamps.includes(d[1])) {
+          timestamps.push(d[1]);
+        }
+        temp.push(d[0]);
       }
-      array.push(temp);
+      data.push(temp);
+      j += 1;
     }
-    return array;
+
+    this.data = {
+      data: data,
+      timestamps: timestamps,
+    };
   };
 
-  prepareDatalist = (datalist: {}): void => {
-    let propNames: string[] = Object.getOwnPropertyNames(datalist);
-    let timestampArray: number[] = datalist[propNames[propNames.length - 1]];
-    this.timeStamps = this.createTimeDataMap(timestampArray);
-    this.data = this.createData(datalist, propNames, timestampArray);
-  };
-
-  setData = (datalist: object[], configuration: {}, nodeMap: Map<string, string>): void => {
-    this.prepareDatalist(datalist);
-    this.strategy.performPrediction(this.data, configuration, nodeMap, []);
+  start = (configuration: {}): void => {
+    this.strategy.performPrediction(this.data, configuration, this.nodeMap);
   };
 }
+
+/**
+ * let svm = new ProcessSvm();
+ * let processor = new ProcessData(svm);
+ * processor.setData(datalist, nodeMap);
+ * processor.start();
+ */

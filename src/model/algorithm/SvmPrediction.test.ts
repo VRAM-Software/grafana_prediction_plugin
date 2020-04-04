@@ -18,8 +18,8 @@ describe('SvmPrediction tests', () => {
   });
 
   test('predict method should call setData and predict function from ml-modules', () => {
-    predictor.predict([1, 2, 3], { N: 1, b: 1, D: [1, 2], w: 1, kernelType: 'test' });
-    expect(mockedSetData).toBeCalledWith([1, 2, 3], { N: 1, b: 1, D: [1, 2], w: 1, kernelType: 'test' });
+    predictor.predict({data: [[1,2],[2,3],[3,4]],timestamps: [1, 2, 3]}, { N: 1, b: 1, D: [1, 2], w: 1, kernelType: 'test' });
+    expect(mockedSetData).toBeCalledTimes(3);
     expect(mockedPredict).toBeCalledTimes(3);
   });
 });

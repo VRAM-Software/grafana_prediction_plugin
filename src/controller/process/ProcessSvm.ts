@@ -1,5 +1,6 @@
 import { PerformPrediction } from 'controller/PerformPrediction';
 import { SvmPrediction } from 'model/algorithm/SvmPrediction';
+import { DataSet } from '../../types/DataSet';
 
 export class ProcessSvm implements PerformPrediction {
   private svmPredicter: SvmPrediction;
@@ -10,13 +11,12 @@ export class ProcessSvm implements PerformPrediction {
     this.svmPredicter = new SvmPrediction();
   };
 
-  performPrediction = (datalist: {}, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): {} => {
+  performPrediction = (data: DataSet, configuration: {}, nodeMap: Map<string, string>): {} => {
     if (!this.svmPredicter) {
       this.createPredicterInstance();
     }
-    // do operations with data to pass correct data to predictMethod
-    // this.rlPredicter.setUpData(datalist: Map<string, number[], ...);
-    let res = this.svmPredicter.predict([], configuration);
+
+    let res = this.svmPredicter.predict(data, configuration);
     return res;
   };
 }

@@ -1,3 +1,5 @@
+import { DataSet } from 'types/DataSet';
+
 export interface AlgorithmPrediction {
-  predict(data: number[], json: {}): {};
+  predict(data: DataSet, json: {}): {};
 }

@@ -1,5 +1,6 @@
 import { PerformPrediction } from 'controller/PerformPrediction';
 import { RlPrediction } from 'model/algorithm/RlPrediction';
+import { DataSet } from '../../types/DataSet';
 
 export class ProcessRl implements PerformPrediction {
   private result: {};
@@ -11,13 +12,12 @@ export class ProcessRl implements PerformPrediction {
     this.rlPredicter = new RlPrediction();
   };
 
-  performPrediction = (datalist: {}, configuration: {}, nodeMap: Map<string, string>, timeData: number[]): void => {
+  performPrediction = (data: DataSet, configuration: {}, nodeMap: Map<string, string>): void => {
     if (!this.rlPredicter) {
       this.createPredicterInstance();
     }
-    // do operations with data to pass correct data to predictMethod
-    // this.rlPredicter.setUpData(datalist: Map<string, number[], ...);
-    let res = this.rlPredicter.predict([], configuration);
+
+    let res = this.rlPredicter.predict(data, configuration);
     this.result = res;
   };
 }

@@ -1,9 +1,10 @@
 import { AlgorithmPrediction } from 'model/AlgorithmPrediction';
 import Regression from '../../libs/regression';
+import { DataSet } from 'types/DataSet';
 
 export class RlPrediction implements AlgorithmPrediction {
   private options: {};
-  private timeData: number[];
+  // aren't coeffiecients the results?
   private coefficients: number;
 
   constructor() {}
@@ -20,9 +21,9 @@ export class RlPrediction implements AlgorithmPrediction {
     this.coefficients = value;
   };
 
-  // data: {x: [1,2,3], y: [1]}
-  predict = (data: {}, json: {}): {} => {
+  // TODO
+  predict = (data: DataSet, json: {}): {} => {
     const rl: Regression = new Regression();
-    return rl.hypothesize(data);
+    return rl.hypothesize(data.data[1]);
   };
 }
