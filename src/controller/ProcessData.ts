@@ -1,5 +1,6 @@
 import { PerformPrediction } from './PerformPrediction';
 import { DataSet } from '../types/DataSet';
+import { DataList } from 'types/DataList';
 
 export class ProcessData {
   private strategy: PerformPrediction;
@@ -44,7 +45,7 @@ export class ProcessData {
   //     "queryB": "DISK"
   //  }
 
-  setData = (datalist: { target: string; datapoints: number[][] }[], nodeMap: Map<string, string>): void => {
+  setData = (datalist: DataList[], nodeMap: Map<string, string>): void => {
     // TODO: understand how to setup nodeMap
     let timestamps: number[] = [];
     let data: number[][] = [];
