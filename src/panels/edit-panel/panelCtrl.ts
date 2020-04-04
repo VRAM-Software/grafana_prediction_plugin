@@ -84,12 +84,12 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
     this.panel.predictionSettings.predittori = null;
   }
-
-  async change_query_association(query: any, selectedP: any) {
-    this.panel.predictionSettings.nodeMap[query.id] = selectedP;
-    //console.log(this.panel.predictionSettings.nodeMap);
+  /*
+  async change_query_association() {
+    //this.panel.predictionSettings.nodeMap[query.id] = selectedP;
+    console.log(this.panel.predictionSettings.nodeMap);
   }
-
+  */
   onResize() {
     if (this.graphDiv) {
       this.plotlyPanelUtil.plotlyOnResize();
@@ -115,7 +115,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   onInitEditMode() {
     if (!this.plotlyPanelUtil.isPlotlyEditModeLoaded()) {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-
       this.addEditorTab('Select query associations', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/nodemap.html', 3);
 
       this.plotlyPanelUtil.plotlyOnInitEditMode(3);
