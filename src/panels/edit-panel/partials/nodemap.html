@@ -3,9 +3,9 @@
     <div class="section gf-form-group">
         <div class="gf-form-inline">
             <div class="gf-form" ng-repeat="p in ctrl.panel.predictionSettings.predittori">
-                <label class="gf-form-label width-12">{{ p }}</label>
+                <label class="gf-form-label width-12">{{ p.name }}</label>
                 <div class="gf-form-select-wrapper width-12">
-                    <select class="gf-form-input" ng-model="ctrl.panel.predictionSettings.nodeMap[ctrl.panel.predictionSettings.predittori.indexOf(p)]" ng-options="q.name for q in ctrl.panel.predictionSettings.query"></select>
+                    <select class="gf-form-input" ng-model="ctrl.panel.predictionSettings.nodeMap[p.id]" ng-options="q.name for q in ctrl.panel.predictionSettings.query"></select>
                 </div>
             </div>
         </div>

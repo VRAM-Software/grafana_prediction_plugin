@@ -76,7 +76,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   async onUpload(net: any) {
     this.panel.predictionSettings.json = JSON.stringify(net);
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
-    this.panel.predictionSettings.predittori = net.Predictors;
+    this.panel.predictionSettings.predittori = net.Predictors.map((a, index) => {
+      return { id: index, name: a };
+    });
   }
 
   async delete_json_click() {
