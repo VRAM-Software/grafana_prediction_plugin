@@ -20,7 +20,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     predictionSettings: {
       version: null,
       json: null,
-      nodeMap: null,
+      nodeMap: [],
     },
   };
 
@@ -41,7 +41,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     _.defaultsDeep(this.panel, defaults);
 
     this.predictionPanelConfig = this.panel.predictionSettings;
-
     this.plotlyPanelUtil = new PlotlyPanelUtil(this);
 
     // ?? This seems needed for tests?!!
@@ -128,9 +127,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     if (!this.predictionPanelConfig.version || PlotlyPanelCtrl.predictionSettingsVersion > this.predictionPanelConfig.version) {
       // Process migration of settings
       this.panel.predictionSettings.version = PlotlyPanelCtrl.predictionSettingsVersion;
-    }
-    if (!this.panel.predictionSettings.nodeMap) {
-      this.panel.predictionSettings.nodeMap = [];
     }
     this.plotlyPanelUtil.plotlyOnPanelInitialized();
   }
