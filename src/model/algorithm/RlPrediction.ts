@@ -22,8 +22,17 @@ export class RlPrediction implements AlgorithmPrediction {
   };
 
   // TODO
-  predict = (data: DataSet, json: {}): {} => {
+  // data: [[10,20],[20,40],[30,60]]
+  predict = (data: DataSet, json: {}): number[][] => {
     const rl: Regression = new Regression();
-    return rl.hypothesize(data.data[1]);
+    let result: number[][] = [];
+    for (let i = 0; i < data.timestamps.length; i++) {
+      for (let j = 0; j < data.data.length; j++) {
+        let obj: number[] = data.data[i];
+        let x: number = obj[j];
+        result.push(rl.predict(x));
+      }
+    }
+    return result;
   };
 }

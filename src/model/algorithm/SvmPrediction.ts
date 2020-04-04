@@ -13,7 +13,7 @@ export class SvmPrediction implements AlgorithmPrediction {
     // atm we calculate labels: [] in setData but it's not right since
     // we have labels = timestamps
     // TODO: understand what labels we need to use for SVM cause it's needed for
-    //       predict method
+    //       predict method :-> modify setData
 
     //  timestamps: [12,13,14]
     //  data: [[10,20],[20,40],[30,60]]

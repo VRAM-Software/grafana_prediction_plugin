@@ -8,4 +8,5 @@ export default class Regression {
   rectMatrix(options: {}): number[];
   addRowAndColumn(product: number[], options: {}): void;
   rref(A: number[]): number[];
+  predict(x: number): number[];
 }
