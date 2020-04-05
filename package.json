@@ -19,12 +19,15 @@
     }
   },
   "dependencies": {
+    "@akanass/rx-http-request": "^3.3.0",
     "@babel/preset-env": "^7.9.0",
+    "influx": "^5.5.1",
     "jquery": "^3.4.1",
     "lodash": "^4.17.10",
     "luxon": "^1.22.2",
     "moment": "^2.24.0",
     "plotly.js": "^1.52.3",
+    "rxjs": "^6.5.5",
     "scriptjs": "^2.5.9"
   },
   "devDependencies": {
