@@ -16,7 +16,7 @@ export class DataSource {
       throw new Error('DataSource - invalid datasource parameter');
     }
     return new DataSource(
-      other.host + ':' + other.port,
+      `${other.host}:${other.port}`,
       other.database,
       other.username,
       other.password,
@@ -76,7 +76,7 @@ export class DataSource {
       throw new Error('DataSource - invalid name parameter');
     }
     const urlParse: URL = new URL(url);
-    this.host = urlParse.protocol + '//' + urlParse.hostname;
+    this.host = `${urlParse.protocol}//${urlParse.hostname}`;
     this.port = urlParse.port;
     this.database = database;
     if (username === '') {
@@ -127,7 +127,7 @@ export class DataSource {
    * @returns The datasource's URL.
    */
   getUrl(): string {
-    return this.host + ':' + this.port;
+    return `${this.host}:${this.port}`;
   }
   /**
    * @returns The object's type field.
@@ -152,18 +152,18 @@ export class DataSource {
    * @returns A new DataSource object.
    */
   clone(): DataSource {
-    return new DataSource(this.host + ':' + this.port, this.database, this.username, this.password, this.type, this.name, this.grafanaDatasourceId);
+    return new DataSource(`${this.host}:${this.port}`, this.database, this.username, this.password, this.type, this.name, this.grafanaDatasourceId);
   }
   /**
    * @desc Creates a new DataSource object identical to this object with a custom default database.
-   * @param database_name Custom database.
+   * @param databaseName Custom database.
    * @returns A new DataSource object.
    */
-  cloneWithDB(database_name: string): DataSource {
-    if (database_name == null || database_name.length === 0) {
-      throw new Error('DataSource - invalid database_name parameter');
+  cloneWithDB(databaseName: string): DataSource {
+    if (databaseName == null || databaseName.length === 0) {
+      throw new Error('DataSource - invalid databaseName parameter');
     }
-    return new DataSource(this.host + ':' + this.port, database_name, this.username, this.password, this.type, this.name, this.grafanaDatasourceId);
+    return new DataSource(`${this.host}:${this.port}`, databaseName, this.username, this.password, this.type, this.name, this.grafanaDatasourceId);
   }
 
   /**

@@ -34,18 +34,17 @@ export class SelectInfluxDBCtrl {
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
     const port = window.location.port;
-    const hostUrl = protocol + '//' + hostname + ':' + port;
+    const hostUrl = `${protocol}//${hostname}:${port}`;
 
-    RxHR.get(hostUrl + '/api/datasources').subscribe(
+    RxHR.get(`${hostUrl}/api/datasources`).subscribe(
       data => {
         if (data.response.statusCode === 200) {
           const datasources = JSON.parse(data.body);
           for (const entry of datasources) {
             if (entry.type === 'influxdb') {
               this.datasources[entry.id] = new DataSource(entry.url, entry.database, entry.user, entry.password, entry.type, entry.name, entry.id);
-              // this.getDatabases(entry.id);
             } else {
-              console.log('SelectInfluxDBCtrl - Ignoring database with name:' + entry.name + ' because is not an InfluxDB');
+              console.log(`SelectInfluxDBCtrl - Ignoring database with name:${entry.name} because is not an InfluxDB`);
             }
           }
           this.panelCtrl.refresh();
@@ -58,18 +57,18 @@ export class SelectInfluxDBCtrl {
 
   async createDatabaseToWrite() {
     // if user doesn't provide a specific name
-    if (this.panel.predictionSettings.influxDatabase === null || this.panel.predictionSettings.influxDatabase.length === 0) {
-      this.panel.predictionSettings.influxDatabase = 'GrafanaPredictionDatabase';
-      // this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the database name!',
-      //   'You must specify a database name where the plug-in should write']);
-      throw new Error('SelectInfluxDBCtrl - createDatabaseToWrite - ' + 'You must specify a database name where the plug-in should write!');
-    }
-    if (typeof this.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
-      // no datasource set
-      // this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the datasource!',
-      //   'You must select a datasource to write data']);
-      throw new Error('SelectInfluxDBCtrl - createDatabaseToWrite - ' + 'You must select a datasource to write data!');
-    }
+    // if (this.panel.predictionSettings.influxDatabase === null || this.panel.predictionSettings.influxDatabase.length === 0) {
+    //   this.panel.predictionSettings.influxDatabase = 'GrafanaPredictionDatabase';
+    //   this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the database name!',
+    //     'You must specify a database name where the plug-in should write']);
+    //   throw new Error('SelectInfluxDBCtrl - createDatabaseToWrite - ' + 'You must specify a database name where the plug-in should write!');
+    // }
+    // if (typeof this.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
+    //   // no datasource set
+    //   this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the datasource!',
+    //     'You must select a datasource to write data']);
+    //   throw new Error('SelectInfluxDBCtrl - createDatabaseToWrite - ' + 'You must select a datasource to write data!');
+    // }
 
     // Save info
     this.panel.predictionSettings.influxHost = this.datasources[this.panel.predictionSettings.writeDatasourceID].getHost();

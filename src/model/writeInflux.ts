@@ -7,6 +7,9 @@
 import { InfluxDB, IPoint } from 'influx';
 import { WriteInfluxParameters } from '../types/writeInfluxParameters';
 
+const writeInfluxErrorDefinition = 'WriteInflux - Writing a point of data to';
+const writeInfluxErrorDescription = ' has encountered the following error: ';
+
 export class WriteInflux {
   private readonly datasource: string;
   private readonly influx: InfluxDB;
@@ -39,12 +42,13 @@ export class WriteInflux {
       .then(names => {
         if (!names.includes(this.parameters.database)) {
           return this.influx.createDatabase(this.parameters.database).catch(err => {
-            throw new Error('WriteInflux - Creating default database at: ' + dsn + ' has encountered the following error: ' + err);
+            throw new Error(writeInfluxErrorDefinition + dsn + writeInfluxErrorDescription + err);
           });
         }
+        return null;
       })
       .catch(err => {
-        throw new Error('WriteInflux - Getting database names at: ' + dsn + ' has encountered the following error: ' + err);
+        throw new Error(writeInfluxErrorDefinition + dsn + writeInfluxErrorDescription + err);
       });
   }
 
@@ -54,7 +58,7 @@ export class WriteInflux {
         database: this.parameters.database,
       })
       .catch(err => {
-        throw new Error('WriteInflux - Writing a batch of data to' + this.datasource + ' has encountered the following error: ' + err);
+        throw new Error(writeInfluxErrorDefinition + this.datasource + writeInfluxErrorDescription + err);
       });
   }
 
@@ -64,12 +68,12 @@ export class WriteInflux {
         database: this.parameters.database,
       })
       .catch(err => {
-        throw new Error('WriteInflux - Writing a point of data to' + this.datasource + ' has encountered the following error: ' + err);
+        throw new Error(writeInfluxErrorDefinition + this.datasource + writeInfluxErrorDescription + err);
       });
   }
 
   private setupArray(data: number[], timestamps: number[]): IPoint[] {
-    let influxPoints: IPoint[] = [];
+    const influxPoints: IPoint[] = [];
 
     for (let i = 0; i < data.length; ++i) {
       influxPoints.push(this.setupPoint(data[i], timestamps[i]));
@@ -79,11 +83,10 @@ export class WriteInflux {
   }
 
   private setupPoint(point: number, timestamp: number): IPoint {
-    const influxPoint: IPoint = {
+    return {
       measurement: this.parameters.measurement,
       fields: { [this.parameters.fieldKey]: point },
       timestamp: timestamp,
     };
-    return influxPoint;
   }
 }
