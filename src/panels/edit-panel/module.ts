@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 /**
  * File: module.ts
  * Author: Marco Dalla Libera

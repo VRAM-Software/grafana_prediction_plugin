@@ -12,6 +12,7 @@ import $ from 'jquery';
 
 import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
+import { SelectInfluxDBDirective } from './selectInfluxDBTab';
 
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static predictionSettingsVersion = 1;
@@ -21,6 +22,12 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       version: null,
       json: null,
       nodeMap: null,
+      writeDatasourceID: '',
+      influxHost: '',
+      influxPort: '',
+      influxDatabase: '',
+      influxMeasurement: '',
+      influxFieldKey: '',
     },
   };
 
@@ -109,7 +116,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   onInitEditMode() {
     if (!this.plotlyPanelUtil.isPlotlyEditModeLoaded()) {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-      this.plotlyPanelUtil.plotlyOnInitEditMode(3);
+      this.addEditorTab('Configure influxDB destination', SelectInfluxDBDirective, 3);
+      this.plotlyPanelUtil.plotlyOnInitEditMode(4);
 
       this.plotlyPanelUtil.onConfigChanged();
     }

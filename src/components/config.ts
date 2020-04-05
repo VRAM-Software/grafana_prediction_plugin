@@ -7,19 +7,17 @@
 
 import { PluginMeta } from '@grafana/data';
 
-export class TestControl {
+export class GrafanaPredictionControl {
   static templateUrl: string;
   enabled: boolean;
   appEditCtrl: any;
   appModel: any;
-  $location: any;
 
   /** @ngInject */
-  constructor($location: any) {
-    this.$location = $location;
+  constructor($scope: any, $injector: any) {
     this.enabled = false;
 
-    // Codice consigliato da Grafana per gestire abilitazione plugin
+    // Grafana code to handle plugin enable, can't mock appEditCtrl so ignore it
     this.appEditCtrl.setPostUpdateHook(this.postUpdate.bind(this));
     if (!this.appModel) {
       this.appModel = {} as PluginMeta;
@@ -33,14 +31,15 @@ export class TestControl {
 
   postUpdate() {
     if (!this.appModel.enabled) {
+      this.enabled = false;
       console.log('plugin disabled');
       return;
     }
-
+    this.enabled = true;
     console.log('Post Update, plugin loaded', this);
   }
 
   redirect() {}
 }
 
-TestControl.templateUrl = 'components/config.html';
+GrafanaPredictionControl.templateUrl = 'components/config.html';
