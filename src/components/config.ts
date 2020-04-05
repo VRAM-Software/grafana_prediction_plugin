@@ -7,7 +7,7 @@
 
 import { PluginMeta } from '@grafana/data';
 
-export class TestControl {
+export class GrafanaPredictionControl {
   static templateUrl: string;
   enabled: boolean;
   appEditCtrl: any;
@@ -42,4 +42,4 @@ export class TestControl {
   redirect() {}
 }
 
-TestControl.templateUrl = 'components/config.html';
+GrafanaPredictionControl.templateUrl = 'components/config.html';

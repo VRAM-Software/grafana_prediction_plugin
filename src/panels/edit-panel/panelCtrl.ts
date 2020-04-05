@@ -12,6 +12,7 @@ import $ from 'jquery';
 
 import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
+import { SelectInfluxDBDirective } from './selectInfluxDBTab';
 
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static predictionSettingsVersion = 1;
@@ -21,6 +22,12 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       version: null,
       json: null,
       nodeMap: [],
+      writeDatasourceID: '',
+      influxHost: '',
+      influxPort: '',
+      influxDatabase: '',
+      influxMeasurement: '',
+      influxFieldKey: '',
     },
   };
   queryList: any[];
@@ -86,11 +93,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
     this.panel.predictionSettings.predittori = null;
   }
-  /*
-  async ng_change() {
-    console.log(this.panel.predictionSettings.nodeMap);
-  }
-  */
+
   async update_queries() {
     // per influxDB il nome del campo potrebbe essere name anziché alias
     this.panel.predictionSettings.query = this.queryList.map(a => {
@@ -125,8 +128,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     if (!this.plotlyPanelUtil.isPlotlyEditModeLoaded()) {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
       this.addEditorTab('Select query associations', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/nodemap.html', 3);
-
-      this.plotlyPanelUtil.plotlyOnInitEditMode(3);
+      this.addEditorTab('Configure influxDB destination', SelectInfluxDBDirective, 4);
+      this.plotlyPanelUtil.plotlyOnInitEditMode(5);
       this.plotlyPanelUtil.onConfigChanged();
     }
   }

@@ -8,7 +8,7 @@
   "scripts": {
     "build": "grafana-toolkit plugin:build",
     "test": "grafana-toolkit plugin:test",
-    "ci-test": "grafana-toolkit plugin:test --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
+    "ci-test": "grafana-toolkit plugin:test --coverage",
     "dev": "grafana-toolkit plugin:dev",
     "watch": "grafana-toolkit plugin:dev --watch"
   },
@@ -19,12 +19,16 @@
     }
   },
   "dependencies": {
+    "@akanass/rx-http-request": "^3.3.0",
     "@babel/preset-env": "^7.9.0",
+    "influx": "^5.5.1",
     "jquery": "^3.4.1",
     "lodash": "^4.17.10",
     "luxon": "^1.22.2",
     "moment": "^2.24.0",
     "plotly.js": "^1.52.3",
+    "ml-modules": "https://github.com/Max09081998/ml-modules/tarball/master",
+    "rxjs": "^6.5.5",
     "scriptjs": "^2.5.9"
   },
   "devDependencies": {

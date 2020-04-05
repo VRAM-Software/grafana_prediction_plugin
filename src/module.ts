@@ -6,9 +6,9 @@
  * Description: Main module file of the app plugin, that imports other resources
  */
 
-import { TestControl } from './components/config';
+import { GrafanaPredictionControl } from './components/config';
 import { AppPlugin } from '@grafana/data';
 
-export { TestControl as ConfigCtrl };
+export { GrafanaPredictionControl as ConfigCtrl };
 
 export const plugin = new AppPlugin();
