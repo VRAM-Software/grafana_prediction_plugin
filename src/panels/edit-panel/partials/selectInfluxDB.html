@@ -6,40 +6,31 @@
 * Description: HTML content of the select influxDB tab
 */
 -->
-<div class="editor-row">
-    <div class="section gf-form-group">
-        <h5 class="section-heading">Configure the influxDB instance to write the prediction results into</h5>
-        <div class="gf-form">
-            <button type="button" id="load-btn" ng-click="ctrl.loadData()" class="btn btn-success" ng-model="load" >Refresh datasources list</button>
-            <p style="padding-bottom: 4em"></p>
+<div class="section gf-form-group">
+    <h5 class="section-heading">Configure the influxDB instance to write the prediction results into</h5>
+    <div class="gf-form">
+        <label class="gf-form-label width-15">Datasource</label>
+        <div class="gf-form-select-wrapper width-20">
+            <select class="gf-form-input"
+                    ng-model="ctrl.panel.predictionSettings.writeDatasourceID"
+                    ng-options="object.getGrafanaDatasourceId() as object.getName() for (datasource_id, object) in ctrl.datasources">
+            </select>
         </div>
-        <div class="gf-form">
-            <label class="gf-form-label width-15">Datasource</label>
-            <div class="gf-form-select-wrapper width-20">
-                <select ng-model="ctrl.selectedDatasource" class="gf-form-input ng-pristine ng-valid ng-not-empty ng-touched">
-                    <option value="">-- Choose a datasource --</option>
-                    <option ng-repeat="(datasource_id, object) in ctrl.datasources"
-                            value="{{object.getGrafanaDatasourceId()}}">
-                        {{object.getName()}} - {{object.getUrl()}}
-                    </option>
-                </select>
-            </div>
-        </div>
-        <div class="gf-form">
-            <label class="gf-form-label width-15" style="font-size: 13px">Database name</label>
-            <input class="gf-form-input width-20" style="padding-right: 1em" type="text" ng-model="ctrl.panel.predictionSettings.influxDatabase" />
-        </div>
-        <div class="gf-form">
-            <label class="gf-form-label width-15" style="font-size: 13px">Measurement name</label>
-            <input class="gf-form-input width-20" style="padding-right: 1em" type="text" ng-model="ctrl.panel.predictionSettings.influxMeasurement" />
-        </div>
-        <div class="gf-form">
-            <label class="gf-form-label width-15" style="font-size: 13px">Field key</label>
-            <input class="gf-form-input width-20" style="padding-right: 1em" type="text" ng-model="ctrl.panel.predictionSettings.influxFieldKey" />
-        </div>
-        <div class="gf-form">
-            <button ng-click="ctrl.createDatabaseToWrite()" id="testdb-btn" class="btn btn-success" style="margin-top: 1.5em">
-                Confirm</button>
-        </div>
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label width-15" style="font-size: 13px">Database name</label>
+        <input class="gf-form-input width-20" style="padding-right: 1em" type="text" ng-model="ctrl.panel.predictionSettings.influxDatabase" />
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label width-15" style="font-size: 13px">Measurement name</label>
+        <input class="gf-form-input width-20" style="padding-right: 1em" type="text" ng-model="ctrl.panel.predictionSettings.influxMeasurement" />
+    </div>
+    <div class="gf-form">
+        <label class="gf-form-label width-15" style="font-size: 13px">Field key</label>
+        <input class="gf-form-input width-20" style="padding-right: 1em" type="text" ng-model="ctrl.panel.predictionSettings.influxFieldKey" />
+    </div>
+    <div class="gf-form">
+        <button ng-click="ctrl.createDatabaseToWrite()" id="testdb-btn" class="btn btn-success" style="margin-top: 1.5em">
+            Confirm</button>
     </div>
 </div>

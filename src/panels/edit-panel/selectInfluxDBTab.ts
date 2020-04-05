@@ -15,36 +15,18 @@ export class SelectInfluxDBCtrl {
 
   private datasources: { [datasourceID: string]: DataSource } = {};
 
-  // ANGULARJS <select> stuff - save the selected datasource to write
-  // @ts-ignore
-  private selectedDatasource: string;
-
-  // @ts-ignore
-  constructor($scope, private $sce, datasourceSrv, private backendSrv) {
+  constructor($scope) {
     this.panelCtrl = $scope.ctrl;
     $scope.ctrl = this;
     this.panel = this.panelCtrl.panel;
     this.panel.datasource = this.panel.datasource || null;
     this.panel.targets = this.panel.targets || [{}];
-    this.selectedDatasource = '';
     this.getDatasources();
   }
 
   // ------------------------------------------------------
   // Get all database structure
   // ------------------------------------------------------
-
-  loadData() {
-    (document.getElementById('load-btn') as HTMLButtonElement).disabled = true;
-    // If the field is not empty, let's save the selected datasource in the panel
-    if (this.panel.predictionSettings.writeDatasourceID.length > 0) {
-      this.selectedDatasource = this.panel.predictionSettings.writeDatasourceID;
-      this.panelCtrl.publishAppEvent(AppEvents.alertSuccess, ['Saved data loaded succesfully!']);
-    } else {
-      this.panelCtrl.publishAppEvent(AppEvents.alertSuccess, ['List of available datasources loaded succesfully!']);
-    }
-  }
-
   getDatasources() {
     console.log('SelectInfluxDBCtrl - start loading datasources...');
     this.datasources = {};
@@ -66,6 +48,8 @@ export class SelectInfluxDBCtrl {
               console.log('SelectInfluxDBCtrl - Ignoring database with name:' + entry.name + ' because is not an InfluxDB');
             }
           }
+          this.panelCtrl.refresh();
+          console.log('refresh after datasources load');
         }
       },
       err => console.error(err)
@@ -80,7 +64,7 @@ export class SelectInfluxDBCtrl {
       //   'You must specify a database name where the plug-in should write']);
       throw new Error('SelectInfluxDBCtrl - createDatabaseToWrite - ' + 'You must specify a database name where the plug-in should write!');
     }
-    if (typeof this.datasources[this.selectedDatasource] === 'undefined') {
+    if (typeof this.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
       // no datasource set
       // this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the datasource!',
       //   'You must select a datasource to write data']);
@@ -88,9 +72,8 @@ export class SelectInfluxDBCtrl {
     }
 
     // Save info
-    this.panel.predictionSettings.influxHost = this.datasources[this.selectedDatasource].getHost();
-    this.panel.predictionSettings.influxPort = this.datasources[this.selectedDatasource].getPort();
-    this.panel.predictionSettings.writeDatasourceID = this.selectedDatasource;
+    this.panel.predictionSettings.influxHost = this.datasources[this.panel.predictionSettings.writeDatasourceID].getHost();
+    this.panel.predictionSettings.influxPort = this.datasources[this.panel.predictionSettings.writeDatasourceID].getPort();
 
     this.panelCtrl.saved_write_connections = true;
     this.panelCtrl.publishAppEvent(AppEvents.alertSuccess, ['InfluxDB parameters saved successfully!']);

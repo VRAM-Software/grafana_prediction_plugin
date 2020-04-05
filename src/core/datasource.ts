@@ -13,7 +13,7 @@ export class DataSource {
    */
   static copy(other: DataSource): DataSource {
     if (other == null) {
-      throw new Error('[7DOS G&B][DataSource]copy - invalid datasource parameter');
+      throw new Error('DataSource - invalid datasource parameter');
     }
     return new DataSource(
       other.host + ':' + other.port,
@@ -69,11 +69,11 @@ export class DataSource {
    */
   constructor(url: string, database = 'telegraf', username = '', password = '', type = '', name = '', grafanaDatasourceId = 0) {
     if (url.length === 0) {
-      throw new Error('[7DOS G&B][DataSource]constructor - invalid url parameter');
+      throw new Error('DataSource - invalid url parameter');
     } else if (type !== null && type.length === 0) {
-      throw new Error('[7DOS G&B][DataSource]constructor - invalid type parameter');
+      throw new Error('DataSource - invalid type parameter');
     } else if (name !== null && name.length === 0) {
-      throw new Error('[7DOS G&B][DataSource]constructor - invalid name parameter');
+      throw new Error('DataSource - invalid name parameter');
     }
     const urlParse: URL = new URL(url);
     this.host = urlParse.protocol + '//' + urlParse.hostname;
@@ -161,7 +161,7 @@ export class DataSource {
    */
   cloneWithDB(database_name: string): DataSource {
     if (database_name == null || database_name.length === 0) {
-      throw new Error('[7DOS G&B][DataSource]cloneWithDB - invalid database_name parameter');
+      throw new Error('DataSource - invalid database_name parameter');
     }
     return new DataSource(this.host + ':' + this.port, database_name, this.username, this.password, this.type, this.name, this.grafanaDatasourceId);
   }
