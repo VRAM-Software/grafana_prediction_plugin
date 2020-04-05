@@ -56,6 +56,7 @@ export class WriteInflux {
     this.influx
       .writePoints(this.setupArray(data, timestamps), {
         database: this.parameters.database,
+        precision: 'ms',
       })
       .catch(err => {
         throw new Error(writeInfluxErrorDefinition + this.datasource + writeInfluxErrorDescription + err);
@@ -66,6 +67,7 @@ export class WriteInflux {
     this.influx
       .writePoints([this.setupPoint(point, timestamp)], {
         database: this.parameters.database,
+        precision: 'ms',
       })
       .catch(err => {
         throw new Error(writeInfluxErrorDefinition + this.datasource + writeInfluxErrorDescription + err);
