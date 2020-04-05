@@ -6,7 +6,6 @@
  */
 import { RxHR } from '@akanass/rx-http-request/browser/index.js';
 
-import { coreModule } from 'grafana/app/core/core';
 import { DataSource } from '../../core/datasource';
 import { AppEvents } from '@grafana/data';
 
@@ -108,5 +107,3 @@ export function SelectInfluxDBDirective() {
     templateUrl: 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/selectInfluxDB.html',
   };
 }
-
-coreModule.directive('metricsTab', SelectInfluxDBDirective);

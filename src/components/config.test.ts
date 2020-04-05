@@ -5,7 +5,7 @@
  * Description: Test file for config.ts
  */
 
-import { TestControl } from './config';
+import { GrafanaPredictionControl } from './config';
 
 describe('test', () => {
   const injector = {
@@ -24,15 +24,15 @@ describe('test', () => {
   const scope = {
     $on: () => {},
   };
-  let component: TestControl;
+  let component: GrafanaPredictionControl;
 
-  TestControl.prototype.appEditCtrl = {
+  GrafanaPredictionControl.prototype.appEditCtrl = {
     setPostUpdateHook: x => {},
   };
 
   beforeEach(() => {
     console.log = jest.fn();
-    component = new TestControl(scope, injector);
+    component = new GrafanaPredictionControl(scope, injector);
   });
 
   test('Constructor is called', () => {
