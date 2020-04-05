@@ -23,7 +23,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       nodeMap: [],
     },
   };
-
+  queryList: any[];
   plotlyPanelUtil: PlotlyPanelUtil;
   private _graphDiv: any;
   private predictionPanelConfig: any;
@@ -87,11 +87,18 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.panel.predictionSettings.predittori = null;
   }
   /*
-  async change_query_association() {
-    //this.panel.predictionSettings.nodeMap[query.id] = selectedP;
+  async ng_change() {
     console.log(this.panel.predictionSettings.nodeMap);
   }
   */
+  async update_queries() {
+    // per influxDB il nome del campo potrebbe essere name anziché alias
+    this.panel.predictionSettings.query = this.queryList.map(a => {
+      return { id: a.refId, name: a.alias };
+    });
+    // comportamento anomalo: cancella la nodeMap
+  }
+
   onResize() {
     if (this.graphDiv) {
       this.plotlyPanelUtil.plotlyOnResize();
@@ -146,11 +153,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   onDataReceived(dataList) {
+    this.queryList = dataList;
     this.plotlyPanelUtil.plotlyDataReceived(dataList, this.annotationsSrv);
-    // per influxDB il nome del campo potrebbe essere name anziché alias
-    this.panel.predictionSettings.query = dataList.map(a => {
-      return { id: a.refId, name: a.alias };
-    });
   }
 
   link(scope, elem, attrs, ctrl) {
