@@ -93,6 +93,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   async deleteJsonClick() {
     this.predictionPanelConfig.json = null;
     this.panel.predictionSettings.predictors = null;
+    this.panel.predictionSettings.nodeMap = [];
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
   }
 
@@ -109,9 +110,14 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   updateQueries(dataList) {
-    this.panel.predictionSettings.queries = dataList.map(a => {
+    const updatedQueries = dataList.map(a => {
       return { target: a.target };
     });
+
+    if (!_.isEqual(this.panel.predictionSettings.queries, updatedQueries)) {
+      this.panel.predictionSettings.nodeMap = [];
+      this.panel.predictionSettings.queries = _.cloneDeep(updatedQueries);
+    }
   }
 
   onResize() {
