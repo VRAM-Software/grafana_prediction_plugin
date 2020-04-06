@@ -1,5 +1,5 @@
-import { PerformPrediction } from 'controller/PerformPrediction';
-import { SvmPrediction } from 'model/algorithm/SvmPrediction';
+import { PerformPrediction } from '../../controller/PerformPrediction';
+import { SvmPrediction } from '../../model/algorithm/SvmPrediction';
 import { DataSet } from '../../types/DataSet';
 
 export class ProcessSvm implements PerformPrediction {
@@ -11,7 +11,7 @@ export class ProcessSvm implements PerformPrediction {
     this.svmPredicter = new SvmPrediction();
   };
 
-  performPrediction = (data: DataSet, configuration: {}, nodeMap: Map<string, string>): {} => {
+  performPrediction = (data: DataSet, configuration: {}, nodeMap: Map<string, string>): number[][] => {
     if (!this.svmPredicter) {
       this.createPredicterInstance();
     }

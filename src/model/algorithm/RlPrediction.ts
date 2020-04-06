@@ -1,11 +1,15 @@
-import { AlgorithmPrediction } from 'model/AlgorithmPrediction';
+import { AlgorithmPrediction } from '../../model/AlgorithmPrediction';
 import Regression from '../../libs/regression';
-import { DataSet } from 'types/DataSet';
+import { DataSet } from '../../types/DataSet';
 
 export class RlPrediction implements AlgorithmPrediction {
-  private options: {};
-  // aren't coeffiecients the results?
-  private coefficients: number;
+  private options: {
+    kernel: {
+      linear: true;
+    };
+    karpathy: true;
+  };
+  private coefficients: number[][];
 
   constructor() {}
 
@@ -13,11 +17,7 @@ export class RlPrediction implements AlgorithmPrediction {
     return this.options;
   };
 
-  setOptions = (option: {}): void => {
-    this.options = option;
-  };
-
-  setCoefficients = (value: number): void => {
+  setCoefficients = (value: number[][]): void => {
     this.coefficients = value;
   };
 
