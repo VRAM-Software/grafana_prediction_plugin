@@ -1,5 +1,5 @@
 import { PerformPrediction } from './PerformPrediction';
-import { DataSet, DataList, WriteInfluxParameters } from '../types/types';
+import { DataSet, DataList, WriteInfluxParameters, JsonConfiguration } from '../types/types';
 import { ProcessSvm } from './process/ProcessSvm';
 import { ProcessRl } from './process/ProcessRl';
 
@@ -8,7 +8,7 @@ export class ProcessData {
   private dataList: DataList[];
   private nodeMap: Map<string, string>;
   private influxParameters: WriteInfluxParameters;
-  private configuration: {};
+  private configuration: JsonConfiguration;
   private data: DataSet;
 
   constructor() {}
@@ -66,7 +66,7 @@ export class ProcessData {
     this.influxParameters = params;
   };
 
-  setConfiguration = (conf: {}) => {
+  setConfiguration = (conf: JsonConfiguration) => {
     this.configuration = conf;
   };
 
@@ -79,9 +79,7 @@ export class ProcessData {
       console.error('You forgot to set one of the parameters');
     } else {
       this.setupData();
-      // commented out because we need a type for the configuration file structure
-      // this.setStrategy(this.configuration.pluginAim);
-      this.setStrategy('alg');
+      this.setStrategy(this.configuration.pluginAim);
       this.strategy.performPrediction(this.data, this.configuration, this.influxParameters);
     }
   };
