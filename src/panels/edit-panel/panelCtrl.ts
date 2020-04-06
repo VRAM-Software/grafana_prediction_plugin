@@ -21,7 +21,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     predictionSettings: {
       version: null,
       json: null,
-      nodeMap: null,
+      predictors: [],
+      queries: [],
+      nodeMap: [],
       writeDatasourceID: '',
       influxHost: '',
       influxPort: '',
@@ -30,7 +32,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       influxFieldKey: '',
     },
   };
-
   plotlyPanelUtil: PlotlyPanelUtil;
   private _graphDiv: any;
   private predictionPanelConfig: any;
@@ -48,7 +49,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     _.defaultsDeep(this.panel, defaults);
 
     this.predictionPanelConfig = this.panel.predictionSettings;
-
     this.plotlyPanelUtil = new PlotlyPanelUtil(this);
 
     // ?? This seems needed for tests?!!
@@ -76,19 +76,42 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   // Called only on import button click, if the import doesn't throw errors, it reset the saved data
-  async upload_button_click(net: any) {
+  async uploadButtonClick(net: any) {
     await this.onUpload(net);
   }
 
   // Called on import button click but also to re-load a saved json
   async onUpload(net: any) {
     this.panel.predictionSettings.json = JSON.stringify(net);
+    this.panel.predictionSettings.predictors = net.predictors.map((a, index) => {
+      return { id: index, name: a };
+    });
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
+    //TODO: call controller setConfiguration()
   }
 
-  async delete_json_click() {
+  async deleteJsonClick() {
     this.predictionPanelConfig.json = null;
+    this.panel.predictionSettings.predictors = null;
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
+  }
+
+  async confirmQueries() {
+    // TODO: check that the select does not have the same data
+    const controllerMap = new Map();
+
+    this.panel.predictionSettings.predictors.forEach(predictor => {
+      controllerMap.set(predictor.name, this.panel.predictionSettings.nodeMap[predictor.id]);
+    });
+
+    //TODO: call controller setNodeMap()
+    console.log('BUILDED MAP', controllerMap);
+  }
+
+  updateQueries(dataList) {
+    this.panel.predictionSettings.queries = dataList.map(a => {
+      return { target: a.target };
+    });
   }
 
   onResize() {
@@ -116,9 +139,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   onInitEditMode() {
     if (!this.plotlyPanelUtil.isPlotlyEditModeLoaded()) {
       this.addEditorTab('Import JSON', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/importJson.html', 2);
-      this.addEditorTab('Configure influxDB destination', SelectInfluxDBDirective, 3);
-      this.plotlyPanelUtil.plotlyOnInitEditMode(4);
-
+      this.addEditorTab('Select query associations', 'public/plugins/grafana-prediction-plugin/panels/edit-panel/partials/nodemap.html', 3);
+      this.addEditorTab('Configure influxDB destination', SelectInfluxDBDirective, 4);
+      this.plotlyPanelUtil.plotlyOnInitEditMode(5);
       this.plotlyPanelUtil.onConfigChanged();
     }
   }
@@ -145,7 +168,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   onDataReceived(dataList) {
+    this.updateQueries(dataList);
+    console.log('DATALIST', dataList);
     this.plotlyPanelUtil.plotlyDataReceived(dataList, this.annotationsSrv);
+    //TODO: call controller setDataList()
   }
 
   link(scope, elem, attrs, ctrl) {
