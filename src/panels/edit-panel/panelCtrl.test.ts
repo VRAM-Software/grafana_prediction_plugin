@@ -10,6 +10,7 @@ import $ from 'jquery';
 import * as panel_json_v0 from './__testData/panel_json_v0.json';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 
+const $ = require('jquery');
 jest.mock('./plotly/PlotlyPanelUtil');
 jest.mock('@grafana/data')
 
@@ -70,58 +71,81 @@ describe('Plotly Panel', () => {
     });
   });
 
+
+
   describe('test constructor', () => {
+    document.body.innerHTML =
+        '<div id="plotly-spot">' +
+          '<div>Cose</div>' +
+        '</div>';
+
+    const elem = {
+      find: jest.fn((string) => {
+        [ 'Test', 'Tast' ]
+      })
+    };
+
     let panel = new PlotlyPanelCtrl(scope, injector, null, null, null, null);
     panel.addEditorTab = jest.fn();
-    panel.otherPanelInFullscreenMode = jest.fn(() => { return false });
-    $('#plotly-spot').lenght = 10;
+    panel.otherPanelInFullscreenMode = jest.fn(() => false);
+    const spyDataReceived = jest.spyOn(panel, 'onDataReceived');
+
+    Object.defineProperty(panel, 'graphDiv', {
+      get: jest.fn(() => true)
+    });
+
     test('calls onInitEditMode', () => {
       panel.onInitEditMode();
       expect(panel.addEditorTab).toHaveBeenCalled();
       expect(panel.plotlyPanelUtil.plotlyOnInitEditMode).toHaveBeenCalled();
       expect(panel.plotlyPanelUtil.onConfigChanged).toHaveBeenCalled();
     });
-    test('has graphDiv', () => {
-      expect(panel.graphDiv).not.toBeNull();
+    test('onRender method', () => {
+      panel.otherPanelInFullscreenMode = jest.fn(() => false);
+      panel.onRender();
+      expect(panel.plotlyPanelUtil.plotlyOnRender).toHaveBeenCalled();
+    });
+    test('onRender method, return branch', () => {
+      panel.otherPanelInFullscreenMode = jest.fn(() => true);
+      panel.onRender();
+      expect(panel.plotlyPanelUtil.plotlyOnRender).toHaveBeenCalled();
+    });
+    test('loading data and snapshots', () => {
+      panel.onDataSnapshotLoad({});
+      expect(spyDataReceived).toHaveBeenCalled();
+      expect(panel.plotlyPanelUtil.plotlyDataReceived).toHaveBeenCalledWith({}, null);
     });
     /*
+    test('link method', () => {
+      panel.link(scope, elem, null, null);
+      //expect(panel.graphDiv).toEqual(elem.find("test")[0]);
+      expect(panel.plotlyPanelUtil.initialized).toBeFalsy();
+    });
+    */
     test('resize method', () => {
       panel.onResize();
       expect(panel.plotlyPanelUtil.plotlyOnResize).toHaveBeenCalled();
     });
-    */
-    test('onRender method', () => {
-      panel.onRender();
-      //expect(panel.otherPanelInFullscreenMode).toBeFalsy();
-      //expect(panel.plotlyPanelUtil.plotlyOnRender).toHaveBeenCalled();
-    });
-
 
 
   });
 
-  describe('check json deletion', () => {
-    beforeEach(() => {
-      ctx.ctrl.panel = panel_json_v0;
-      ctx.ctrl.delete_json_click();
-    });
-
-    it('it should have deleted the file', () => {
-      expect(ctx.ctrl.predictionPanelConfig.json).toBe(null);
-      // controllo del messaggio di successo
-    });
-  });
-
-  describe('check json upload', () => {
+  describe('check json upload and deletion', () => {
     let json = new File([""], "mock", { type: 'application/json' });
     beforeEach(() => {
+      ctx.ctrl.publishAppEvent = jest.fn();
       ctx.ctrl.panel = panel_json_v0;
+      ctx.ctrl.delete_json_click();
       ctx.ctrl.onUpload(json);
     });
 
-    it('it should have uploaded the file', () => {
+    it('should have deleted the file and published event', () => {
+      expect(ctx.ctrl.predictionPanelConfig.json).toBe(null);
+      expect(ctx.ctrl.publishAppEvent).toHaveBeenCalled();
+    });
+    it('should have uploaded the file and published event', () => {
       expect(ctx.ctrl.panel.predictionSettings.json).toBe(JSON.stringify(json));
-      // controllo del messaggio di successo
+      expect(ctx.ctrl.publishAppEvent).toHaveBeenCalled();
     });
   });
 });
