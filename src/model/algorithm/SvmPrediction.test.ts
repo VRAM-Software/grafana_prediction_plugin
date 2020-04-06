@@ -27,7 +27,20 @@ describe('SvmPrediction tests', () => {
         ],
         timestamps: [1, 2, 3],
       },
-      { N: 1, b: 1, D: [1, 2], w: 1, kernelType: 'test' }
+      {
+        pluginAim: 'test',
+        predictors: ['a', 'b'],
+        result: { N: 1, D: 1, b: 1, kernelType: 'test', w: [1, 1] },
+        notes: 'notes',
+      },
+      {
+        host: 'test',
+        port: 'test',
+        database: 'test',
+        credentials: ['test', 'test'],
+        measurement: 'test',
+        fieldKey: 'test',
+      }
     );
     expect(mockedSetData).toBeCalledTimes(3);
     expect(mockedPredict).toBeCalledTimes(3);

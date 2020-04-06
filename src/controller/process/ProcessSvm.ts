@@ -1,22 +1,16 @@
 import { PerformPrediction } from '../../controller/PerformPrediction';
 import { SvmPrediction } from '../../model/algorithm/SvmPrediction';
-import { DataSet } from '../../types/DataSet';
+import { DataSet, WriteInfluxParameters } from '../../types/types';
 
 export class ProcessSvm implements PerformPrediction {
   private svmPredicter: SvmPrediction;
 
-  constructor() {}
-
-  createPredicterInstance = () => {
+  constructor() {
     this.svmPredicter = new SvmPrediction();
-  };
+  }
 
-  performPrediction = (data: DataSet, configuration: {}, nodeMap: Map<string, string>): number[][] => {
-    if (!this.svmPredicter) {
-      this.createPredicterInstance();
-    }
-
-    let res = this.svmPredicter.predict(data, configuration);
+  performPrediction = (data: DataSet, configuration: {}, influxParameters: WriteInfluxParameters): number[][] => {
+    let res = this.svmPredicter.predict(data, configuration, influxParameters);
     return res;
   };
 }

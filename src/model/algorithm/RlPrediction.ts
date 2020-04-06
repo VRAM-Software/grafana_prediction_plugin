@@ -1,29 +1,16 @@
 import { AlgorithmPrediction } from '../../model/AlgorithmPrediction';
 import Regression from '../../libs/regression';
-import { DataSet } from '../../types/DataSet';
+import { DataSet, WriteInfluxParameters } from '../../types/types';
+import { WriteInflux } from 'model/writeInflux';
+import { JsonConfiguration } from '../../types/JsonConfiguration';
 
 export class RlPrediction implements AlgorithmPrediction {
-  private options: {
-    kernel: {
-      linear: true;
-    };
-    karpathy: true;
-  };
-  private coefficients: number[][];
+  private writeInflux: WriteInflux;
 
   constructor() {}
 
-  getOptions = (): {} => {
-    return this.options;
-  };
-
-  setCoefficients = (value: number[][]): void => {
-    this.coefficients = value;
-  };
-
-  // TODO
-  // data: [[10,20],[20,40],[30,60]]
-  predict = (data: DataSet, json: {}): number[][] => {
+  predict = (data: DataSet, json: JsonConfiguration, parameters: WriteInfluxParameters): number[][] => {
+    // add function in regression library => setCoefficients using json.result for RL
     const rl: Regression = new Regression();
     let result: number[][] = [];
     for (let i = 0; i < data.timestamps.length; i++) {

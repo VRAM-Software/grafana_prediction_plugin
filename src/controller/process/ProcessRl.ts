@@ -1,22 +1,16 @@
 import { PerformPrediction } from '../../controller/PerformPrediction';
 import { RlPrediction } from '../../model/algorithm/RlPrediction';
-import { DataSet } from '../../types/DataSet';
+import { DataSet, RlJsonConfiguration, WriteInfluxParameters } from '../../types/types';
 
 export class ProcessRl implements PerformPrediction {
   private rlPredicter: RlPrediction;
 
-  constructor() {}
-
-  createPredicterInstance = () => {
+  constructor() {
     this.rlPredicter = new RlPrediction();
-  };
+  }
 
-  performPrediction = (data: DataSet, configuration: {}, nodeMap: Map<string, string>): number[][] => {
-    if (!this.rlPredicter) {
-      this.createPredicterInstance();
-    }
-
-    let res = this.rlPredicter.predict(data, configuration);
+  performPrediction = (data: DataSet, configuration: RlJsonConfiguration, influxParameters: WriteInfluxParameters): number[][] => {
+    let res = this.rlPredicter.predict(data, configuration, influxParameters);
     return res;
   };
 }
