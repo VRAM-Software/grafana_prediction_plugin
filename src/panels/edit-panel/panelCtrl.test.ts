@@ -6,13 +6,10 @@
  */
 
 import { PlotlyPanelCtrl } from './panelCtrl';
-import $ from 'jquery';
 import * as panel_json_v0 from './__testData/panel_json_v0.json';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 
-const $ = require('jquery');
 jest.mock('./plotly/PlotlyPanelUtil');
-jest.mock('@grafana/data')
 
 describe('Plotly Panel', () => {
   const injector = {
@@ -32,10 +29,14 @@ describe('Plotly Panel', () => {
     $on: () => {},
   };
 
+  PlotlyPanelCtrl.prototype.events = {
+    on: jest.fn(),
+    emitter: jest.fn(),
+    emit: jest.fn(),
+    removeAllListeners: jest.fn(),
+    off: jest.fn(),
+  };
   PlotlyPanelCtrl.prototype.panel = {
-    events: {
-      on: () => {},
-    },
     gridPos: {
       w: 100,
     },
@@ -71,7 +72,10 @@ describe('Plotly Panel', () => {
     });
   });
 
-
+  test('events', () => {
+    let panel = new PlotlyPanelCtrl(scope, injector, null, null, null, null);
+    expect(panel.events.on).toHaveBeenCalled(); 
+  });
 
   describe('test constructor', () => {
     document.body.innerHTML =
