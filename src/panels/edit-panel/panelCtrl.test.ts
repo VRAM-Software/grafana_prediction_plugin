@@ -86,8 +86,8 @@ describe('Plotly Panel', () => {
     };
 
     let panel = new PlotlyPanelCtrl(scope, injector, null, null, null, null);
-    panel.addEditorTab = jest.fn();
     panel.otherPanelInFullscreenMode = jest.fn(() => false);
+    panel.addEditorTab = jest.fn();
     const spyDataReceived = jest.spyOn(panel, 'onDataReceived');
 
     Object.defineProperty(panel, 'graphDiv', {
@@ -99,16 +99,6 @@ describe('Plotly Panel', () => {
       expect(panel.addEditorTab).toHaveBeenCalled();
       expect(panel.plotlyPanelUtil.plotlyOnInitEditMode).toHaveBeenCalled();
       expect(panel.plotlyPanelUtil.onConfigChanged).toHaveBeenCalled();
-    });
-    test('onRender method', () => {
-      panel.otherPanelInFullscreenMode = jest.fn(() => false);
-      panel.onRender();
-      expect(panel.plotlyPanelUtil.plotlyOnRender).toHaveBeenCalled();
-    });
-    test('onRender method, return branch', () => {
-      panel.otherPanelInFullscreenMode = jest.fn(() => true);
-      panel.onRender();
-      expect(panel.plotlyPanelUtil.plotlyOnRender).toHaveBeenCalled();
     });
     test('loading data and snapshots', () => {
       panel.onDataSnapshotLoad({});
@@ -125,6 +115,40 @@ describe('Plotly Panel', () => {
     test('resize method', () => {
       panel.onResize();
       expect(panel.plotlyPanelUtil.plotlyOnResize).toHaveBeenCalled();
+    });
+    test('onDataError method', () => {
+      const spyRender = jest.spyOn(panel, 'render');
+      panel.onDataError('e');
+      expect(panel.plotlyPanelUtil.plotlyOnDataError).toHaveBeenCalled();
+      expect(spyRender).toHaveBeenCalled();
+    });
+
+    describe('branches with PanelInFullscreenMode', () => {
+      beforeAll(() => {
+        panel.otherPanelInFullscreenMode = jest.fn(() => true);
+      });
+      test('onRender method, return branch', () => {
+        panel.onRender();
+        expect(panel.plotlyPanelUtil.plotlyOnRender).not.toHaveBeenCalled();
+      });
+      test('onRefresh method, return branch', () => {
+        panel.onRefresh();
+        expect(panel.plotlyPanelUtil.plotlyOnRefresh).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('branches without PanelInFullscreenMode', () => {
+      beforeAll(() => {
+        panel.otherPanelInFullscreenMode = jest.fn(() => false);
+      });
+      test('onRender method', () => {
+        panel.onRender();
+        expect(panel.plotlyPanelUtil.plotlyOnRender).toHaveBeenCalled();
+      });
+      test('onRefresh method', () => {
+        panel.onRefresh();
+        expect(panel.plotlyPanelUtil.plotlyOnRefresh).toHaveBeenCalled();
+      });
     });
 
 
