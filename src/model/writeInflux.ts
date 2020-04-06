@@ -63,7 +63,7 @@ export class WriteInflux {
       });
   }
 
-  writePointToInflux(string, point: number, timestamp: number) {
+  writePointToInflux(point: number, timestamp: number) {
     this.influx
       .writePoints([this.setupPoint(point, timestamp)], {
         database: this.parameters.database,
