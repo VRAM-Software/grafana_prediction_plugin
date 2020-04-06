@@ -83,7 +83,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   async onUpload(net: any) {
     this.panel.predictionSettings.json = JSON.stringify(net);
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
-    this.panel.predictionSettings.predittori = net.Predictors.map((a, index) => {
+    this.panel.predictionSettings.predictors = net.Predictors.map((a, index) => {
       return { id: index, name: a };
     });
   }
@@ -91,15 +91,16 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   async delete_json_click() {
     this.predictionPanelConfig.json = null;
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
-    this.panel.predictionSettings.predittori = null;
+    this.panel.predictionSettings.predictors = null;
   }
 
   async update_queries() {
-    // per influxDB il nome del campo potrebbe essere name anziché alias
-    this.panel.predictionSettings.query = this.queryList.map(a => {
-      return { id: a.refId, name: a.alias };
-    });
-    // comportamento anomalo: cancella la nodeMap
+    this.panel.predictionSettings.query = _.clone(
+      this.queryList.map(a => {
+        return { id: a.refId, name: a.alias };
+      })
+    );
+    // comportamento anomalo: cancella la nodeMap, a causa dell'interfaccia angular
   }
 
   onResize() {
