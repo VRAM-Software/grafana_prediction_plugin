@@ -102,7 +102,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     const controllerMap = new Map();
 
     this.panel.predictionSettings.predictors.forEach(predictor => {
-      controllerMap.set(predictor.name, this.panel.predictionSettings.nodeMap[predictor.id]);
+      controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
     });
 
     //TODO: call controller setNodeMap()
