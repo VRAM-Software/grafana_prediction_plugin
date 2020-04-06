@@ -93,6 +93,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   async deleteJsonClick() {
     this.predictionPanelConfig.json = null;
     this.panel.predictionSettings.predictors = null;
+    this.panel.predictionSettings.nodeMap = [];
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
   }
 
@@ -101,7 +102,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     const controllerMap = new Map();
 
     this.panel.predictionSettings.predictors.forEach(predictor => {
-      controllerMap.set(predictor.name, this.panel.predictionSettings.nodeMap[predictor.id]);
+      controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
     });
 
     //TODO: call controller setNodeMap()
@@ -109,9 +110,28 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   updateQueries(dataList) {
-    this.panel.predictionSettings.queries = dataList.map(a => {
+    const updatedQueries = dataList.map(a => {
       return { target: a.target };
     });
+
+    if (!this.compareQueriesList(this.panel.predictionSettings.queries, updatedQueries)) {
+      this.panel.predictionSettings.nodeMap = [];
+      this.panel.predictionSettings.queries = _.cloneDeep(updatedQueries);
+    }
+  }
+
+  private compareQueriesList(query1, query2): boolean {
+    if (query1.length !== query2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < query1.length; ++i) {
+      if (query1[i].target !== query2[i].target) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   onResize() {
