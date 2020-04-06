@@ -114,10 +114,24 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return { target: a.target };
     });
 
-    if (!_.isEqual(this.panel.predictionSettings.queries, updatedQueries)) {
+    if (!this.compareQueriesList(this.panel.predictionSettings.queries, updatedQueries)) {
       this.panel.predictionSettings.nodeMap = [];
       this.panel.predictionSettings.queries = _.cloneDeep(updatedQueries);
     }
+  }
+
+  private compareQueriesList(query1, query2): boolean {
+    if (query1.length !== query2.length) {
+      return false;
+    }
+
+    for (let i = 0; i < query1.length; ++i) {
+      if (query1[i].target !== query2[i].target) {
+        return false;
+      }
+    }
+
+    return true;
   }
 
   onResize() {
