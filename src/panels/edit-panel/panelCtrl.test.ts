@@ -9,7 +9,6 @@ import { PlotlyPanelCtrl } from './panelCtrl';
 
 import * as panel_json_v0 from './__testData/panel_json_v0.json';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
-import { AppEvents } from '@grafana/data';
 
 jest.mock('./plotly/PlotlyPanelUtil');
 
@@ -84,6 +83,7 @@ describe('Plotly Panel', () => {
 
     it('it should have deleted the file', () => {
       expect(ctx.ctrl.predictionPanelConfig.json).toBe(null);
+      // controllo del messaggio di successo
     });
   });
 
@@ -96,17 +96,7 @@ describe('Plotly Panel', () => {
 
     it('it should have uploaded the file', () => {
       expect(ctx.ctrl.panel.predictionSettings.json).toBe(JSON.stringify(json));
-    });
-  });
-
-  describe('check resizing', () => {
-    beforeEach(() => {
-      ctx.ctrl.panel = panel_json_v0;
-      ctx.ctrl.onResize();
-    });
-
-    it('it should have called plotlyOnResize()', () => {
-      expect(PlotlyPanelUtil).toHaveBeenCalledTimes(1);
+      // controllo del messaggio di successo
     });
   });
 });
