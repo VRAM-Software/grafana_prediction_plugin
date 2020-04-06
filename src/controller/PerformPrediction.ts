@@ -1,5 +1,5 @@
-import { DataSet } from '../types/DataSet';
+import { DataSet, WriteInfluxParameters, JsonConfiguration } from '../types/types';
 
 export interface PerformPrediction {
-  performPrediction(data: DataSet, configuration: {}, nodeMap: Map<string, string>): void;
+  performPrediction(data: DataSet, configuration: JsonConfiguration, parameters: WriteInfluxParameters): void;
 }

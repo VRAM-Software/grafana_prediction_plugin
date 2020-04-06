@@ -1,61 +1,34 @@
 import { PerformPrediction } from './PerformPrediction';
-import { DataSet } from '../types/DataSet';
-import { DataList } from 'types/DataList';
+import { DataSet, DataList, WriteInfluxParameters, JsonConfiguration } from '../types/types';
+import { ProcessSvm } from './process/ProcessSvm';
+import { ProcessRl } from './process/ProcessRl';
 
 export class ProcessData {
   private strategy: PerformPrediction;
-  private data: DataSet;
+  private dataList: DataList[];
   private nodeMap: Map<string, string>;
+  private influxParameters: WriteInfluxParameters;
+  private configuration: JsonConfiguration;
+  private data: DataSet;
 
-  constructor(strategy: PerformPrediction) {
-    this.strategy = strategy;
-  }
+  constructor() {}
 
-  setStrategy = (algorithm: PerformPrediction): void => {
-    this.strategy = algorithm;
-  };
-
-  /**
-   * datalist: [
-   *   {
-   *      target:"CPU",
-   *      datapoints: [
-   *        [10, 12 //timestamp],
-   *        [20, 13 //timestamp],
-   *        [30, 14 //timestamp]
-   *      ]
-   *   },
-   *   {
-   *      target: "DISK",
-   *      datapoints: [
-   *        [20, 12 //timestamp],
-   *        [40, 13 //timestamp],
-   *        [60, 14 //timestamp]
-   *      ]
-   *   }
-   * ]
-   */
-  // setData returns:
-  //  timestamps: [12,13,14]
-  //  data: [[10,20],[20,40],[30,60]]
-
-  // nodemap: Map<string, string>
-  //  {
-  //     "queryA": "CPU"
-  //     "queryB": "DISK"
-  //  }
-
-  setData = (datalist: DataList[], nodeMap: Map<string, string>): void => {
-    // TODO: understand how to setup nodeMap
+  private setupData = (): void => {
     let timestamps: number[] = [];
     let data: number[][] = [];
-    let j = 0;
     let temp: number[] = [];
+    let predictors: string[] = [];
+    let j = 0;
 
-    while (j < datalist[0].datapoints.length) {
+    while (j < this.dataList[0].datapoints.length) {
       temp = [];
-      for (let i = 0; i < datalist.length; i++) {
-        let dp = datalist[i].datapoints;
+      for (let i = 0; i < this.dataList.length; i++) {
+        if (!this.dataList[i].target) {
+          console.error('Map not properly set up');
+        } else {
+          predictors.push(this.nodeMap.get(this.dataList[i].target) ?? '');
+        }
+        let dp = this.dataList[i].datapoints;
         let d = dp[j];
         if (!timestamps.includes(d[1])) {
           timestamps.push(d[1]);
@@ -72,14 +45,42 @@ export class ProcessData {
     };
   };
 
-  start = (configuration: {}): void => {
-    this.strategy.performPrediction(this.data, configuration, this.nodeMap);
+  setStrategy = (algorithm: string): void => {
+    if (algorithm === 'svm') {
+      this.strategy = new ProcessSvm();
+    }
+    if (algorithm === 'rl') {
+      this.strategy = new ProcessRl();
+    }
+  };
+
+  setDataList = (data: DataList[]) => {
+    this.dataList = data;
+  };
+
+  setNodeMap = (nodeMap: Map<string, string>) => {
+    this.nodeMap = nodeMap;
+  };
+
+  setInfluxParameters = (params: WriteInfluxParameters) => {
+    this.influxParameters = params;
+  };
+
+  setConfiguration = (conf: JsonConfiguration) => {
+    this.configuration = conf;
+  };
+
+  start = (): void => {
+    if (
+      [this.data, this.configuration, this.influxParameters].every(param => {
+        return param ? true : false;
+      })
+    ) {
+      console.error('You forgot to set one of the parameters');
+    } else {
+      this.setupData();
+      this.setStrategy(this.configuration.pluginAim);
+      this.strategy.performPrediction(this.data, this.configuration, this.influxParameters);
+    }
   };
 }
-
-/**
- * let svm = new ProcessSvm();
- * let processor = new ProcessData(svm);
- * processor.setData(datalist, nodeMap);
- * processor.start();
- */
