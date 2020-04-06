@@ -1,18 +1,20 @@
 
-<div class="editor-row">
-    <div class="section gf-form-group">
-        <div class="gf-form-inline">
-            <div class="gf-form" ng-repeat="p in ctrl.panel.predictionSettings.predictors">
-                <label class="gf-form-label width-12">{{ p.name }}</label>
-                <div class="gf-form-select-wrapper width-12">
-                    <select class="gf-form-input" ng-model="ctrl.panel.predictionSettings.nodeMap[p.id]" ng-options="q.name for q in ctrl.panel.predictionSettings.query"></select>
-                </div>
+<div class="section gf-form-group">
+    <h5 class="section-heading">Map predictors to queries</h5>
+    <div class="gf-form-inline">
+        <div class="gf-form" ng-repeat="p in ctrl.panel.predictionSettings.predictors">
+            <label class="gf-form-label width-12">{{ p.name }}</label>
+            <div class="gf-form-select-wrapper width-12">
+                <select class="gf-form-input"
+                        ng-model="ctrl.panel.predictionSettings.nodeMap[p.id]"
+                        ng-options="q.target as q.target for q in ctrl.panel.predictionSettings.queries">
+                </select>
             </div>
         </div>
     </div>
-    <div class="section">
-        <div class="gf-form">
-            <button type="button" id="load-btn" ng-click="ctrl.update_queries()" class="btn btn-success">Refresh datasources list</button>
-        </div>
+    <div class="gf-form">
+        <button type="button" id="load-btn" ng-click="ctrl.confirmQueries()" class="btn btn-success" style="margin-top: 1.5em">
+            Confirm
+        </button>
     </div>
 </div>
