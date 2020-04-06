@@ -55,24 +55,25 @@ export class SelectInfluxDBCtrl {
     );
   }
 
-  async createDatabaseToWrite() {
+  async updateDatabaseParams() {
     // if user doesn't provide a specific name
     // if (this.panel.predictionSettings.influxDatabase === null || this.panel.predictionSettings.influxDatabase.length === 0) {
     //   this.panel.predictionSettings.influxDatabase = 'GrafanaPredictionDatabase';
     //   this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the database name!',
     //     'You must specify a database name where the plug-in should write']);
-    //   throw new Error('SelectInfluxDBCtrl - createDatabaseToWrite - ' + 'You must specify a database name where the plug-in should write!');
+    //   throw new Error('SelectInfluxDBCtrl - updateDatabaseParams - ' + 'You must specify a database name where the plug-in should write!');
     // }
     // if (typeof this.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
     //   // no datasource set
     //   this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the datasource!',
     //     'You must select a datasource to write data']);
-    //   throw new Error('SelectInfluxDBCtrl - createDatabaseToWrite - ' + 'You must select a datasource to write data!');
+    //   throw new Error('SelectInfluxDBCtrl - updateDatabaseParams - ' + 'You must select a datasource to write data!');
     // }
 
     // Save info
     this.panel.predictionSettings.influxHost = this.datasources[this.panel.predictionSettings.writeDatasourceID].getHost();
     this.panel.predictionSettings.influxPort = this.datasources[this.panel.predictionSettings.writeDatasourceID].getPort();
+    // TODO: call controller setInfluxParameters()
 
     this.panelCtrl.saved_write_connections = true;
     this.panelCtrl.publishAppEvent(AppEvents.alertSuccess, ['InfluxDB parameters saved successfully!']);
