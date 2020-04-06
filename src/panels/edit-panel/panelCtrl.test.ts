@@ -112,6 +112,10 @@ describe('Plotly Panel', () => {
       expect(panel.plotlyPanelUtil.initialized).toBeFalsy();
     });
     */
+    test('graphDiv getter', () => {
+      const gd = panel.graphDiv;
+      expect(gd).toEqual(true);
+    });
     test('resize method', () => {
       panel.onResize();
       expect(panel.plotlyPanelUtil.plotlyOnResize).toHaveBeenCalled();
@@ -122,6 +126,14 @@ describe('Plotly Panel', () => {
       expect(panel.plotlyPanelUtil.plotlyOnDataError).toHaveBeenCalled();
       expect(spyRender).toHaveBeenCalled();
     });
+    /*
+    test('dataReceived event', () => {
+      const spyDataReceived = jest.spyOn(panel, 'onDataReceived');
+      event.PanelEvents.render();
+      expect(spyDataReceived).toHaveBeenCalled();
+    });
+    */
+
 
     describe('branches with PanelInFullscreenMode', () => {
       beforeAll(() => {
@@ -150,8 +162,6 @@ describe('Plotly Panel', () => {
         expect(panel.plotlyPanelUtil.plotlyOnRefresh).toHaveBeenCalled();
       });
     });
-
-
   });
 
   describe('check json upload and deletion', () => {
@@ -160,14 +170,15 @@ describe('Plotly Panel', () => {
       ctx.ctrl.publishAppEvent = jest.fn();
       ctx.ctrl.panel = panel_json_v0;
       ctx.ctrl.delete_json_click();
-      ctx.ctrl.onUpload(json);
+      //ctx.ctrl.onUpload(json);
     });
 
     it('should have deleted the file and published event', () => {
       expect(ctx.ctrl.predictionPanelConfig.json).toBe(null);
       expect(ctx.ctrl.publishAppEvent).toHaveBeenCalled();
     });
-    it('should have uploaded the file and published event', () => {
+    it('should call the onUpload method, load json and publish event', () => {
+      ctx.ctrl.upload_button_click(json);
       expect(ctx.ctrl.panel.predictionSettings.json).toBe(JSON.stringify(json));
       expect(ctx.ctrl.publishAppEvent).toHaveBeenCalled();
     });
