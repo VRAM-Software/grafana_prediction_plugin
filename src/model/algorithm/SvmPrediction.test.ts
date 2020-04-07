@@ -44,7 +44,7 @@ describe('SvmPrediction tests', () => {
       },
       params
     );
-    expect(mockedSetData).toBeCalledTimes(3);
+    expect(mockedSetData).toBeCalledTimes(1);
     expect(mockedPredict).toBeCalledTimes(3);
   });
 });
