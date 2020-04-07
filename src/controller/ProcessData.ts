@@ -30,17 +30,23 @@ export class ProcessData {
         }
         let dp = this.dataList[i].datapoints;
         let d = dp[j];
-        if (!timestamps.includes(d[1])) {
-          timestamps.push(d[1]);
+        if (d[0]) {
+          if (!timestamps.includes(d[1])) {
+            timestamps.push(d[1]);
+          }
+          temp.push(d[0]);
+        } else {
+          console.log("null numbers, tuple ignored");
         }
-        temp.push(d[0]);
+        
       }
       data.push(temp);
       j += 1;
     }
 
+    console.log(this.data);
     this.data = {
-      data: data,
+      data: data.filter(e => e.length),
       timestamps: timestamps,
     };
   };

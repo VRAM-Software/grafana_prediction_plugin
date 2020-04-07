@@ -14,10 +14,12 @@ export class SvmPrediction implements AlgorithmPrediction {
     this.writeInflux = new WriteInflux(parameters);
     this.svm.setData(json);
 
+    console.log(data);
     let result: number[][] = [];
     for (let i = 0; i < data.timestamps.length; i++) {
       result.push(this.svm.predict(data.data[i]));
     }
+    console.log(result);
     this.writeInflux.writeArrayToInflux(result.flat(), data.timestamps);
     return result;
   };
