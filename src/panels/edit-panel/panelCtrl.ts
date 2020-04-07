@@ -13,6 +13,7 @@ import $ from 'jquery';
 import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 import { SelectInfluxDBDirective } from './selectInfluxDBTab';
+import { ProcessData } from '../../controller/ProcessData';
 
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static predictionSettingsVersion = 1;
@@ -24,6 +25,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       predictors: [],
       queries: [],
       nodeMap: [],
+      savedWriteConnections: false,
       writeDatasourceID: '',
       influxHost: '',
       influxPort: '',
@@ -33,6 +35,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     },
   };
   plotlyPanelUtil: PlotlyPanelUtil;
+  private readonly processData: ProcessData;
   private _graphDiv: any;
   private predictionPanelConfig: any;
 
@@ -50,6 +53,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
     this.predictionPanelConfig = this.panel.predictionSettings;
     this.plotlyPanelUtil = new PlotlyPanelUtil(this);
+    this.processData = new ProcessData();
 
     // ?? This seems needed for tests?!!
     if (!this.events) {
@@ -69,6 +73,44 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     // Standard handlers
     this.events.on(PanelEvents.editModeInitialized, this.onInitEditMode.bind(this));
     this.events.on(PanelEvents.panelInitialized, this.onPanelInitialized.bind(this));
+
+    this.initializeController();
+  }
+
+  private initializeController() {
+    // configuration
+    if (this.panel.predictionSettings.json) {
+      let net = JSON.parse(this.panel.predictionSettings.json);
+      this.processData.setConfiguration({
+        pluginAim: net.pluginAim,
+        predictors: net.predictors,
+        result: net.result,
+        notes: net.notes,
+      });
+    }
+
+    // Influx
+    if (this.panel.predictionSettings.savedWriteConnections) {
+      this.processData.setInfluxParameters({
+        host: this.panel.predictionSettings.influxHost,
+        port: this.panel.predictionSettings.influxPort,
+        database: this.panel.predictionSettings.influxDatabase,
+        credentials: ['', ''],
+        measurement: this.panel.predictionSettings.influxMeasurement,
+        fieldKey: this.panel.predictionSettings.influxFieldKey,
+      });
+    }
+
+    // nodeMap
+    if (this.panel.predictionSettings.nodeMap && this.panel.predictionSettings.nodeMap.length > 0) {
+      const controllerMap = new Map();
+
+      this.panel.predictionSettings.predictors.forEach(predictor => {
+        controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
+      });
+
+      this.processData.setNodeMap(controllerMap);
+    }
   }
 
   get graphDiv(): any {
@@ -87,7 +129,13 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       return { id: index, name: a };
     });
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
-    //TODO: call controller setConfiguration()
+    this.processData.setConfiguration({
+      pluginAim: net.pluginAim,
+      predictors: net.predictors,
+      result: net.result,
+      notes: net.notes,
+    });
+    this.onChange();
   }
 
   async deleteJsonClick() {
@@ -105,8 +153,21 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
     });
 
-    //TODO: call controller setNodeMap()
-    console.log('BUILDED MAP', controllerMap);
+    this.processData.setNodeMap(controllerMap);
+    this.onChange();
+  }
+
+  async confirmDatabaseSettings() {
+    this.processData.setInfluxParameters({
+      host: this.panel.predictionSettings.influxHost,
+      port: this.panel.predictionSettings.influxPort,
+      database: this.panel.predictionSettings.influxDatabase,
+      credentials: ['', ''],
+      measurement: this.panel.predictionSettings.influxMeasurement,
+      fieldKey: this.panel.predictionSettings.influxFieldKey,
+    });
+
+    this.onChange();
   }
 
   updateQueries(dataList) {
@@ -116,7 +177,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
     if (!this.compareQueriesList(this.panel.predictionSettings.queries, updatedQueries)) {
       this.panel.predictionSettings.nodeMap = [];
-      this.panel.predictionSettings.queries = _.cloneDeep(updatedQueries);
+      this.panel.predictionSettings.queries = updatedQueries;
     }
   }
 
@@ -132,6 +193,10 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     }
 
     return true;
+  }
+
+  private onChange() {
+    this.processData.start();
   }
 
   onResize() {
@@ -188,10 +253,11 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   onDataReceived(dataList) {
-    this.updateQueries(dataList);
     console.log('DATALIST', dataList);
+    this.updateQueries(dataList);
     this.plotlyPanelUtil.plotlyDataReceived(dataList, this.annotationsSrv);
-    //TODO: call controller setDataList()
+    this.processData.setDataList(dataList);
+    this.onChange();
   }
 
   link(scope, elem, attrs, ctrl) {
