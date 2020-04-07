@@ -12,6 +12,7 @@ export class RlPrediction implements AlgorithmPrediction {
   predict = (data: DataSet, json: JsonConfiguration, parameters: WriteInfluxParameters): number[][] => {
     // add function in regression library => setCoefficients using json.result for RL
     const rl: Regression = new Regression();
+    this.writeInflux = new WriteInflux(parameters);
     let result: number[][] = [];
     for (let i = 0; i < data.timestamps.length; i++) {
       for (let j = 0; j < data.data.length; j++) {
@@ -19,6 +20,9 @@ export class RlPrediction implements AlgorithmPrediction {
         let x: number = obj[j];
         result.push(rl.predict(x));
       }
+    }
+    for (let i = 0; i < result.length; i++) {
+      this.writeInflux.writeArrayToInflux(result[i], data.timestamps);
     }
     return result;
   };
