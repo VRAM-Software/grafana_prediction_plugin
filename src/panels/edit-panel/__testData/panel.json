@@ -10,7 +10,9 @@
   "predictionSettings": {
     "version": 0,
     "json": {"x":5,"y":6},
-    "nodeMap": {"A":"CPU","B":"RAM"}
+    "nodeMap": [
+      {"id":"A","name":"A-series"}
+    ]
   },
   "targets": [
     {

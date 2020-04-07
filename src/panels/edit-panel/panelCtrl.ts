@@ -101,7 +101,7 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     });
 
     //TODO: call controller setNodeMap()
-    console.log('BUILDED MAP', controllerMap);
+    console.log('BUILT MAP', controllerMap);
   }
 
   updateQueries(dataList) {
