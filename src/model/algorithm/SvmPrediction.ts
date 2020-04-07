@@ -7,7 +7,7 @@ export class SvmPrediction implements AlgorithmPrediction {
   private writeInflux: WriteInflux;
 
   constructor(parameters: WriteInfluxParameters) {
-    this.writeInflux = new WriteInflux(parameters)
+    this.writeInflux = new WriteInflux(parameters);
   }
 
   // [0,1,2]

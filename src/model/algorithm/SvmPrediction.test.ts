@@ -15,7 +15,7 @@ const params: WriteInfluxParameters = {
   credentials: ['test', 'test'],
   measurement: 'test',
   fieldKey: 'test',
-}
+};
 
 jest.mock('ml-modules', () => ({
   SVM: jest.fn(() => ({
