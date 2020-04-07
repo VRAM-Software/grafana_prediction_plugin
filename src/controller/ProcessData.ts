@@ -54,8 +54,14 @@ export class ProcessData {
     }
   };
 
-  setDataList = (data: DataList[]) => {
-    this.dataList = data;
+  setDataList = (data: any) => {
+    this.dataList = [];
+    data.forEach(item => {
+      this.dataList.push({
+        target: item.target,
+        datapoints: item.datapoints,
+      });
+    });
   };
 
   setNodeMap = (nodeMap: Map<string, string>) => {
@@ -71,11 +77,8 @@ export class ProcessData {
   };
 
   start = (): void => {
-    if (
-      [this.data, this.configuration, this.influxParameters].every(param => {
-        return param ? true : false;
-      })
-    ) {
+    const notDefined = value => value == null;
+    if ([this.dataList, this.configuration, this.nodeMap, this.influxParameters].some(notDefined)) {
       console.error('You forgot to set one of the parameters');
     } else {
       this.setupData();

@@ -73,9 +73,9 @@ export class SelectInfluxDBCtrl {
     // Save info
     this.panel.predictionSettings.influxHost = this.datasources[this.panel.predictionSettings.writeDatasourceID].getHost();
     this.panel.predictionSettings.influxPort = this.datasources[this.panel.predictionSettings.writeDatasourceID].getPort();
-    // TODO: call controller setInfluxParameters()
 
-    this.panelCtrl.saved_write_connections = true;
+    this.panel.predictionSettings.savedWriteConnections = true;
+    await this.panelCtrl.confirmDatabaseSettings();
     this.panelCtrl.publishAppEvent(AppEvents.alertSuccess, ['InfluxDB parameters saved successfully!']);
   }
 }
