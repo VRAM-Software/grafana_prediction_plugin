@@ -26,7 +26,7 @@ jest.mock('ml-modules', () => ({
 
 describe('SvmPrediction tests', () => {
   test('predict method should call setData and predict function from ml-modules', () => {
-    let predictor: SvmPrediction = new SvmPrediction(params);
+    let predictor: SvmPrediction = new SvmPrediction();
     predictor.predict(
       {
         data: [
@@ -41,7 +41,8 @@ describe('SvmPrediction tests', () => {
         predictors: ['a', 'b'],
         result: { N: 1, D: 1, b: 1, kernelType: 'test', w: [1, 1] },
         notes: 'notes',
-      }
+      },
+      params
     );
     expect(mockedSetData).toBeCalledTimes(3);
     expect(mockedPredict).toBeCalledTimes(3);

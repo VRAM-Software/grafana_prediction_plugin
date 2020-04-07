@@ -16,7 +16,7 @@ const params: WriteInfluxParameters = {
 
 describe('RlPrediction tests', () => {
   test('setOptions should set options', () => {
-    let predictor: RlPrediction = new RlPrediction(params);
+    let predictor: RlPrediction = new RlPrediction();
     predictor.predict(
       {
         data: [
@@ -34,7 +34,8 @@ describe('RlPrediction tests', () => {
           [2, 3],
         ],
         notes: 'notes',
-      }
+      },
+      params
     );
     expect(Regression.prototype.predict).toBeCalled();
   });

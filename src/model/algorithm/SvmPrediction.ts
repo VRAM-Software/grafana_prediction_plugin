@@ -6,15 +6,15 @@ import { WriteInflux } from 'model/writeInflux';
 export class SvmPrediction implements AlgorithmPrediction {
   private writeInflux: WriteInflux;
 
-  constructor(parameters: WriteInfluxParameters) {
-    this.writeInflux = new WriteInflux(parameters);
+  constructor() {
   }
 
   // [0,1,2]
   // [[1,2],[2,3],[3,4]]
 
-  predict = (data: DataSet, json: SvmJsonConfiguration): number[][] => {
+  predict = (data: DataSet, json: SvmJsonConfiguration, parameters: WriteInfluxParameters): number[][] => {
     const svm: any = new SVM();
+    this.writeInflux = new WriteInflux(parameters);
     let result: number[][] = [];
     // populate array with results
     // json should contains data + labels <- modify ghiotto's library function setData

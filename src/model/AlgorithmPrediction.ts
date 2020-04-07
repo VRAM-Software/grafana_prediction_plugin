@@ -1,5 +1,4 @@
-import { DataSet } from 'types/DataSet';
-import { JsonConfiguration } from 'types/JsonConfiguration';
+import { DataSet, JsonConfiguration, WriteInfluxParameters } from 'types/types';
 export interface AlgorithmPrediction {
-  predict(data: DataSet, json: JsonConfiguration): {};
+  predict(data: DataSet, json: JsonConfiguration, parameters: WriteInfluxParameters): {};
 }

@@ -7,13 +7,13 @@ import { JsonConfiguration } from '../../types/JsonConfiguration';
 export class RlPrediction implements AlgorithmPrediction {
   private writeInflux: WriteInflux;
 
-  constructor(parameteres: WriteInfluxParameters) {
-    this.writeInflux = new WriteInflux(parameteres);
+  constructor() {
   }
 
-  predict = (data: DataSet, json: JsonConfiguration): number[][] => {
+  predict = (data: DataSet, json: JsonConfiguration, parameters: WriteInfluxParameters): number[][] => {
     // add function in regression library => setCoefficients using json.result for RL
     const rl: Regression = new Regression();
+    this.writeInflux = new WriteInflux(parameters);
     let result: number[][] = [];
     for (let i = 0; i < data.timestamps.length; i++) {
       for (let j = 0; j < data.data.length; j++) {
