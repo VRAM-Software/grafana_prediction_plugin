@@ -12,11 +12,12 @@
         <div class="gf-form-inline">
             <div class="gf-form" ng-if="!ctrl.panel.predictionSettings.json">
                 <label class="gf-form-label width-20">Upload json file</label>
-                <dash-upload on-upload="ctrl.upload_button_click(dash)"></dash-upload>
+                <dash-upload on-upload="ctrl.uploadButtonClick(dash)"></dash-upload>
             </div>
             <div class="gf-form" ng-if="ctrl.panel.predictionSettings.json">
                 <label class="gf-form-label width-20">Remove json file</label>
-                <button class="btn btn-success" ng-click="ctrl.delete_json_click()">Remove</button>
+                <button class="btn btn-success" ng-click="ctrl.deleteJsonClick()">Remove</button>
             </div>
         </div>
+    </div>
 </div>

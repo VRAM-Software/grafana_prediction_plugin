@@ -198,4 +198,4 @@ class Regression {
     }
   }
 }
-exports.default = Regression;
+module.exports = Regression;
