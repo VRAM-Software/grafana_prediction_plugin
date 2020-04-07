@@ -40,6 +40,10 @@ class Regression {
     this.identity = this.identityMatrix(options.numX); //matrice identità
   }
 
+  setCoefficients(x) {
+    this.coefficients = x;
+  }
+
   //Aggiungo dei dati che ho osservato per addestrare l'algoritmo
   addObservation(options) {
     if (!options) {
