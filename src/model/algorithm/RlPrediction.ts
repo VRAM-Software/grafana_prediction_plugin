@@ -21,9 +21,7 @@ export class RlPrediction implements AlgorithmPrediction {
         result.push(rl.predict(x));
       }
     }
-    for (let i = 0; i < result.length; i++) {
-      this.writeInflux.writeArrayToInflux(result[i], data.timestamps);
-    }
+    this.writeInflux.writeArrayToInflux(result.flat(), data.timestamps);
     return result;
   };
 }

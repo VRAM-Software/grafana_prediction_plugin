@@ -19,11 +19,9 @@ export class SvmPrediction implements AlgorithmPrediction {
     // json should contains data + labels <- modify ghiotto's library function setData
     for (let i = 0; i < data.timestamps.length; i++) {
       svm.setData(json);
-      result.push(svm.predict([data.data[i][j], data.timestamps[i]]));
+      result.push(svm.predict([data.data[i]]));
     }
-    for (let i = 0; i < result.length; i++) {
-      this.writeInflux.writeArrayToInflux(result[i], data.timestamps);
-    }
+    this.writeInflux.writeArrayToInflux(result.flat(), data.timestamps);
     return result;
   };
 }

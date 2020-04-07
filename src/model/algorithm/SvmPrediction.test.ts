@@ -1,5 +1,9 @@
 import { SvmPrediction } from './SvmPrediction';
 import { SVM } from 'ml-modules';
+import { WriteInflux } from 'model/writeInflux';
+import { InfluxDB, IPoint } from 'influx';
+
+jest.mock('influx');
 
 const mockedPredict: any = jest.fn();
 const mockedSetData: any = jest.fn();
@@ -34,7 +38,7 @@ describe('SvmPrediction tests', () => {
         notes: 'notes',
       },
       {
-        host: 'test',
+        host: 'myinfluxdb',
         port: 'test',
         database: 'test',
         credentials: ['test', 'test'],
