@@ -1,12 +1,21 @@
 import { SvmPrediction } from './SvmPrediction';
 import { SVM } from 'ml-modules';
 import { WriteInflux } from 'model/writeInflux';
-import { InfluxDB, IPoint } from 'influx';
+import { WriteInfluxParameters } from '../../types/types';
 
-jest.mock('influx');
+jest.mock('model/writeInflux');
 
 const mockedPredict: any = jest.fn();
 const mockedSetData: any = jest.fn();
+
+const params: WriteInfluxParameters = {
+  host: 'myinfluxdb',
+  port: 'test',
+  database: 'test',
+  credentials: ['test', 'test'],
+  measurement: 'test',
+  fieldKey: 'test',
+}
 
 jest.mock('ml-modules', () => ({
   SVM: jest.fn(() => ({
@@ -16,12 +25,8 @@ jest.mock('ml-modules', () => ({
 }));
 
 describe('SvmPrediction tests', () => {
-  let predictor: SvmPrediction;
-  beforeEach(() => {
-    predictor = new SvmPrediction();
-  });
-
   test('predict method should call setData and predict function from ml-modules', () => {
+    let predictor: SvmPrediction = new SvmPrediction(params);
     predictor.predict(
       {
         data: [
@@ -36,14 +41,6 @@ describe('SvmPrediction tests', () => {
         predictors: ['a', 'b'],
         result: { N: 1, D: 1, b: 1, kernelType: 'test', w: [1, 1] },
         notes: 'notes',
-      },
-      {
-        host: 'myinfluxdb',
-        port: 'test',
-        database: 'test',
-        credentials: ['test', 'test'],
-        measurement: 'test',
-        fieldKey: 'test',
       }
     );
     expect(mockedSetData).toBeCalledTimes(3);
