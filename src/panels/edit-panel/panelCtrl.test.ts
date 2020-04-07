@@ -24,7 +24,6 @@ describe('Plotly Panel', () => {
       };
     },
   };
-
   const scope = {
     $on: () => {},
   };
@@ -42,32 +41,29 @@ describe('Plotly Panel', () => {
     },
   };
 
-  const ctx = {} as any;
+  let ctrl = {} as any;
   beforeEach(() => {
     PlotlyPanelUtil.mockClear();
-    ctx.ctrl = new PlotlyPanelCtrl(scope, injector, null, null, null, null);
-    ctx.ctrl.events = {
-      emit: () => {},
-    };
-    ctx.ctrl.annotationsPromise = Promise.resolve({});
-    ctx.ctrl.updateTimeRange();
+    ctrl = new PlotlyPanelCtrl(scope, injector, null, null, null, null);
+    ctrl.annotationsPromise = Promise.resolve({});
+    ctrl.updateTimeRange();
   });
 
   const epoch = 1505800000000;
   Date.now = () => epoch;
 
   it('should use default configs', () => {
-    expect(JSON.stringify(ctx.ctrl.panel.predictionSettings)).toBe(JSON.stringify(PlotlyPanelCtrl.predictionPanelDefaults.predictionSettings));
+    expect(JSON.stringify(ctrl.panel.predictionSettings)).toBe(JSON.stringify(PlotlyPanelCtrl.predictionPanelDefaults.predictionSettings));
   });
 
   describe('check settings migration', () => {
     beforeEach(() => {
-      ctx.ctrl.panel = panel_json_v0;
-      ctx.ctrl.onPanelInitialized();
+      ctrl.panel = panel_json_v0;
+      ctrl.onPanelInitialized();
     });
 
     it('it should now have have a version', () => {
-      expect(ctx.ctrl.panel.predictionSettings.version).toBe(PlotlyPanelCtrl.predictionSettingsVersion);
+      expect(ctrl.panel.predictionSettings.version).toBe(PlotlyPanelCtrl.predictionSettingsVersion);
       expect(PlotlyPanelUtil).toHaveBeenCalledTimes(1);
     });
   });
@@ -171,20 +167,20 @@ describe('Plotly Panel', () => {
   describe('check json upload and deletion', () => {
     let json = new File([""], "mock", { type: 'application/json' });
     beforeEach(() => {
-      ctx.ctrl.publishAppEvent = jest.fn();
-      ctx.ctrl.panel = panel_json_v0;
-      ctx.ctrl.delete_json_click();
-      //ctx.ctrl.onUpload(json);
+      ctrl.publishAppEvent = jest.fn();
+      ctrl.panel = panel_json_v0;
+      ctrl.delete_json_click();
+      //ctrl.onUpload(json);
     });
 
     it('should have deleted the file and published event', () => {
-      expect(ctx.ctrl.predictionPanelConfig.json).toBe(null);
-      expect(ctx.ctrl.publishAppEvent).toHaveBeenCalled();
+      expect(ctrl.predictionPanelConfig.json).toBe(null);
+      expect(ctrl.publishAppEvent).toHaveBeenCalled();
     });
     it('should call the onUpload method, load json and publish event', () => {
-      ctx.ctrl.upload_button_click(json);
-      expect(ctx.ctrl.panel.predictionSettings.json).toBe(JSON.stringify(json));
-      expect(ctx.ctrl.publishAppEvent).toHaveBeenCalled();
+      ctrl.upload_button_click(json);
+      expect(ctrl.panel.predictionSettings.json).toBe(JSON.stringify(json));
+      expect(ctrl.publishAppEvent).toHaveBeenCalled();
     });
   });
 });

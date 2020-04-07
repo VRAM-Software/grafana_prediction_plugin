@@ -51,11 +51,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
     this.plotlyPanelUtil = new PlotlyPanelUtil(this);
 
-    // ?? This seems needed for tests?!!
-    if (!this.events) {
-      return;
-    }
-
     this.events.on(PanelEvents.render, this.onRender.bind(this));
     this.events.on(PanelEvents.dataReceived, this.onDataReceived.bind(this));
     this.events.on(PanelEvents.dataError, this.onDataError.bind(this));
