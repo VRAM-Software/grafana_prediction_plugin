@@ -20,7 +20,7 @@ const params: WriteInfluxParameters = {
 jest.mock('ml-modules', () => ({
   SVM: jest.fn(() => ({
     setData: mockedSetData,
-    predict: mockedPredict,
+    predictData: mockedPredict,
   })),
 }));
 
