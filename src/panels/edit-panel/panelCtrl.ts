@@ -12,6 +12,7 @@ import $ from 'jquery';
 
 import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
+// @ts-ignore
 import { SelectInfluxDBDirective } from './selectInfluxDBTab';
 import { ProcessData } from '../../controller/ProcessData';
 
@@ -45,7 +46,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.$rootScope = $rootScope;
     this.uiSegmentSrv = uiSegmentSrv;
     this.annotationsSrv = annotationsSrv;
-
     // defaults configs
     let defaults = _.cloneDeep(PlotlyPanelCtrl.predictionPanelDefaults);
     defaults = _.merge(defaults, PlotlyPanelUtil.defaults);

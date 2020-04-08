@@ -36,9 +36,8 @@ export class ProcessData {
           }
           temp.push(d[0]);
         } else {
-          console.log("null numbers, tuple ignored");
+          console.log('null numbers, tuple ignored');
         }
-        
       }
       data.push(temp);
       j += 1;
