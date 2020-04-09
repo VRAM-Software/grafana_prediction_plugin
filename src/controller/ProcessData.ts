@@ -45,42 +45,45 @@ export class ProcessData {
     };
   };
 
-  setStrategy = (algorithm: string): void => {
+  setStrategy(algorithm: string) {
     if (algorithm === 'svm') {
       this.strategy = new ProcessSvm();
     }
     if (algorithm === 'rl') {
       this.strategy = new ProcessRl();
     }
-  };
+  }
 
-  setDataList = (data: DataList[]) => {
-    this.dataList = data;
-  };
+  setDataList(data: any) {
+    this.dataList = [];
+    data.forEach(item => {
+      this.dataList.push({
+        target: item.target,
+        datapoints: item.datapoints,
+      });
+    });
+  }
 
-  setNodeMap = (nodeMap: Map<string, string>) => {
+  setNodeMap(nodeMap: Map<string, string>) {
     this.nodeMap = nodeMap;
-  };
+  }
 
-  setInfluxParameters = (params: WriteInfluxParameters) => {
+  setInfluxParameters(params: WriteInfluxParameters) {
     this.influxParameters = params;
-  };
+  }
 
-  setConfiguration = (conf: JsonConfiguration) => {
+  setConfiguration(conf: JsonConfiguration) {
     this.configuration = conf;
-  };
+  }
 
-  start = (): void => {
-    if (
-      [this.data, this.configuration, this.influxParameters].every(param => {
-        return param ? true : false;
-      })
-    ) {
+  start() {
+    const notDefined = value => value == null;
+    if ([this.dataList, this.configuration, this.nodeMap, this.influxParameters].some(notDefined)) {
       console.error('You forgot to set one of the parameters');
     } else {
       this.setupData();
       this.setStrategy(this.configuration.pluginAim);
       this.strategy.performPrediction(this.data, this.configuration, this.influxParameters);
     }
-  };
+  }
 }
