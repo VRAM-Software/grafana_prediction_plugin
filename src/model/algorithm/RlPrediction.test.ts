@@ -1,14 +1,22 @@
 import { RlPrediction } from './RlPrediction';
+import { WriteInfluxParameters } from '../../types/types';
+import { WriteInflux } from 'model/writeInflux';
 const Regression = require('../../libs/regression');
 jest.mock('../../libs/regression');
+jest.mock('model/writeInflux');
+
+const params: WriteInfluxParameters = {
+  host: 'myinfluxdb',
+  port: 'test',
+  database: 'test',
+  credentials: ['test', 'test'],
+  measurement: 'test',
+  fieldKey: 'test',
+};
 
 describe('RlPrediction tests', () => {
-  let predictor: RlPrediction;
-  beforeEach(() => {
-    predictor = new RlPrediction();
-  });
-
   test('setOptions should set options', () => {
+    let predictor: RlPrediction = new RlPrediction();
     predictor.predict(
       {
         data: [
@@ -27,14 +35,7 @@ describe('RlPrediction tests', () => {
         ],
         notes: 'notes',
       },
-      {
-        host: 'test',
-        port: 'test',
-        database: 'test',
-        credentials: ['test', 'test'],
-        measurement: 'test',
-        fieldKey: 'test',
-      }
+      params
     );
     expect(Regression.prototype.predict).toBeCalled();
   });
