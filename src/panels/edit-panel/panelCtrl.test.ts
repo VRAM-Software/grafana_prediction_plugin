@@ -102,7 +102,7 @@ it('it should have a version', () => {
   expect(ctrl.panel.predictionSettings.version).toBe(PlotlyPanelCtrl.predictionSettingsVersion);
   expect(PlotlyPanelUtil).toHaveBeenCalledTimes(1);
 });
-it('should have deleted the file and published event', () => {
+it('should delete the file and publish success event', () => {
   ctrl.deleteJsonClick();
   expect(ctrl.predictionPanelConfig.json).toBe(null);
   expect(ctrl.publishAppEvent).toHaveBeenCalled();
