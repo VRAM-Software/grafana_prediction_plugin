@@ -12,8 +12,8 @@ import $ from 'jquery';
 
 import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
-import { SelectInfluxDBDirective } from './selectInfluxDBTab';
 import { ProcessData } from '../../controller/ProcessData';
+import { SelectInfluxDBDirective } from './selectInfluxDBTab';
 
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static predictionSettingsVersion = 1;

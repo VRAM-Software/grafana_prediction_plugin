@@ -72,13 +72,6 @@ beforeEach(() => {
   ctrl.updateTimeRange();
 });
 
-test('processData works', () => {
-  let p = new ProcessData();
-  p.setDataList({} as any);
-  expect(p).toBeInstanceOf(ProcessData);
-  expect(p.setDataList).not.toBeNull();
-});
-
 it('should set eventhanlers', () => {
   expect(ctrl.events.on).toHaveBeenCalledWith(PanelEvents.render, expect.anything());
   expect(ctrl.events.on).toHaveBeenCalledWith(PanelEvents.dataReceived, expect.anything());
