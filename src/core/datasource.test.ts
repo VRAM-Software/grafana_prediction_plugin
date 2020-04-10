@@ -1,3 +1,9 @@
+/**
+ * File: datasource.test.ts
+ * Author: Vittorio Santagiuliana
+ * Creation date: 2020-04-10
+ * Description: Test file for datasource.ts
+ */
 
 import { DataSource } from './datasource';
 
@@ -7,14 +13,10 @@ const type = 'type';
 const name = 'DataSource';
 const username = 'username';
 const password = 'password';
-
-
 const url2 = 'smtp://vram.com:7';
 const database2 = 'grafana';
 const type2 = 'type';
 const name2 = 'name';
-
-
 
 let ds, ds2;
 
@@ -46,20 +48,14 @@ test('getDatabase method', () => {
 test('getUsername method', () => {
   let res = ds.getUsername();
   expect(res).toEqual(username);
-});
-
-test('getUsername method', () => {
-  let res = ds2.getUsername();
+  res = ds2.getUsername();
   expect(res).toEqual('');
 });
 
 test('getPassword method', () => {
   let res = ds.getPassword();
   expect(res).toEqual(password);
-});
-
-test('getPassword method', () => {
-  let res = ds2.getPassword();
+  res = ds2.getPassword();
   expect(res).toEqual('');
 });
 
