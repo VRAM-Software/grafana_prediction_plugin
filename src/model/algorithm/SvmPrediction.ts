@@ -23,5 +23,5 @@ export class SvmPrediction implements AlgorithmPrediction {
     console.log(result);
     this.writeInflux.writeArrayToInflux(result.flat(), data.timestamps);
     return result;
-  };
+  }
 }
