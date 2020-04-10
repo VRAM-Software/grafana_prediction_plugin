@@ -7,10 +7,11 @@ export class ProcessSvm implements PerformPrediction {
 
   constructor() {
     this.svmPredicter = new SvmPrediction();
+    this.performPrediction = this.performPrediction.bind(this);
   }
 
-  performPrediction = (data: DataSet, configuration: SvmJsonConfiguration, influxParameters: WriteInfluxParameters): number[][] => {
+  performPrediction(data: DataSet, configuration: SvmJsonConfiguration, influxParameters: WriteInfluxParameters): number[][] {
     let res = this.svmPredicter.predict(data, configuration, influxParameters);
     return res;
-  };
+  }
 }

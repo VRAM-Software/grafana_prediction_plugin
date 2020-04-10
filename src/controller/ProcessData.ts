@@ -43,11 +43,14 @@ export class ProcessData {
       j += 1;
     }
 
-    console.log(this.data);
     this.data = {
       data: data.filter(e => e.length),
       timestamps: timestamps,
     };
+  };
+
+  getCurrentStrategy = (): PerformPrediction => {
+    return this.strategy;
   };
 
   setStrategy = (algorithm: string): void => {
@@ -81,14 +84,14 @@ export class ProcessData {
     this.configuration = conf;
   };
 
-  start = (): void => {
+  start = (): any => {
     const notDefined = value => value == null;
     if ([this.dataList, this.configuration, this.nodeMap, this.influxParameters].some(notDefined)) {
       console.error('You forgot to set one of the parameters');
     } else {
       this.setupData();
       this.setStrategy(this.configuration.pluginAim);
-      this.strategy.performPrediction(this.data, this.configuration, this.influxParameters);
+      return this.strategy.performPrediction(this.data, this.configuration, this.influxParameters);
     }
   };
 }
