@@ -5,6 +5,11 @@ on: pull_request
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      image: influxdb:1.7.10
+      options: -p 8086:8086 --detach --rm influxdb:1.7.10
+
     steps:
       - name: clone repository
         uses: actions/checkout@v2
