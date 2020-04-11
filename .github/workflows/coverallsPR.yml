@@ -5,6 +5,10 @@ on: pull_request
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      image: influxdb:1.7
+
     steps:
       - name: clone repository
         uses: actions/checkout@v2
@@ -14,6 +18,8 @@ jobs:
           node-version: 12
       - name: fetch all
         run: git fetch --prune --unshallow
+      - name: start Influx docker image
+        run: docker run -p 8086:8086 --detach --rm influxdb:1.7
       - name: install npm dependecies
         run: npm ci
       - name: run tests
