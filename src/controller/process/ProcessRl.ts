@@ -7,10 +7,11 @@ export class ProcessRl implements PerformPrediction {
 
   constructor() {
     this.rlPredicter = new RlPrediction();
+    this.performPrediction = this.performPrediction.bind(this);
   }
 
-  performPrediction = (data: DataSet, configuration: RlJsonConfiguration, influxParameters: WriteInfluxParameters): number[][] => {
+  performPrediction(data: DataSet, configuration: RlJsonConfiguration, influxParameters: WriteInfluxParameters): number[][] {
     let res = this.rlPredicter.predict(data, configuration, influxParameters);
     return res;
-  };
+  }
 }
