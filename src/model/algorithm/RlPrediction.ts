@@ -4,7 +4,6 @@ import { DataSet, WriteInfluxParameters } from '../../types/types';
 import { JsonConfiguration } from '../../types/JsonConfiguration';
 
 export class RlPrediction implements AlgorithmPrediction {
-
   constructor() {}
 
   predict = (data: DataSet, json: JsonConfiguration, parameters: WriteInfluxParameters): number[][] => {

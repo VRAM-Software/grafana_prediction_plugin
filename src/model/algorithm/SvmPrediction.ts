@@ -3,7 +3,6 @@ import { SVM } from 'ml-modules';
 import { DataSet, WriteInfluxParameters, SvmJsonConfiguration } from '../../types/types';
 
 export class SvmPrediction implements AlgorithmPrediction {
-
   constructor() {}
 
   predict = (data: DataSet, json: SvmJsonConfiguration, parameters: WriteInfluxParameters): number[][] => {
