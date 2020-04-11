@@ -1,11 +1,9 @@
 import { AlgorithmPrediction } from '../../model/AlgorithmPrediction';
 import Regression from '../../libs/regression';
 import { DataSet, WriteInfluxParameters } from '../../types/types';
-import { WriteInflux } from 'model/writeInflux';
 import { JsonConfiguration } from '../../types/JsonConfiguration';
 
 export class RlPrediction implements AlgorithmPrediction {
-  private writeInflux: WriteInflux;
 
   constructor() {}
 

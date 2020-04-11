@@ -1,10 +1,8 @@
 import { AlgorithmPrediction } from '../../model/AlgorithmPrediction';
 import { SVM } from 'ml-modules';
 import { DataSet, WriteInfluxParameters, SvmJsonConfiguration } from '../../types/types';
-import { WriteInflux } from 'model/writeInflux';
 
 export class SvmPrediction implements AlgorithmPrediction {
-  private writeInflux: WriteInflux;
 
   constructor() {}
 
