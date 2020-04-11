@@ -7,15 +7,15 @@ export class SvmPrediction implements AlgorithmPrediction {
   private writeInflux: WriteInflux;
   private svm: any;
 
-  constructor() {}
+  constructor() {
+    this.predict = this.predict.bind(this);
+  }
 
-  predict = (data: DataSet, json: SvmJsonConfiguration, parameters: WriteInfluxParameters): number[][] => {
+  predict(data: DataSet, json: SvmJsonConfiguration, parameters: WriteInfluxParameters): number[][] {
     this.svm = new SVM();
     this.writeInflux = new WriteInflux(parameters);
-    console.log(json);
     this.svm.setData(json);
 
-    console.log(data);
     let result: number[][] = [];
     for (let i = 0; i < data.timestamps.length; i++) {
       result.push(this.svm.predictData(data.data[i]));
@@ -23,5 +23,5 @@ export class SvmPrediction implements AlgorithmPrediction {
     console.log(result);
     this.writeInflux.writeArrayToInflux(result.flat(), data.timestamps);
     return result;
-  };
+  }
 }
