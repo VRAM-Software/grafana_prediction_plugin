@@ -1,5 +1,6 @@
 import { ProcessData } from './ProcessData';
 import { WriteInfluxParameters, SvmJsonConfiguration, RlJsonConfiguration } from '../types/types';
+import { ProcessSvm } from './process/ProcessSvm';
 import { SvmPrediction } from '../model/algorithm/SvmPrediction';
 import { RlPrediction } from '../model/algorithm/RlPrediction';
 
@@ -61,17 +62,24 @@ beforeEach(() => {
   pd.setInfluxParameters(influxParameters);
 });
 
+test('getStrategy method', () => {
+  pd.setConfiguration(svmConfiguration);
+  pd.start();
+  let res = pd.getCurrentStrategy();
+  expect(res).not.toBeNull();
+});
+
 test('SVM ProcessData', () => {
   pd.setConfiguration(svmConfiguration);
   pd.start();
-  expect(console.log).toHaveBeenCalled();
+  expect(mockSvmPredict).toHaveBeenCalled();
   expect(console.log).not.toHaveBeenCalledWith('You forgot to set one of the parameters');
 });
 
 test('RL ProcessData', () => {
   pd.setConfiguration(rlConfiguration);
   pd.start();
-  expect(console.log).toHaveBeenCalled();
+  expect(mockRlPredict).toHaveBeenCalled();
   expect(console.log).not.toHaveBeenCalledWith('You forgot to set one of the parameters');
 });
 
