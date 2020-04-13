@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import { DataList } from './DataList';
 import { DataSet } from './DataSet';
 import { WriteInfluxParameters } from './writeInfluxParameters';
