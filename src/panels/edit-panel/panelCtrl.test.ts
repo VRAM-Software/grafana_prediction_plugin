@@ -5,14 +5,34 @@
  * Description: Test file for panelCtrl.ts
  */
 
+import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import { PanelEvents } from '@grafana/data';
 import * as panel_json from './__test__/panel.json';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 import { ProcessData } from '../../controller/ProcessData';
 import { PlotlyPanelCtrl } from './panelCtrl';
 
+const mockGetCurrentStrategy = jest.fn();
+const mockSetStrategy = jest.fn();
+const mockSetDataList = jest.fn();
+const mockSetNodeMap = jest.fn();
+const mockSetInfluxParameters = jest.fn();
+const mockSetConfiguration = jest.fn();
+const mockStart = jest.fn();
+
+ProcessData = jest.fn().mockImplementation(() => {
+  return {
+    getCurrentStrategy: mockGetCurrentStrategy,
+    setStrategy: mockSetStrategy,
+    setDataList: mockSetDataList,
+    setNodeMap: mockSetNodeMap,
+    setInfluxParameters: mockSetInfluxParameters,
+    setConfiguration: mockSetConfiguration,
+    start: mockStart,
+  };
+});
+
 jest.mock('./plotly/PlotlyPanelUtil');
-jest.mock('../../controller/ProcessData');
 
 const injector = {
   get: () => {

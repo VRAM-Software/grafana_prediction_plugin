@@ -30,31 +30,39 @@ export class ProcessData {
         }
         let dp = this.dataList[i].datapoints;
         let d = dp[j];
-        if (!timestamps.includes(d[1])) {
-          timestamps.push(d[1]);
+        if (d[0]) {
+          if (!timestamps.includes(d[1])) {
+            timestamps.push(d[1]);
+          }
+          temp.push(d[0]);
+        } else {
+          console.log('null numbers, tuple ignored');
         }
-        temp.push(d[0]);
       }
       data.push(temp);
       j += 1;
     }
 
     this.data = {
-      data: data,
+      data: data.filter(e => e.length),
       timestamps: timestamps,
     };
   };
 
-  setStrategy(algorithm: string) {
+  getCurrentStrategy = (): PerformPrediction => {
+    return this.strategy;
+  };
+
+  setStrategy = (algorithm: string): void => {
     if (algorithm === 'svm') {
       this.strategy = new ProcessSvm();
     }
     if (algorithm === 'rl') {
       this.strategy = new ProcessRl();
     }
-  }
+  };
 
-  setDataList(data: any) {
+  setDataList = (data: any) => {
     this.dataList = [];
     data.forEach(item => {
       this.dataList.push({
@@ -62,28 +70,28 @@ export class ProcessData {
         datapoints: item.datapoints,
       });
     });
-  }
+  };
 
-  setNodeMap(nodeMap: Map<string, string>) {
+  setNodeMap = (nodeMap: Map<string, string>) => {
     this.nodeMap = nodeMap;
-  }
+  };
 
-  setInfluxParameters(params: WriteInfluxParameters) {
+  setInfluxParameters = (params: WriteInfluxParameters) => {
     this.influxParameters = params;
-  }
+  };
 
-  setConfiguration(conf: JsonConfiguration) {
+  setConfiguration = (conf: JsonConfiguration) => {
     this.configuration = conf;
-  }
+  };
 
-  start() {
+  start = (): any => {
     const notDefined = value => value == null;
     if ([this.dataList, this.configuration, this.nodeMap, this.influxParameters].some(notDefined)) {
       console.error('You forgot to set one of the parameters');
     } else {
       this.setupData();
       this.setStrategy(this.configuration.pluginAim);
-      this.strategy.performPrediction(this.data, this.configuration, this.influxParameters);
+      return this.strategy.performPrediction(this.data, this.configuration, this.influxParameters);
     }
-  }
+  };
 }

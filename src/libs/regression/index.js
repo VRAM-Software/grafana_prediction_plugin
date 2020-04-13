@@ -40,6 +40,10 @@ class Regression {
     this.identity = this.identityMatrix(options.numX); //matrice identità
   }
 
+  setCoefficients(x) {
+    this.coefficients = x;
+  }
+
   //Aggiungo dei dati che ho osservato per addestrare l'algoritmo
   addObservation(options) {
     if (!options) {
@@ -78,13 +82,9 @@ class Regression {
       this.calculateCoefficients();
     }
     let hypothesis = [];
-    console.log('coefficients lenght');
-    console.log(this.coefficients.length);
     for (let x = 0; x < this.coefficients.length; x++) {
       let coefficientRow = this.coefficients[x];
       for (let y = 0; y < coefficientRow.length; y++) {
-        console.log('option');
-        console.log(options.x[x]);
         hypothesis[y] = (hypothesis[y] || 0) + coefficientRow[y] * options.x[x];
       }
     }

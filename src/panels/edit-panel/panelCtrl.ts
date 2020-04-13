@@ -5,15 +5,14 @@
  * Description: Main control panel of the app plugin, handles configuration and data import
  */
 
-import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
-
 import _ from 'lodash';
 import $ from 'jquery';
-
+import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
-import { ProcessData } from '../../controller/ProcessData';
+// @ts-ignore
 import { SelectInfluxDBDirective } from './selectInfluxDBTab';
+import { ProcessData } from '../../controller/ProcessData';
 
 export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   static predictionSettingsVersion = 1;
@@ -45,7 +44,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.$rootScope = $rootScope;
     this.uiSegmentSrv = uiSegmentSrv;
     this.annotationsSrv = annotationsSrv;
-
     // defaults configs
     let defaults = _.cloneDeep(PlotlyPanelCtrl.predictionPanelDefaults);
     defaults = _.merge(defaults, PlotlyPanelUtil.defaults);
