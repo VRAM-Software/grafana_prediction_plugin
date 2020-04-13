@@ -48,36 +48,24 @@ const writeTimestamps: number[] = [
 const writePoint = 23;
 const writeTimestamp = 1586617851266;
 
-describe('NetUpdater NetWriter Integration Test', () => {
+describe('WriteInflux Integration Test', () => {
   it('Constructor - No error', () => {
-    let error = false;
-    try {
+    expect( () => {
       writeInflux = new WriteInflux(params);
-    } catch (err) {
-      error = true;
-    }
-    expect(error).toBeFalsy();
+    }).not.toThrow(Error);
   });
 
   describe('Write methods', () => {
     it('Write array - No error', () => {
-      let error = false;
-      try {
+      expect( () => {
         writeInflux.writePointToInflux(writePoint, writeTimestamp);
-      } catch (err) {
-        error = true;
-      }
-      expect(error).toBeFalsy();
+      }).not.toThrow(Error);
     });
 
     it('Write point - No error', () => {
-      let error = false;
-      try {
+      expect( () => {
         writeInflux.writeArrayToInflux(writeArray, writeTimestamps);
-      } catch (err) {
-        error = true;
-      }
-      expect(error).toBeFalsy();
+      }).not.toThrow(Error);
     });
   });
 });
