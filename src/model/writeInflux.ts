@@ -24,7 +24,7 @@ export class WriteInflux {
       throw new Error('WriteInflux - invalid port parameter');
     }
     if (parameters.database == null || parameters.database.length === 0) {
-      throw new Error('WriteInflux - invalid defaultDB parameter');
+      throw new Error('WriteInflux - invalid database parameter');
     }
 
     this.parameters = parameters;
