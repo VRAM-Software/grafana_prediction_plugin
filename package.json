@@ -25,7 +25,6 @@
     "jquery": "^3.4.1",
     "lodash": "^4.17.10",
     "luxon": "^1.22.2",
-    "moment": "^2.24.0",
     "plotly.js": "^1.52.3",
     "ml-modules": "https://github.com/Max09081998/ml-modules/tarball/master",
     "rxjs": "^6.5.5",
