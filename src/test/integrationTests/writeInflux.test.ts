@@ -50,20 +50,20 @@ const writeTimestamp = 1586617851266;
 
 describe('WriteInflux Integration Test', () => {
   it('Constructor - No error', () => {
-    expect( () => {
+    expect(() => {
       writeInflux = new WriteInflux(params);
     }).not.toThrow(Error);
   });
 
   describe('Write methods', () => {
     it('Write array - No error', () => {
-      expect( () => {
+      expect(() => {
         writeInflux.writePointToInflux(writePoint, writeTimestamp);
       }).not.toThrow(Error);
     });
 
     it('Write point - No error', () => {
-      expect( () => {
+      expect(() => {
         writeInflux.writeArrayToInflux(writeArray, writeTimestamps);
       }).not.toThrow(Error);
     });
