@@ -5,7 +5,6 @@
  * Description: Test file for panelCtrl.ts
  */
 
-import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import { PanelEvents } from '@grafana/data';
 import * as panel_json from './__test__/panel.json';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';

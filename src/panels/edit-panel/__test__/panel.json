@@ -16,6 +16,7 @@
     "influxMeasurement": "",
     "influxFieldKey": "",
     "savedWriteConnections": true,
+    "writeDatasourceID": 0,
     "predictors": [{"id":0,"name":"A-predictor"}],
     "nodeMap": [{"id":"A","name":"A-series"}]
   },
