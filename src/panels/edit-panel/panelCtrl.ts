@@ -5,11 +5,9 @@
  * Description: Main control panel of the app plugin, handles configuration and data import
  */
 
-import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
-
 import _ from 'lodash';
 import $ from 'jquery';
-
+import { MetricsPanelCtrl } from 'grafana/app/plugins/sdk';
 import { AppEvents, PanelEvents } from '@grafana/data';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 // @ts-ignore
@@ -54,11 +52,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.predictionPanelConfig = this.panel.predictionSettings;
     this.plotlyPanelUtil = new PlotlyPanelUtil(this);
     this.processData = new ProcessData();
-
-    // ?? This seems needed for tests?!!
-    if (!this.events) {
-      return;
-    }
 
     this.events.on(PanelEvents.render, this.onRender.bind(this));
     this.events.on(PanelEvents.dataReceived, this.onDataReceived.bind(this));
