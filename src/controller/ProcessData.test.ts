@@ -1,6 +1,5 @@
 import { ProcessData } from './ProcessData';
 import { WriteInfluxParameters, SvmJsonConfiguration, RlJsonConfiguration } from '../types/types';
-import { ProcessSvm } from './process/ProcessSvm';
 import { SvmPrediction } from '../model/algorithm/SvmPrediction';
 import { RlPrediction } from '../model/algorithm/RlPrediction';
 
