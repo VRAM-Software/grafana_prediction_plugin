@@ -22,15 +22,11 @@ const mockWritePoints = jest.fn().mockImplementation(async () => {
   return {};
 });
 
-jest.mock('influx', () => {
+InfluxDB = jest.fn().mockImplementation(() => {
   return {
-    InfluxDB: jest.fn().mockImplementation(() => {
-      return {
-        getDatabaseNames: mockGetDatabaseNames,
-        createDatabase: mockCreateDatabase,
-        writePoints: mockWritePoints,
-      };
-    }),
+    getDatabaseNames: mockGetDatabaseNames,
+    createDatabase: mockCreateDatabase,
+    writePoints: mockWritePoints,
   };
 });
 
@@ -42,6 +38,9 @@ describe('WriteInflux Unit tests', () => {
   describe('Constructor unit tests', () => {
     beforeEach(() => {
       InfluxDB.mockClear();
+      mockGetDatabaseNames.mockClear();
+      mockCreateDatabase.mockClear();
+      mockWritePoints.mockClear();
       this.influx = new InfluxDB();
       this.params = {
         host: 'http://localhost',
@@ -51,6 +50,12 @@ describe('WriteInflux Unit tests', () => {
         measurement: 'CPU',
         fieldKey: 'CPULoadPercentage',
       };
+    });
+
+    it('Constructor with correct paramters - do not throw error', () => {
+      expect(() => {
+        this.writeInflux = new WriteInflux(this.params);
+      }).not.toThrow(Error);
     });
 
     it('Constructor host is empty - throw error', () => {
