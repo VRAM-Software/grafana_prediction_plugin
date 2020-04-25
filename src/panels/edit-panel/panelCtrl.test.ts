@@ -52,6 +52,7 @@ const elem = {
   find: string => [true],
 };
 const json = {
+  author: 'VRAMSoftware',
   predictors: ['a', 'b', 'c'],
 };
 const predictors = json.predictors.map((a, index) => {

@@ -23,6 +23,12 @@ export class WriteInflux {
     if (parameters.database == null || parameters.database.length === 0) {
       throw new Error('WriteInflux - invalid database parameter');
     }
+    if (parameters.measurement == null || parameters.measurement.length === 0) {
+      throw new Error('WriteInflux - invalid measurement parameter');
+    }
+    if (parameters.fieldKey == null || parameters.fieldKey.length === 0) {
+      throw new Error('WriteInflux - invalid fieldKey parameter');
+    }
 
     this.parameters = parameters;
 

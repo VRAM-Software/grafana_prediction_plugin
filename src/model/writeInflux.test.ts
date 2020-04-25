@@ -74,6 +74,20 @@ describe('WriteInflux Unit tests', () => {
       }).toThrow(Error);
     });
 
+    it('Constructor measurement is empty - throw error', () => {
+      this.params.measurement = '';
+      expect(() => {
+        this.writeInflux = new WriteInflux(this.params);
+      }).toThrow(Error);
+    });
+
+    it('Constructor fieldKey is empty - throw error', () => {
+      this.params.fieldKey = '';
+      expect(() => {
+        this.writeInflux = new WriteInflux(this.params);
+      }).toThrow(Error);
+    });
+
     it('Constructor database name already present - do not create a new one', () => {
       this.params.database = 'mockedDatabaseName';
       this.writeInflux = new WriteInflux(this.params);
