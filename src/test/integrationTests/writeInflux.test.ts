@@ -7,6 +7,7 @@
 
 import { WriteInflux } from '../../model/writeInflux';
 import { WriteInfluxParameters } from '../../types/writeInfluxParameters';
+import * as InfluxData from './writeInfluxData';
 
 let writeInflux: WriteInflux;
 
@@ -19,52 +20,24 @@ const params: WriteInfluxParameters = {
   fieldKey: 'CPULoadPercentage',
 };
 
-const writeArray: number[] = [15, 16, 14, 14, 15, 18, 25, 40, 70, 95, 90, 94, 93, 83, 70, 65, 55, 40, 30, 15, 14, 16];
-const writeTimestamps: number[] = [
-  1586617266639,
-  1586617272774,
-  1586617277593,
-  1586617282042,
-  1586617286310,
-  1586617290435,
-  1586617294594,
-  1586617298765,
-  1586617302243,
-  1586617306319,
-  1586617311845,
-  1586617317405,
-  1586617322157,
-  1586617330424,
-  1586617334539,
-  1586617339167,
-  1586617345629,
-  1586617350869,
-  1586617357056,
-  1586617362786,
-  1586617369878,
-  1586617375724,
-];
-
-const writePoint = 23;
-const writeTimestamp = 1586617851266;
-
 describe('WriteInflux Integration Test', () => {
   it('Constructor - No error', () => {
     expect(() => {
       writeInflux = new WriteInflux(params);
+      console.log('INTEGRATION CONSTRUCTOR');
     }).not.toThrow(Error);
   });
 
   describe('Write methods', () => {
     it('Write array - No error', () => {
       expect(() => {
-        writeInflux.writePointToInflux(writePoint, writeTimestamp);
+        writeInflux.writePointToInflux(InfluxData.writePoint, InfluxData.writeTimestamp);
       }).not.toThrow(Error);
     });
 
     it('Write point - No error', () => {
       expect(() => {
-        writeInflux.writeArrayToInflux(writeArray, writeTimestamps);
+        writeInflux.writeArrayToInflux(InfluxData.writeArray, InfluxData.writeTimestamps);
       }).not.toThrow(Error);
     });
   });
