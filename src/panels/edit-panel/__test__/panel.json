@@ -1,33 +1,261 @@
 {
-  "datasource": "-- Grafana --",
+  "datasource": "InfluxDB",
   "gridPos": {
-    "h": 9,
+    "h": 8,
     "w": 12,
     "x": 0,
     "y": 0
   },
-  "id": 2,
+  "id": 8,
+  "options": {},
+  "pconfig": {
+    "fixScale": "",
+    "layout": {
+      "dragmode": "lasso",
+      "font": {
+        "family": "\"Open Sans\", Helvetica, Arial, sans-serif"
+      },
+      "hovermode": "closest",
+      "legend": {
+        "orientation": "h"
+      },
+      "showlegend": true,
+      "xaxis": {
+        "rangemode": "normal",
+        "showgrid": true,
+        "type": "linear",
+        "zeroline": false
+      },
+      "yaxis": {
+        "rangemode": "normal",
+        "showgrid": true,
+        "type": "linear",
+        "zeroline": false
+      },
+      "zaxis": {
+        "rangemode": "normal",
+        "showgrid": true,
+        "type": "linear",
+        "zeroline": false
+      }
+    },
+    "loadFromCDN": false,
+    "settings": {
+      "displayModeBar": true,
+      "type": "scatter"
+    },
+    "showAnnotations": true,
+    "traces": [
+      {
+        "mapping": {
+          "color": "h2o_ph",
+          "size": null,
+          "text": null,
+          "x": "h2o_ph@time",
+          "y": "h2o_ph",
+          "z": null
+        },
+        "name": "h2o_feet",
+        "settings": {
+          "color_option": "ramp",
+          "line": {
+            "color": "#005f81",
+            "dash": "solid",
+            "shape": "linear",
+            "width": 5
+          },
+          "marker": {
+            "color": "#33B5E5",
+            "colorscale": "YlOrRd",
+            "line": {
+              "color": "#DDD",
+              "width": 0
+            },
+            "showscale": false,
+            "size": 5,
+            "sizemin": 3,
+            "sizemode": "diameter",
+            "sizeref": 0.2,
+            "symbol": "circle"
+          }
+        },
+        "show": {
+          "line": true,
+          "lines": true,
+          "markers": true
+        }
+      },
+      {
+        "mapping": {
+          "color": "h2o_temperature",
+          "size": null,
+          "text": null,
+          "x": "h2o_temperature@time",
+          "y": "h2o_temperature",
+          "z": null
+        },
+        "name": "h2o_temperature",
+        "settings": {
+          "color_option": "ramp",
+          "line": {
+            "color": "#96D98D",
+            "dash": "solid",
+            "shape": "linear",
+            "width": 5
+          },
+          "marker": {
+            "color": "#33B5E5",
+            "colorscale": "Greens",
+            "line": {
+              "color": "#DDD",
+              "width": 0
+            },
+            "showscale": false,
+            "size": 5,
+            "sizemin": 3,
+            "sizemode": "diameter",
+            "sizeref": 0.2,
+            "symbol": "circle"
+          }
+        },
+        "show": {
+          "line": true,
+          "lines": true,
+          "markers": true
+        }
+      }
+    ]
+  },
   "predictionSettings": {
-    "version": 0,
-    "json": "{\"author\":\"VRAMSoftware\",\"version\":\"1.0.0\",\"date\":\"2020/04/05\",\"time\":\"14:36:6\",\"pluginAim\":\"svm\",\"predictors\":[\"weight\",\"size\"],\"trainData\":[[69,4.39],[69,4.21],[65,4.09],[72,5.85],[67,4.7],[73,5.68],[70,5.56],[75,5.11],[74,5.36],[65,4.27],[73,5.79],[70,5.47],[74,5.53],[68,4.47],[74,5.22]],\"trainLabels\":[\"1\",\"1\",\"1\",\"-1\",\"1\",\"-1\",\"-1\",\"-1\",\"-1\",\"1\",\"-1\",\"-1\",\"-1\",\"1\",\"-1\"],\"result\":{\"N\":15,\"D\":2,\"b\":63.30499208064203,\"kernelType\":\"linear\",\"w\":[-0.8471448086741091,-0.9149644375601502]},\"notes\":\"notes\"}",
-    "influxHost": "",
-    "influxPort": "",
-    "influxDatabase": "",
-    "influxMeasurement": "",
-    "influxFieldKey": "",
+    "influxDatabase": "NOAA_water_database",
+    "influxFieldKey": "speed",
+    "influxHost": "http://localhost",
+    "influxMeasurement": "prediction_walk",
+    "influxPort": "8086",
+    "json": "{\"author\":\"VRAMSoftware\",\"version\":\"1.0.0\",\"date\":\"2020/04/05\",\"time\":\"14:36:6\",\"pluginAim\":\"svm\",\"predictors\":[\"weight\",\"size\"],\"trainData\":[[69,4.39],[69,4.21],[65,4.09],[72,5.85],[67,4.7],[73,5.68],[70,5.56],[75,5.11],[74,5.36],[65,4.27],[73,5.79],[70,5.47],[74,5.53],[68,4.47],[74,5.22]],\"trainLabels\":[\"1\",\"1\",\"1\",\"-1\",\"1\",\"-1\",\"-1\",\"-1\",\"-1\",\"1\",\"-1\",\"-1\",\"-1\",\"1\",\"-1\"],\"result\":{\"N\":15,\"D\":2,\"b\":63.30499208064203,\"kernelType\":\"linear\",\"w\":[-0.8471448086741091,-0.9149644375601502]},\"notes\":\"kuygc\"}",
+    "nodeMap": [
+      "h2o_ph",
+      "h2o_temperature"
+    ],
+    "predictors": [
+      {
+        "id": 0,
+        "name": "weight"
+      },
+      {
+        "id": 1,
+        "name": "size"
+      }
+    ],
+    "queries": [
+      {
+        "target": "h2o_ph"
+      },
+      {
+        "target": "h2o_temperature"
+      }
+    ],
+    "query": [
+      {
+        "id": "h2o_feet",
+        "name": "[h2o_feet] : [h2o_feet]"
+      }
+    ],
     "savedWriteConnections": true,
-    "writeDatasourceID": 0,
-    "predictors": [{"id":0,"name":"A-predictor"}],
-    "nodeMap": [{"id":"A","name":"A-series"}]
+    "version": 1,
+    "writeDatasourceID": 5
   },
   "targets": [
     {
+      "alias": "h2o_ph",
+      "groupBy": [
+        {
+          "params": [
+            "1s"
+          ],
+          "type": "time"
+        },
+        {
+          "params": [
+            "none"
+          ],
+          "type": "fill"
+        }
+      ],
+      "measurement": "average_temperature",
+      "orderByTime": "ASC",
+      "policy": "default",
       "refId": "A",
       "resultFormat": "time_series",
-      "scenarioId": "random_walk",
-      "target": "select metric"
+      "select": [
+        [
+          {
+            "params": [
+              "degrees"
+            ],
+            "type": "field"
+          },
+          {
+            "params": [],
+            "type": "mean"
+          }
+        ]
+      ],
+      "tags": [
+        {
+          "key": "location",
+          "operator": "=",
+          "value": "coyote_creek"
+        }
+      ]
+    },
+    {
+      "alias": "h2o_temperature",
+      "groupBy": [
+        {
+          "params": [
+            "1s"
+          ],
+          "type": "time"
+        },
+        {
+          "params": [
+            "none"
+          ],
+          "type": "fill"
+        }
+      ],
+      "measurement": "h2o_temperature",
+      "orderByTime": "ASC",
+      "policy": "default",
+      "refId": "B",
+      "resultFormat": "time_series",
+      "select": [
+        [
+          {
+            "params": [
+              "degrees"
+            ],
+            "type": "field"
+          },
+          {
+            "params": [],
+            "type": "mean"
+          }
+        ]
+      ],
+      "tags": [
+        {
+          "key": "location",
+          "operator": "=",
+          "value": "coyote_creek"
+        }
+      ]
     }
   ],
-  "title": "Panel Title",
-  "type": "vram-panel"
+  "timeFrom": null,
+  "timeShift": null,
+  "title": "VRAM panel",
+  "type": "vram-panel",
+  "version": 1
 }

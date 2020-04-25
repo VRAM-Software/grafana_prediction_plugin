@@ -153,7 +153,9 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
         controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
       }
     });
-
+    console.log('ERROR', error);
+    console.log(controllerMap);
+    console.log(this.panel.predictionSettings);
     if (!error) {
       this.publishAppEvent(AppEvents.alertSuccess, ['Query association correctly set!']);
       this.processData.setNodeMap(controllerMap);
