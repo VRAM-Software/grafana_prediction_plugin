@@ -8,6 +8,7 @@
 import { WriteInflux } from './writeInflux';
 import { WriteInfluxParameters } from '../types/writeInfluxParameters';
 import { InfluxDB } from 'influx';
+import * as InfluxData from '../test/integrationTests/writeInfluxData';
 
 const mockGetDatabaseNames = jest.fn().mockImplementation(async () => {
   return ['mockedDatabaseName'];
@@ -33,75 +34,49 @@ jest.mock('influx', () => {
   };
 });
 
-let influx: InfluxDB;
-let writeInflux: WriteInflux;
-
-const params: WriteInfluxParameters = {
-  host: 'http://localhost',
-  port: '8086',
-  database: 'testDB',
-  credentials: ['root', 'root'],
-  measurement: 'CPU',
-  fieldKey: 'CPULoadPercentage',
-};
-
-import * as InfluxData from '../test/integrationTests/writeInfluxData';
-
 describe('WriteInflux Unit tests', () => {
+  InfluxDB;
+  WriteInflux;
+  WriteInfluxParameters;
+
   describe('Constructor unit tests', () => {
     beforeEach(() => {
       InfluxDB.mockClear();
       this.influx = new InfluxDB();
+      this.params = {
+        host: 'http://localhost',
+        port: '8086',
+        database: 'testDB',
+        credentials: ['root', 'root'],
+        measurement: 'CPU',
+        fieldKey: 'CPULoadPercentage',
+      };
     });
 
     it('Constructor host is empty - throw error', () => {
+      this.params.host = '';
       expect(() => {
-        writeInflux = new WriteInflux({
-          host: '',
-          port: '8086',
-          database: 'testDB',
-          credentials: ['root', 'root'],
-          measurement: 'CPU',
-          fieldKey: 'CPULoadPercentage',
-        });
+        this.writeInflux = new WriteInflux(this.params);
       }).toThrow(Error);
     });
 
     it('Constructor port is empty - throw error', () => {
+      this.params.port = '';
       expect(() => {
-        writeInflux = new WriteInflux({
-          host: 'http://localhost',
-          port: '',
-          database: 'testDB',
-          credentials: ['root', 'root'],
-          measurement: 'CPU',
-          fieldKey: 'CPULoadPercentage',
-        });
+        this.writeInflux = new WriteInflux(this.params);
       }).toThrow(Error);
     });
 
     it('Constructor database is empty - throw error', () => {
+      this.params.database = '';
       expect(() => {
-        writeInflux = new WriteInflux({
-          host: 'http://localhost',
-          port: '8086',
-          database: '',
-          credentials: ['root', 'root'],
-          measurement: 'CPU',
-          fieldKey: 'CPULoadPercentage',
-        });
+        this.writeInflux = new WriteInflux(this.params);
       }).toThrow(Error);
     });
 
     it('Constructor database name already present - do not create a new one', () => {
-      writeInflux = new WriteInflux({
-        host: 'http://localhost',
-        port: '8086',
-        database: 'mockedDatabaseName',
-        credentials: ['root', 'root'],
-        measurement: 'CPU',
-        fieldKey: 'CPULoadPercentage',
-      });
+      this.params.database = 'mockedDatabaseName';
+      this.writeInflux = new WriteInflux(this.params);
       expect(this.influx.getDatabaseNames).toBeCalledTimes(1);
       expect(this.influx.createDatabase).not.toBeCalled();
     });
@@ -110,32 +85,32 @@ describe('WriteInflux Unit tests', () => {
   describe('Write unit tests', () => {
     beforeEach(() => {
       InfluxDB.mockClear();
-      writeInflux = new WriteInflux(params);
-      writeInflux.setupArray = jest.fn();
-      writeInflux.setupPoint = jest.fn();
+      this.writeInflux = new WriteInflux(this.params);
+      this.writeInflux.setupArray = jest.fn();
+      this.writeInflux.setupPoint = jest.fn();
     });
 
     it('WriteArray - correct calls to influx library', () => {
-      writeInflux.writeArrayToInflux(InfluxData.writeArray, InfluxData.writeTimestamps);
-      expect(writeInflux.setupArray).toHaveBeenCalledTimes(1);
+      this.writeInflux.writeArrayToInflux(InfluxData.writeArray, InfluxData.writeTimestamps);
+      expect(this.writeInflux.setupArray).toHaveBeenCalledTimes(1);
     });
 
     it('WritePoints - correct calls to influx library', () => {
-      writeInflux.writePointToInflux(InfluxData.writePoint, InfluxData.writeTimestamp);
-      expect(writeInflux.setupPoint).toHaveBeenCalledTimes(1);
+      this.writeInflux.writePointToInflux(InfluxData.writePoint, InfluxData.writeTimestamp);
+      expect(this.writeInflux.setupPoint).toHaveBeenCalledTimes(1);
     });
   });
 
   describe('SetupArray unit tests', () => {
     beforeEach(() => {
       InfluxDB.mockClear();
-      writeInflux = new WriteInflux(params);
-      writeInflux.setupPoint = jest.fn();
+      this.writeInflux = new WriteInflux(this.params);
+      this.writeInflux.setupPoint = jest.fn();
     });
 
     it('SetupArray - correct calls to setupPoint', () => {
-      writeInflux.setupArray(InfluxData.writeArray, InfluxData.writeTimestamps);
-      expect(writeInflux.setupPoint).toHaveBeenCalledTimes(InfluxData.writeArray.length);
+      this.writeInflux.setupArray(InfluxData.writeArray, InfluxData.writeTimestamps);
+      expect(this.writeInflux.setupPoint).toHaveBeenCalledTimes(InfluxData.writeArray.length);
     });
   });
 });
