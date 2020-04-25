@@ -117,18 +117,22 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
 
   // Called on import button click but also to re-load a saved json
   async onUpload(net: any) {
-    this.panel.predictionSettings.json = JSON.stringify(net);
-    this.panel.predictionSettings.predictors = net.predictors.map((a, index) => {
-      return { id: index, name: a };
-    });
-    this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
-    this.processData.setConfiguration({
-      pluginAim: net.pluginAim,
-      predictors: net.predictors,
-      result: net.result,
-      notes: net.notes,
-    });
-    this.onChange();
+    if (net.author === 'VRAMSoftware') {
+      this.panel.predictionSettings.json = JSON.stringify(net);
+      this.panel.predictionSettings.predictors = net.predictors.map((a, index) => {
+        return { id: index, name: a };
+      });
+      this.processData.setConfiguration({
+        pluginAim: net.pluginAim,
+        predictors: net.predictors,
+        result: net.result,
+        notes: net.notes,
+      });
+      this.onChange();
+      this.publishAppEvent(AppEvents.alertSuccess, ['File Json Caricato']);
+    } else {
+      this.publishAppEvent(AppEvents.alertError, ['Invalid JSON configuration file!', 'JSON not recognized as a legal configuration file']);
+    }
   }
 
   async deleteJsonClick() {
@@ -139,15 +143,26 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   async confirmQueries() {
-    // TODO: check that the select does not have the same data
+    let error = false;
     const controllerMap = new Map();
 
     this.panel.predictionSettings.predictors.forEach(predictor => {
-      controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
+      if (controllerMap.has(this.panel.predictionSettings.nodeMap[predictor.id])) {
+        error = true;
+      } else {
+        controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
+      }
     });
-
-    this.processData.setNodeMap(controllerMap);
-    this.onChange();
+    console.log('ERROR', error);
+    console.log(controllerMap);
+    console.log(this.panel.predictionSettings);
+    if (!error) {
+      this.publishAppEvent(AppEvents.alertSuccess, ['Query association correctly set!']);
+      this.processData.setNodeMap(controllerMap);
+      this.onChange();
+    } else {
+      this.publishAppEvent(AppEvents.alertError, ['Predictor to query map contains errors!', 'Predictors must map to different queries']);
+    }
   }
 
   async confirmDatabaseSettings() {
