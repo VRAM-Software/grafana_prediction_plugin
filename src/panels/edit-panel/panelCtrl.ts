@@ -143,21 +143,24 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
   }
 
   async confirmQueries() {
-    // TODO: check that the select does not have the same data
+    let error = false;
     const controllerMap = new Map();
 
     this.panel.predictionSettings.predictors.forEach(predictor => {
       if (controllerMap.has(this.panel.predictionSettings.nodeMap[predictor.id])) {
-        this.publishAppEvent(AppEvents.alertError, ['Predictor to query map contains errors!', 'Predictors must map to different queries']);
-        return;
+        error = true;
       } else {
         controllerMap.set(this.panel.predictionSettings.nodeMap[predictor.id], predictor.name);
       }
     });
 
-    this.publishAppEvent(AppEvents.alertSuccess, ['Query association correctly set!']);
-    this.processData.setNodeMap(controllerMap);
-    this.onChange();
+    if (!error) {
+      this.publishAppEvent(AppEvents.alertSuccess, ['Query association correctly set!']);
+      this.processData.setNodeMap(controllerMap);
+      this.onChange();
+    } else {
+      this.publishAppEvent(AppEvents.alertError, ['Predictor to query map contains errors!', 'Predictors must map to different queries']);
+    }
   }
 
   async confirmDatabaseSettings() {
