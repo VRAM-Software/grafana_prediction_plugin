@@ -120,7 +120,7 @@ describe('WriteInflux Unit tests', () => {
       }).toThrow(Error);
     });
 
-    it('Constructor database name already present - not create a new one', () => {
+    it('Constructor database name already present - do not create a new one', () => {
       writeInflux = new WriteInflux({
         host: 'http://localhost',
         port: '8086',
