@@ -35,9 +35,9 @@ jest.mock('influx', () => {
 });
 
 describe('WriteInflux Unit tests', () => {
-  InfluxDB;
-  WriteInflux;
-  WriteInfluxParameters;
+  let influx: InfluxDB;
+  let writeInflux: WriteInflux;
+  let params: WriteInfluxParameters;
 
   describe('Constructor unit tests', () => {
     beforeEach(() => {
