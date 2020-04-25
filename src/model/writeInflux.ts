@@ -7,9 +7,6 @@
 import { InfluxDB, IPoint } from 'influx';
 import { WriteInfluxParameters } from '../types/writeInfluxParameters';
 
-const writeInfluxErrorDefinition = 'WriteInflux - Writing a point of data to';
-const writeInfluxErrorDescription = ' has encountered the following error: ';
-
 export class WriteInflux {
   private readonly datasource: string;
   private readonly influx: InfluxDB;
@@ -37,41 +34,26 @@ export class WriteInflux {
     }
     this.datasource = dsn.toString();
     this.influx = new InfluxDB(this.datasource + this.parameters.database);
-    this.influx
-      .getDatabaseNames()
-      .then(names => {
-        if (!names.includes(this.parameters.database)) {
-          return this.influx.createDatabase(this.parameters.database).catch(err => {
-            throw new Error(writeInfluxErrorDefinition + dsn + writeInfluxErrorDescription + err);
-          });
-        }
-        return null;
-      })
-      .catch(err => {
-        throw new Error(writeInfluxErrorDefinition + dsn + writeInfluxErrorDescription + err);
-      });
+    this.influx.getDatabaseNames().then(names => {
+      if (!names.includes(this.parameters.database)) {
+        return this.influx.createDatabase(this.parameters.database);
+      }
+      return null;
+    });
   }
 
   writeArrayToInflux(data: number[], timestamps: number[]) {
-    this.influx
-      .writePoints(this.setupArray(data, timestamps), {
-        database: this.parameters.database,
-        precision: 'ms',
-      })
-      .catch(err => {
-        throw new Error(writeInfluxErrorDefinition + this.datasource + writeInfluxErrorDescription + err);
-      });
+    this.influx.writePoints(this.setupArray(data, timestamps), {
+      database: this.parameters.database,
+      precision: 'ms',
+    });
   }
 
   writePointToInflux(point: number, timestamp: number) {
-    this.influx
-      .writePoints([this.setupPoint(point, timestamp)], {
-        database: this.parameters.database,
-        precision: 'ms',
-      })
-      .catch(err => {
-        throw new Error(writeInfluxErrorDefinition + this.datasource + writeInfluxErrorDescription + err);
-      });
+    this.influx.writePoints([this.setupPoint(point, timestamp)], {
+      database: this.parameters.database,
+      precision: 'ms',
+    });
   }
 
   private setupArray(data: number[], timestamps: number[]): IPoint[] {
