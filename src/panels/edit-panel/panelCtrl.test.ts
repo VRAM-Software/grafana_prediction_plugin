@@ -111,7 +111,10 @@ test('graphDiv getter', () => {
   expect(gd).toEqual(true);
 });
 it('should initialize the controller', () => {
-  const controllerMap = new Map([['h2o_ph', 'weight'],["h2o_temperature", "size"]]);
+  const controllerMap = new Map([
+    ['h2o_ph', 'weight'],
+    ['h2o_temperature', 'size'],
+  ]);
   expect(ctrl.processData.setConfiguration).toHaveBeenCalled();
   expect(ctrl.processData.setInfluxParameters).toHaveBeenCalled();
   expect(ctrl.processData.setNodeMap).toHaveBeenCalledWith(expect.any(Map));
@@ -136,7 +139,7 @@ it('should call the onUpload method, load json and publish event', () => {
   expect(spy.change).toHaveBeenCalled();
 });
 test('Query confirm method', () => {
-  ctrl.panel.predictionSettings.nodeMap = ["h2o_ph","h2o_temperature"];
+  ctrl.panel.predictionSettings.nodeMap = ['h2o_ph', 'h2o_temperature'];
   ctrl.confirmQueries();
   expect(ctrl.processData.setNodeMap).toHaveBeenCalled();
   expect(spy.change).toHaveBeenCalled();
