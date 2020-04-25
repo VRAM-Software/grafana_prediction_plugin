@@ -170,7 +170,6 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
       fieldKey: this.panel.predictionSettings.influxFieldKey,
     });
 
-    this.publishAppEvent(AppEvents.alertSuccess, ['Database parameters correctly set!']);
     this.onChange();
   }
 
