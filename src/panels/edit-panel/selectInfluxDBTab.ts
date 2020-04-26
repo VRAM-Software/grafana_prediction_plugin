@@ -18,7 +18,7 @@ export class SelectInfluxDBCtrl {
   // @ts-ignore
   constructor($scope) {
     this.panelCtrl = $scope.ctrl;
-    $scope.ctrl = this;
+    //$scope.ctrl = this;
     this.panel = this.panelCtrl.panel;
     this.panel.datasource = this.panel.datasource || null;
     this.panel.targets = this.panel.targets || [{}];

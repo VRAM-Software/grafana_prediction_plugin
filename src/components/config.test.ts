@@ -5,6 +5,7 @@
  * Description: Test file for config.ts
  */
 
+import { PluginMeta } from '@grafana/data';
 import { GrafanaPredictionControl } from './config';
 
 describe('test', () => {
