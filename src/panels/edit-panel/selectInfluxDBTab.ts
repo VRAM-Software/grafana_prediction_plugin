@@ -58,18 +58,33 @@ export class SelectInfluxDBCtrl {
 
   async updateDatabaseParams() {
     // if user doesn't provide a specific name
-    // if (this.panel.predictionSettings.influxDatabase === null || this.panel.predictionSettings.influxDatabase.length === 0) {
-    //   this.panel.predictionSettings.influxDatabase = 'GrafanaPredictionDatabase';
-    //   this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the database name!',
-    //     'You must specify a database name where the plug-in should write']);
-    //   throw new Error('SelectInfluxDBCtrl - updateDatabaseParams - ' + 'You must specify a database name where the plug-in should write!');
-    // }
-    // if (typeof this.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
-    //   // no datasource set
-    //   this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the datasource!',
-    //     'You must select a datasource to write data']);
-    //   throw new Error('SelectInfluxDBCtrl - updateDatabaseParams - ' + 'You must select a datasource to write data!');
-    // }
+    if (this.panel.predictionSettings.influxDatabase === null || this.panel.predictionSettings.influxDatabase.length === 0) {
+      this.panel.predictionSettings.influxDatabase = 'GrafanaPredictionDatabase';
+      this.panelCtrl.publishAppEvent(AppEvents.alertError, [
+        'Error with the database name!',
+        'You must specify a database name where the plug-in should write',
+      ]);
+      return;
+    }
+    if (typeof this.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
+      // no datasource set
+      this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the datasource!', 'You must select a datasource to write data']);
+      return;
+    }
+    if (this.panel.predictionSettings.influxMeasurement === null || this.panel.predictionSettings.influxMeasurement.length === 0) {
+      this.panelCtrl.publishAppEvent(AppEvents.alertError, [
+        'Error with the measurement name!',
+        'You must specify a measurement name where the plug-in should write',
+      ]);
+      return;
+    }
+    if (this.panel.predictionSettings.influxFieldKey === null || this.panel.predictionSettings.influxFieldKey.length === 0) {
+      this.panelCtrl.publishAppEvent(AppEvents.alertError, [
+        'Error with the fieldKey name!',
+        'You must specify a fieldKey name where the plug-in should write',
+      ]);
+      return;
+    }
 
     // Save info
     this.panel.predictionSettings.influxHost = this.datasources[this.panel.predictionSettings.writeDatasourceID].getHost();

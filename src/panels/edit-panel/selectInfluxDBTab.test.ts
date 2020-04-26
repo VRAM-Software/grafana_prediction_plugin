@@ -6,7 +6,7 @@ const httpResponse = {
   response: {
     statusCode: 200,
   },
-  body: '[{"url":"http://localhost:3000","database":"telegraf","user":"user","password":"password","type":"influxdb","name":"name","id":1 }]',
+  body: '[{"url":"http://localhost:3000","database":"telegraf","user":"user","password":"password","type":"influxdb","name":"name","id":5 }]',
 };
 
 jest.mock('@akanass/rx-http-request/browser/index.js');
