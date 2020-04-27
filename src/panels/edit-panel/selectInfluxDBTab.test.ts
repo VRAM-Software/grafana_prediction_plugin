@@ -1,3 +1,4 @@
+import { AppEvents } from '@grafana/data';
 import { RxHR } from '@akanass/rx-http-request/browser/index.js';
 import * as panel_json from './__test__/panel.json';
 import { SelectInfluxDBCtrl, SelectInfluxDBDirective } from './selectInfluxDBTab';
@@ -35,6 +36,7 @@ let si;
 beforeEach(() => {
   console.log.mockClear();
   console.error.mockClear();
+  scope.ctrl.publishAppEvent.mockClear();
   si = new SelectInfluxDBCtrl(scope);
 });
 
@@ -51,6 +53,38 @@ test('updateDatabaseParams', () => {
   expect(si.panel.predictionSettings.influxHost).toEqual('http://localhost');
   expect(si.panel.predictionSettings.influxPort).toEqual('3000');
   expect(si.panelCtrl.confirmDatabaseSettings).toHaveBeenCalled();
+});
+
+describe('updateDatabaseParams branches', () => {
+  test('Database name error', () => {
+    si.panel.predictionSettings.influxDatabase = null;
+    si.updateDatabaseParams();
+    expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
+        'Error with the database name!',
+        'You must specify a database name where the plug-in should write',
+      ]);
+  });
+  test('Datasource error', () => {
+    si.datasources[si.panel.predictionSettings.writeDatasourceID] = undefined;
+    si.updateDatabaseParams();
+    expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, ['Error with the datasource!', 'You must select a datasource to write data']);
+  });
+  test('FieldKey error', () => {
+    si.panel.predictionSettings.influxFieldKey = null;
+    si.updateDatabaseParams();
+    expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
+        'Error with the fieldKey name!',
+        'You must specify a fieldKey name where the plug-in should write',
+      ]);
+  });
+  test('Measurement error', () => {
+    si.panel.predictionSettings.influxMeasurement = null;
+    si.updateDatabaseParams();
+    expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
+        'Error with the measurement name!',
+        'You must specify a measurement name where the plug-in should write',
+      ]);
+  });
 });
 
 test('SelectInfluxDBDirective', () => {
@@ -85,7 +119,7 @@ describe('non influxdb type branch', () => {
   });
 });
 
-describe('subscribe err/empty scope/invalid response branch', () => {
+describe('subscribe err/empty panel/invalid response branch', () => {
   let se;
   const error = 'httpResponse error';
   const scope = {
