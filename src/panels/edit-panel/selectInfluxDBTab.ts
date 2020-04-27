@@ -15,7 +15,7 @@ export class SelectInfluxDBCtrl {
 
   private datasources: { [datasourceID: string]: DataSource } = {};
 
-  // @ts-ignore
+  /** @ngInject */
   constructor($scope) {
     this.panelCtrl = $scope.ctrl;
     $scope.ctrl = this;
