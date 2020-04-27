@@ -60,30 +60,33 @@ describe('updateDatabaseParams branches', () => {
     si.panel.predictionSettings.influxDatabase = null;
     si.updateDatabaseParams();
     expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
-        'Error with the database name!',
-        'You must specify a database name where the plug-in should write',
-      ]);
+      'Error with the database name!',
+      'You must specify a database name where the plug-in should write',
+    ]);
   });
   test('Datasource error', () => {
     si.datasources[si.panel.predictionSettings.writeDatasourceID] = undefined;
     si.updateDatabaseParams();
-    expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, ['Error with the datasource!', 'You must select a datasource to write data']);
+    expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
+      'Error with the datasource!',
+      'You must select a datasource to write data',
+    ]);
   });
   test('FieldKey error', () => {
     si.panel.predictionSettings.influxFieldKey = null;
     si.updateDatabaseParams();
     expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
-        'Error with the fieldKey name!',
-        'You must specify a fieldKey name where the plug-in should write',
-      ]);
+      'Error with the fieldKey name!',
+      'You must specify a fieldKey name where the plug-in should write',
+    ]);
   });
   test('Measurement error', () => {
     si.panel.predictionSettings.influxMeasurement = null;
     si.updateDatabaseParams();
     expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
-        'Error with the measurement name!',
-        'You must specify a measurement name where the plug-in should write',
-      ]);
+      'Error with the measurement name!',
+      'You must specify a measurement name where the plug-in should write',
+    ]);
   });
 });
 
