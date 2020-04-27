@@ -117,7 +117,7 @@ describe('non influxdb type branch', () => {
     sn = new SelectInfluxDBCtrl(scope);
   });
 
-  test('Ignoring database console log', () => {
+  test('Ignoring non-influx database', () => {
     expect(console.log).toHaveBeenCalledWith(expect.stringContaining('SelectInfluxDBCtrl - Ignoring database with name'));
   });
 });
@@ -155,11 +155,8 @@ describe('subscribe err/empty panel/invalid response branch', () => {
     se = new SelectInfluxDBCtrl(scope);
   });
 
-  test('Console error for bad http response', () => {
-    expect(console.error).toHaveBeenCalledWith(error);
-  });
-
   test('No datasources loaded on bad http response status', () => {
+    expect(console.error).toHaveBeenCalledWith(error);
     expect(console.log).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith('SelectInfluxDBCtrl - start loading datasources...');
     expect(se.datasources).toEqual({});
