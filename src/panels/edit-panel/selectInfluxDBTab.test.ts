@@ -22,18 +22,18 @@ RxHR.get = jest.fn().mockImplementation(() => {
 console.log = jest.fn();
 console.error = jest.fn();
 
-const scope = {
-  ctrl: {
-    refresh: jest.fn(),
-    confirmDatabaseSettings: jest.fn(),
-    publishAppEvent: jest.fn(),
-    panel: panel_json,
-  },
-};
-
 let si;
 
 beforeEach(() => {
+  const scope = {
+    ctrl: {
+      refresh: jest.fn(),
+      confirmDatabaseSettings: jest.fn(),
+      publishAppEvent: jest.fn(),
+      panel: panel_json,
+    },
+    $digest: jest.fn(),
+  };
   console.log.mockClear();
   console.error.mockClear();
   scope.ctrl.publishAppEvent.mockClear();
@@ -64,9 +64,9 @@ describe('updateDatabaseParams branches', () => {
       'You must specify a database name where the plug-in should write',
     ]);
   });
-  
+
   test('Datasource error', () => {
-    si.panelCtrl.datasources[si.panel.predictionSettings.writeDatasourceID] = undefined;
+    si.datasources[si.panel.predictionSettings.writeDatasourceID] = undefined;
     si.updateDatabaseParams();
     expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
       'Error with the datasource!',
@@ -110,6 +110,15 @@ describe('non influxdb type branch', () => {
   };
 
   beforeEach(() => {
+    const scope = {
+      ctrl: {
+        refresh: jest.fn(),
+        confirmDatabaseSettings: jest.fn(),
+        publishAppEvent: jest.fn(),
+        panel: panel_json,
+      },
+      $digest: jest.fn(),
+    };
     RxHR.get = jest.fn().mockImplementation(() => {
       return {
         subscribe: jest.fn().mockImplementation(fun => {
@@ -128,14 +137,6 @@ describe('non influxdb type branch', () => {
 describe('subscribe err/empty panel/invalid response branch', () => {
   let se;
   const error = 'httpResponse error';
-  const scope = {
-    ctrl: {
-      refresh: jest.fn(),
-      confirmDatabaseSettings: jest.fn(),
-      publishAppEvent: jest.fn(),
-      panel: {},
-    },
-  };
   const wrongStatusHttpResponse = {
     response: {
       statusCode: 77,
@@ -144,6 +145,15 @@ describe('subscribe err/empty panel/invalid response branch', () => {
   };
 
   beforeEach(() => {
+    const scope = {
+      ctrl: {
+        refresh: jest.fn(),
+        confirmDatabaseSettings: jest.fn(),
+        publishAppEvent: jest.fn(),
+        panel: {},
+      },
+      $digest: jest.fn(),
+    };
     console.log.mockClear();
     console.error.mockClear();
     scope.ctrl.refresh.mockClear();
@@ -162,7 +172,7 @@ describe('subscribe err/empty panel/invalid response branch', () => {
     expect(console.error).toHaveBeenCalledWith(error);
     expect(console.log).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith('SelectInfluxDBCtrl - start loading datasources...');
-    expect(se.panelCtrl.datasources).toEqual({});
+    expect(se.datasources).toEqual({});
     expect(se.panelCtrl.refresh).not.toHaveBeenCalled();
   });
 
