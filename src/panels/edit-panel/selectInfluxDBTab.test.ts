@@ -65,7 +65,7 @@ describe('updateDatabaseParams branches', () => {
     ]);
   });
   test('Datasource error', () => {
-    si.datasources[si.panel.predictionSettings.writeDatasourceID] = undefined;
+    si.panelCtrl.datasources[si.panel.predictionSettings.writeDatasourceID] = undefined;
     si.updateDatabaseParams();
     expect(si.panelCtrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
       'Error with the datasource!',
@@ -159,7 +159,7 @@ describe('subscribe err/empty panel/invalid response branch', () => {
     expect(console.error).toHaveBeenCalledWith(error);
     expect(console.log).toHaveBeenCalledTimes(1);
     expect(console.log).toHaveBeenCalledWith('SelectInfluxDBCtrl - start loading datasources...');
-    expect(se.datasources).toEqual({});
+    expect(se.panelCtrl.datasources).toEqual({});
     expect(se.panelCtrl.refresh).not.toHaveBeenCalled();
   });
 

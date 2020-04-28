@@ -13,12 +13,11 @@ export class SelectInfluxDBCtrl {
   panel: any;
   panelCtrl: any;
 
-  private datasources: { [datasourceID: string]: DataSource } = {};
+  //private datasources: { [datasourceID: string]: DataSource } = {};
 
   /** @ngInject */
   constructor($scope) {
     this.panelCtrl = $scope.ctrl;
-    //$scope.ctrl = this;
     this.panel = this.panelCtrl.panel;
     this.panel.datasource = this.panel.datasource || null;
     this.panel.targets = this.panel.targets || [{}];
@@ -30,7 +29,7 @@ export class SelectInfluxDBCtrl {
   // ------------------------------------------------------
   getDatasources() {
     console.log('SelectInfluxDBCtrl - start loading datasources...');
-    this.datasources = {};
+    this.panelCtrl.datasources = {};
 
     const protocol = window.location.protocol;
     const hostname = window.location.hostname;
@@ -43,7 +42,15 @@ export class SelectInfluxDBCtrl {
           const datasources = JSON.parse(data.body);
           for (const entry of datasources) {
             if (entry.type === 'influxdb') {
-              this.datasources[entry.id] = new DataSource(entry.url, entry.database, entry.user, entry.password, entry.type, entry.name, entry.id);
+              this.panelCtrl.datasources[entry.id] = new DataSource(
+                entry.url,
+                entry.database,
+                entry.user,
+                entry.password,
+                entry.type,
+                entry.name,
+                entry.id
+              );
             } else {
               console.log(`SelectInfluxDBCtrl - Ignoring database with name:${entry.name} because is not an InfluxDB`);
             }
@@ -66,7 +73,7 @@ export class SelectInfluxDBCtrl {
       ]);
       return;
     }
-    if (typeof this.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
+    if (typeof this.panelCtrl.datasources[this.panel.predictionSettings.writeDatasourceID] === 'undefined') {
       // no datasource set
       this.panelCtrl.publishAppEvent(AppEvents.alertError, ['Error with the datasource!', 'You must select a datasource to write data']);
       return;
@@ -87,8 +94,8 @@ export class SelectInfluxDBCtrl {
     }
 
     // Save info
-    this.panel.predictionSettings.influxHost = this.datasources[this.panel.predictionSettings.writeDatasourceID].getHost();
-    this.panel.predictionSettings.influxPort = this.datasources[this.panel.predictionSettings.writeDatasourceID].getPort();
+    this.panel.predictionSettings.influxHost = this.panelCtrl.datasources[this.panel.predictionSettings.writeDatasourceID].getHost();
+    this.panel.predictionSettings.influxPort = this.panelCtrl.datasources[this.panel.predictionSettings.writeDatasourceID].getPort();
 
     this.panel.predictionSettings.savedWriteConnections = true;
     await this.panelCtrl.confirmDatabaseSettings();
