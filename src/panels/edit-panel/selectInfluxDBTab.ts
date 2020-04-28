@@ -10,6 +10,7 @@ import { DataSource } from '../../core/datasource';
 import { AppEvents } from '@grafana/data';
 
 export class SelectInfluxDBCtrl {
+  $scope: any;
   panel: any;
   panelCtrl: any;
 
@@ -17,6 +18,7 @@ export class SelectInfluxDBCtrl {
 
   /** @ngInject */
   constructor($scope) {
+    this.$scope = $scope;
     this.panelCtrl = $scope.ctrl;
     $scope.ctrl = this;
     this.panel = this.panelCtrl.panel;
@@ -49,6 +51,7 @@ export class SelectInfluxDBCtrl {
             }
           }
           this.panelCtrl.refresh();
+          this.$scope.$digest();
           console.log('refresh after datasources load');
         }
       },
