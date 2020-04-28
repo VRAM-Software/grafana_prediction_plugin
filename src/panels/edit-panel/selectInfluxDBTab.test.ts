@@ -64,6 +64,7 @@ describe('updateDatabaseParams branches', () => {
       'You must specify a database name where the plug-in should write',
     ]);
   });
+  
   test('Datasource error', () => {
     si.panelCtrl.datasources[si.panel.predictionSettings.writeDatasourceID] = undefined;
     si.updateDatabaseParams();
@@ -72,6 +73,7 @@ describe('updateDatabaseParams branches', () => {
       'You must select a datasource to write data',
     ]);
   });
+
   test('FieldKey error', () => {
     si.panel.predictionSettings.influxFieldKey = null;
     si.updateDatabaseParams();
@@ -80,6 +82,7 @@ describe('updateDatabaseParams branches', () => {
       'You must specify a fieldKey name where the plug-in should write',
     ]);
   });
+
   test('Measurement error', () => {
     si.panel.predictionSettings.influxMeasurement = null;
     si.updateDatabaseParams();

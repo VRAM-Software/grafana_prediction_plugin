@@ -5,16 +5,13 @@
  * Description: Class to handle the selectInflux database tab
  */
 import { RxHR } from '@akanass/rx-http-request/browser/index.js';
-
 import { DataSource } from '../../core/datasource';
 import { AppEvents } from '@grafana/data';
 
 export class SelectInfluxDBCtrl {
   panel: any;
   panelCtrl: any;
-
-  //private datasources: { [datasourceID: string]: DataSource } = {};
-
+  
   /** @ngInject */
   constructor($scope) {
     this.panelCtrl = $scope.ctrl;
