@@ -5,7 +5,7 @@
  * Description: Test file for panelCtrl.ts
  */
 
-import { PanelEvents } from '@grafana/data';
+import { AppEvents, PanelEvents } from '@grafana/data';
 import * as panel_json from './__test__/panel.json';
 import { PlotlyPanelUtil } from './plotly/PlotlyPanelUtil';
 import { ProcessData } from '../../controller/ProcessData';
@@ -82,6 +82,7 @@ let ctrl,
 beforeEach(() => {
   PlotlyPanelUtil.mockClear();
   ProcessData.mockClear();
+  mockSetNodeMap.mockClear();
   ctrl = new PlotlyPanelCtrl(scope, injector, null, null, null, null);
   ctrl.otherPanelInFullscreenMode = jest.fn(() => false);
   ctrl.annotationsPromise = Promise.resolve({});
@@ -121,8 +122,9 @@ it('should initialize the controller', () => {
   expect(ctrl.processData.setNodeMap).toHaveBeenCalledWith(controllerMap);
 });
 it('it should have a version', () => {
+  ctrl.panel.predictionSettings.version = 0;
   ctrl.onPanelInitialized();
-  expect(ctrl.panel.predictionSettings.version).toBe(PlotlyPanelCtrl.predictionSettingsVersion);
+  expect(ctrl.panel.predictionSettings.version).toEqual(PlotlyPanelCtrl.predictionSettingsVersion);
   expect(PlotlyPanelUtil).toHaveBeenCalledTimes(1);
 });
 it('should delete the file and publish success event', () => {
@@ -138,11 +140,31 @@ it('should call the onUpload method, load json and publish event', () => {
   expect(ctrl.processData.setConfiguration).toHaveBeenCalled();
   expect(spy.change).toHaveBeenCalled();
 });
+test('onUpload method error', () => {
+  let wrongJson = json;
+  wrongJson.author = 'EEPROMSoftware';
+  ctrl.onUpload(wrongJson);
+  expect(ctrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
+    'Invalid JSON configuration file!',
+    'JSON not recognized as a legal configuration file',
+  ]);
+});
 test('Query confirm method', () => {
   ctrl.panel.predictionSettings.nodeMap = ['h2o_ph', 'h2o_temperature'];
   ctrl.confirmQueries();
   expect(ctrl.processData.setNodeMap).toHaveBeenCalled();
   expect(spy.change).toHaveBeenCalled();
+});
+test('Query confirm error', () => {
+  ctrl.panel.predictionSettings.nodeMap = ['h2o', 'h2o'];
+  ctrl.confirmQueries();
+  // chiamata al setNodeMap del costruttore
+  expect(ctrl.processData.setNodeMap).toHaveBeenCalledTimes(1);
+  expect(spy.change).not.toHaveBeenCalled();
+  expect(ctrl.publishAppEvent).toHaveBeenCalledWith(AppEvents.alertError, [
+    'Predictor to query map contains errors!',
+    'Predictors must map to different queries',
+  ]);
 });
 test('Confirm database settings method', () => {
   ctrl.confirmDatabaseSettings();
