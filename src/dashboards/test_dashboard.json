@@ -50,7 +50,7 @@
     ],
     "schemaVersion": 1,
     "style": "dark",
-    "tags": ["test"],
+    "tags": ["VRAM"],
     "templating": {
         "list": []
     },
@@ -84,7 +84,7 @@
         ]
     },
     "timezone": "",
-    "title": "Test Dashboard",
+    "title": "VRAM Dashboard Example",
     "uid": "",
     "version": 1,
     "network": null
