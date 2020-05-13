@@ -3,7 +3,7 @@
     "name": "Grafana prediction plugin",
     "id": "grafana-prediction-plugin",
     "info": {
-        "description": "App plugin developed for Grafana",
+        "description": "App plugin developed for Grafana to perform SVM and RL predictions",
         "author": {
             "name": "VRAM Software",
             "url": "https://github.com/VRAM-Software"
@@ -15,14 +15,14 @@
         "links": [
             {
                 "name": "GitHub",
-                "url": "https://github.com/VRAM-Software/grafana_prediction_plugin/src"
+                "url": "https://github.com/VRAM-Software/grafana_prediction_plugin/"
             },
             {
                 "name": "License",
                 "url": "https://github.com/VRAM-Software/grafana_prediction_plugin/blob/master/LICENSE"
             }
         ],
-        "version": "%VERSION%",
+        "version": "27.0.0",
         "updated": "%TODAY%"
     },
     "includes": [
@@ -32,7 +32,7 @@
         },
         {
             "type": "dashboard",
-            "name": "Test Dashboard",
+            "name": "VRAM Dashboard Example",
             "path": "./dashboards/test_dashboard.json",
             "addToNav": true
         }
