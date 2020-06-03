@@ -17,36 +17,56 @@ export class ProcessData {
     let timestamps: number[] = [];
     let data: number[][] = [];
     let temp: number[] = [];
-    let predictors: string[] = [];
-    let j = 0;
 
-    while (j < this.dataList[0].datapoints.length) {
-      temp = [];
-      for (let i = 0; i < this.dataList.length; i++) {
-        if (!this.dataList[i].target) {
-          console.error('Map not properly set up');
-        } else {
-          predictors.push(this.nodeMap.get(this.dataList[i].target) ?? '');
-        }
-        let dp = this.dataList[i].datapoints;
-        let d = dp[j];
+    for (let j = 0; j < this.dataList[0].datapoints.length; ++j) {
+      temp = [this.nodeMap.size];
+
+      this.buildIndexesMap().forEach((predictorID, queryID) => {
+        let d = this.dataList[queryID].datapoints[j];
+
         if (d[0]) {
           if (!timestamps.includes(d[1])) {
             timestamps.push(d[1]);
           }
-          temp.push(d[0]);
+          temp[predictorID] = d[0];
         } else {
           console.log('null numbers, tuple ignored');
         }
-      }
+      });
+
       data.push(temp);
-      j += 1;
     }
 
     this.data = {
       data: data.filter(e => e.length),
       timestamps: timestamps,
     };
+  };
+
+  private buildIndexesMap = (): Map<number, number> => {
+    let indexesMap: Map<number, number> = new Map();
+    this.nodeMap.forEach((value, key) => {
+      let targetIndex = -1;
+      let predictorIndex = -1;
+      for (let i = 0; i < this.dataList.length; ++i) {
+        if (this.dataList[i].target === key) {
+          targetIndex = i;
+        }
+      }
+
+      for (let i = 0; i < this.configuration.predictors.length; ++i) {
+        if (this.configuration.predictors[i] === value) {
+          predictorIndex = i;
+        }
+      }
+
+      if (targetIndex < 0 || predictorIndex < 0) {
+        console.error('Map not properly set up');
+      } else {
+        indexesMap.set(targetIndex, predictorIndex);
+      }
+    });
+    return indexesMap;
   };
 
   getCurrentStrategy = (): PerformPrediction => {

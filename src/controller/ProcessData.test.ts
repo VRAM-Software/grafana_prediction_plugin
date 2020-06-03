@@ -1,5 +1,5 @@
 import { ProcessData } from './ProcessData';
-import { WriteInfluxParameters, SvmJsonConfiguration, RlJsonConfiguration } from '../types/types';
+import { WriteInfluxParameters, SvmJsonConfiguration, RlJsonConfiguration, DataList } from '../types/types';
 import { SvmPrediction } from '../model/algorithm/SvmPrediction';
 import { RlPrediction } from '../model/algorithm/RlPrediction';
 
@@ -16,11 +16,67 @@ RlPrediction = jest.fn().mockImplementation(() => {
   return { predict: mockRlPredict };
 });
 
-const dataList = [
-  { target: 'target', datapoints: [[1]] },
-  { target: 'target', datapoints: [[1]] },
+const dataList: DataList[] = [
+  {
+    target: 'cpu',
+    datapoints: [
+      [1, 1],
+      [2, 2],
+      [3, 3],
+    ],
+  },
+  {
+    target: 'disk',
+    datapoints: [
+      [4, 1],
+      [5, 2],
+      [6, 3],
+    ],
+  },
+  {
+    target: 'fan',
+    datapoints: [
+      [7, 1],
+      [8, 2],
+      [9, 3],
+    ],
+  },
 ];
-const nodeMap = new Map([['A-series', 'A-predictor']]);
+const nullDataList: DataList[] = [
+  {
+    target: 'cpu',
+    datapoints: [
+      [1, 1],
+      [null as any, 2],
+      [3, 3],
+    ],
+  },
+  {
+    target: 'disk',
+    datapoints: [
+      [4, 1],
+      [null as any, 2],
+      [6, 3],
+    ],
+  },
+  {
+    target: 'fan',
+    datapoints: [
+      [7, 1],
+      [null as any, 2],
+      [9, 3],
+    ],
+  },
+];
+const nodeMap: Map<string, string> = new Map()
+  .set('cpu', 'weight')
+  .set('disk', 'size')
+  .set('fan', 'fanz');
+const reverseMap: Map<string, string> = new Map()
+  .set('cpu', 'fanz')
+  .set('disk', 'weight')
+  .set('fan', 'size');
+
 const influxParameters: WriteInfluxParameters = {
   host: 'http://localhost',
   port: '3000',
@@ -31,7 +87,7 @@ const influxParameters: WriteInfluxParameters = {
 };
 const svmConfiguration: SvmJsonConfiguration = {
   pluginAim: 'svm',
-  predictors: ['weight', 'size'],
+  predictors: ['weight', 'size', 'fanz'],
   result: {
     N: 15,
     D: 2,
@@ -92,4 +148,32 @@ test('DataList error', () => {
 test('Missing parameter error', () => {
   pd.start();
   expect(console.error).toHaveBeenCalledWith('You forgot to set one of the parameters');
+});
+
+test('Null values in datalist, should be ignored', () => {
+  pd.setConfiguration(svmConfiguration);
+  pd.setDataList(nullDataList);
+  pd.start();
+  expect(console.log).toHaveBeenCalledWith('null numbers, tuple ignored');
+});
+
+test('Check that nodeMap is working, direct match', () => {
+  pd.setConfiguration(svmConfiguration);
+  pd.start();
+  expect(pd.data.data).toStrictEqual([
+    [1, 4, 7],
+    [2, 5, 8],
+    [3, 6, 9],
+  ]);
+});
+
+test('Check that nodeMap is working, reverse match', () => {
+  pd.setConfiguration(svmConfiguration);
+  pd.setNodeMap(reverseMap);
+  pd.start();
+  expect(pd.data.data).toStrictEqual([
+    [4, 7, 1],
+    [5, 8, 2],
+    [6, 9, 3],
+  ]);
 });
