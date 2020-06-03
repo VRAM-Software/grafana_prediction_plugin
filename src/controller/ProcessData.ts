@@ -13,7 +13,7 @@ export class ProcessData {
 
   constructor() {}
 
-  private setupData = (): void => {
+  private readonly setupData = (): void => {
     let timestamps: number[] = [];
     let data: number[][] = [];
     let temp: number[] = [];
@@ -22,7 +22,7 @@ export class ProcessData {
       temp = [this.nodeMap.size];
 
       this.buildIndexesMap().forEach((predictorID, queryID) => {
-        let d = this.dataList[queryID].datapoints[j];
+        const d = this.dataList[queryID].datapoints[j];
 
         if (d[0]) {
           if (!timestamps.includes(d[1])) {
@@ -43,8 +43,8 @@ export class ProcessData {
     };
   };
 
-  private buildIndexesMap = (): Map<number, number> => {
-    let indexesMap: Map<number, number> = new Map();
+  private readonly buildIndexesMap = (): Map<number, number> => {
+    const indexesMap: Map<number, number> = new Map();
     this.nodeMap.forEach((value, key) => {
       let targetIndex = -1;
       let predictorIndex = -1;
@@ -108,6 +108,7 @@ export class ProcessData {
     const notDefined = value => value == null;
     if ([this.dataList, this.configuration, this.nodeMap, this.influxParameters].some(notDefined)) {
       console.error('You forgot to set one of the parameters');
+      return null;
     } else {
       this.setupData();
       this.setStrategy(this.configuration.pluginAim);
