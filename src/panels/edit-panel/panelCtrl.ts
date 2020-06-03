@@ -139,6 +139,8 @@ export class PlotlyPanelCtrl extends MetricsPanelCtrl {
     this.predictionPanelConfig.json = null;
     this.panel.predictionSettings.predictors = null;
     this.panel.predictionSettings.nodeMap = [];
+    this.processData.setConfiguration(null as any);
+    this.processData.setNodeMap(null as any);
     this.publishAppEvent(AppEvents.alertSuccess, ['File Json Cancellato']);
   }
 
