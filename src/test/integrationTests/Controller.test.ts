@@ -71,7 +71,7 @@ const rlJsonConfiguration: RlJsonConfiguration = {
   notes: 'testNotes',
 };
 
-const newMap: Map<string, string> = new Map().set('cpu', 'idQuery1').set('disk', 'idQuery2');
+const newMap: Map<string, string> = new Map().set('cpu', 'weight').set('disk', 'size');
 
 describe('Integration test for the prediction with influx DB mocked', () => {
   let pd;
